@@ -62,3 +62,26 @@ export function revealedWindow(candles: Candle[], startIdx: number, day: number)
   }
   return out;
 }
+
+/**
+ * 진입 이전 구간 — 차트가 1봉째부터 차 보이도록 흐리게 깔 봉들.
+ * 시계열 앞쪽이 부족하면 있는 만큼만 준다.
+ */
+export function leadInWindow(
+  candles: Candle[],
+  startIdx: number,
+  count: number,
+  blind: boolean,
+  base: number,
+): Array<BlindCandle | RevealedCandle> {
+  const from = Math.max(0, startIdx - count);
+  const out: Array<BlindCandle | RevealedCandle> = [];
+  for (let i = from; i < startIdx; i++) {
+    const c = candles[i];
+    if (c === undefined) continue;
+    // day 는 음수(진입 전)로 두어 본 구간 번호와 섞이지 않게 한다
+    const day = i - startIdx;
+    out.push(blind ? toBlind(c, day, base) : toRevealed(c, day));
+  }
+  return out;
+}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { t } from '@/i18n';
 import { SERIES, isDevData } from '@/data';
 import type { Settings as SettingsType } from '@/store';
+import { PrimaryButton, GhostButton } from '@/components/ui';
 
 interface Props {
   settings: SettingsType;
@@ -44,15 +45,20 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
           </button>
         </div>
         <div className="hr" />
-        <button className="btn ghost" style={{ textAlign: 'left' }} onClick={onSources}>
-          {t('settings.sources')} ›
+        <button className="row-link" onClick={onSources}>
+          <span>{t('settings.sources')}</span>
+          <span className="chev">›</span>
+        </button>
+        <button className="row-link" onClick={() => setConfirming(true)} data-danger>
+          <span>{t('settings.clear')}</span>
         </button>
         <div className="hr" />
-        <p className="sub">{t('settings.contact')}</p>
-        <button className="btn ghost" style={{ textAlign: 'left', color: 'var(--up)' }}
-          onClick={() => setConfirming(true)}>
-          {t('settings.clear')}
-        </button>
+        <div className="kv">
+          <span className="k">{t('settings.contact')}</span>
+          <span className="v" style={{ fontWeight: 400, color: 'var(--sub)' }}>
+            support@example.com
+          </span>
+        </div>
         <p className="source">
           {t('settings.version', { version: '0.1.0', date: SERIES.usdkrw.source.fetchedAt })}
           {isDevData && ' · 개발용 합성 데이터'}
@@ -63,10 +69,10 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <h3>{t('settings.clear')}</h3>
             <p>{t('settings.clearConfirm')}</p>
-            <button className="btn" onClick={() => { onClear(); setConfirming(false); }}>
+            <PrimaryButton onClick={() => { onClear(); setConfirming(false); }}>
               {t('settings.clear')}
-            </button>
-            <button className="btn ghost" onClick={() => setConfirming(false)}>{t('play.leaveCancel')}</button>
+            </PrimaryButton>
+            <GhostButton onClick={() => setConfirming(false)}>{t('play.leaveCancel')}</GhostButton>
           </div>
         </div>
       )}

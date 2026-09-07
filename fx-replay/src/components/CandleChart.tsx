@@ -1,21 +1,28 @@
 /**
  * 캔들 차트 — canvas. 외부 차트 라이브러리 없음(번들 크기).
  * 블라인드에서는 정규화 값·Day 축, 리빌 후에는 실제 값·날짜 축.
+ *
+ * 리드인: 진입 이전 구간을 흐리게 깔아 1봉째부터 차트가 차 보이게 한다.
+ * 이게 없으면 초반에 화면 대부분이 빈 격자라 차트가 고장 난 것처럼 보인다.
  */
 import { useEffect, useRef } from 'react';
-import { windowRange } from '@/engine/normalize';
+import { candleHigh, candleLow, windowRange } from '@/engine/normalize';
 import type { BlindCandle, RevealedCandle } from '@/types';
 
 export interface ChartMarker {
-  /** Day 번호 */
+  /** 봉 번호(1부터). 리드인은 제외한 본 구간 기준 */
   day: number;
   kind: 'event' | 'mine';
 }
 
+type Bar = BlindCandle | RevealedCandle;
+
 interface Props {
-  candles: Array<BlindCandle | RevealedCandle>;
-  /** 전체 슬롯 수 (미래는 빈 격자) */
+  candles: Bar[];
+  /** 본 구간의 전체 슬롯 수 (미래는 빈 격자) */
   slots: number;
+  /** 진입 이전 구간 (흐리게) */
+  leadIn?: Bar[];
   markers?: ChartMarker[];
   /** 리빌 후 축 라벨용 */
   labels?: string[];
@@ -24,10 +31,19 @@ interface Props {
 
 const UP = '#F04452';
 const DOWN = '#3182F6';
+const MUTED = '#C9D0D8';
 const GRID = '#EEF0F3';
 const AXIS = '#8B95A1';
+const ENTRY = '#D1D6DB';
 
-export function CandleChart({ candles, slots, markers = [], labels, height = 260 }: Props) {
+export function CandleChart({
+  candles,
+  slots,
+  leadIn = [],
+  markers = [],
+  labels,
+  height = 260,
+}: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -42,23 +58,26 @@ export function CandleChart({ candles, slots, markers = [], labels, height = 260
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
+    if (candles.length === 0) return;
 
     const padL = 8;
-    const padR = 44;
+    const padR = 46;
     const padT = 10;
     const padB = 22;
     const plotW = w - padL - padR;
     const plotH = h - padT - padB;
 
-    if (candles.length === 0) return;
-
-    const { high: hi, low: lo } = windowRange(candles);
+    // 스케일은 리드인까지 포함해 잡는다. 진입 시점에 축이 튀지 않는다.
+    const { high: hi, low: lo } = windowRange([...leadIn, ...candles]);
     const span = hi - lo || 1;
     const top = hi + span * 0.08;
     const bot = lo - span * 0.08;
     const y = (v: number) => padT + ((top - v) / (top - bot)) * plotH;
-    const slotW = plotW / slots;
-    const bodyW = Math.max(1.5, Math.min(8, slotW * 0.62));
+
+    const total = leadIn.length + slots;
+    const slotW = plotW / total;
+    const bodyW = Math.max(1.5, Math.min(9, slotW * 0.62));
+    const slotX = (i: number) => padL + slotW * (i + 0.5);
 
     // 가로 격자 + 우측 값 라벨
     ctx.font = '11px -apple-system, system-ui, sans-serif';
@@ -77,25 +96,41 @@ export function CandleChart({ candles, slots, markers = [], labels, height = 260
       ctx.fillText(v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }), padL + plotW + 6, yy);
     }
 
-    // 캔들
-    candles.forEach((c, i) => {
-      const cx = padL + slotW * (i + 0.5);
-      const rising = c.c >= c.o;
-      ctx.strokeStyle = rising ? UP : DOWN;
-      ctx.fillStyle = rising ? UP : DOWN;
+    const drawCandle = (c: Bar, i: number, muted: boolean) => {
+      const cx = slotX(i);
+      const color = muted ? MUTED : c.c >= c.o ? UP : DOWN;
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(cx, y(c.h));
-      ctx.lineTo(cx, y(c.l));
+      ctx.moveTo(cx, y(candleHigh(c)));
+      ctx.lineTo(cx, y(candleLow(c)));
       ctx.stroke();
       const yo = y(c.o);
       const yc = y(c.c);
       ctx.fillRect(cx - bodyW / 2, Math.min(yo, yc), bodyW, Math.max(1, Math.abs(yc - yo)));
-    });
+    };
+
+    leadIn.forEach((c, i) => drawCandle(c, i, true));
+
+    // 진입 지점 구분선
+    if (leadIn.length > 0) {
+      const x = padL + slotW * leadIn.length;
+      ctx.strokeStyle = ENTRY;
+      ctx.setLineDash([3, 3]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    candles.forEach((c, i) => drawCandle(c, leadIn.length + i, false));
 
     // 마커
     for (const m of markers) {
-      const cx = padL + slotW * (m.day - 0.5);
+      const cx = slotX(leadIn.length + m.day - 1);
       ctx.beginPath();
       if (m.kind === 'event') {
         ctx.fillStyle = '#FFB020';
@@ -112,7 +147,7 @@ export function CandleChart({ candles, slots, markers = [], labels, height = 260
       }
     }
 
-    // x축 라벨
+    // x축 라벨 — 본 구간 기준
     ctx.fillStyle = AXIS;
     ctx.textAlign = 'center';
     const ticks = labels
@@ -120,11 +155,15 @@ export function CandleChart({ candles, slots, markers = [], labels, height = 260
       : [0, Math.floor(slots / 3), Math.floor((slots * 2) / 3), slots - 1];
     for (const i of ticks) {
       if (i < 0) continue;
-      const cx = padL + slotW * (i + 0.5);
+      const cx = slotX(leadIn.length + i);
       const text = labels ? (labels[i] ?? '') : `Day ${i + 1}`;
-      if (text) ctx.fillText(text, cx, h - 8);
+      if (!text) continue;
+      // 가장자리 라벨이 잘리지 않게 안쪽으로 당긴다
+      const half = ctx.measureText(text).width / 2;
+      const x = Math.min(Math.max(cx, padL + half), padL + plotW - half);
+      ctx.fillText(text, x, h - 8);
     }
-  }, [candles, slots, markers, labels, height]);
+  }, [candles, slots, leadIn, markers, labels, height]);
 
   const last = candles[candles.length - 1];
   return (

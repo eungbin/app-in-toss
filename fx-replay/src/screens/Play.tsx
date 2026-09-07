@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pushBackHandler } from '@ait/kit';
 import { progressLabel, t } from '@/i18n';
+import { LEAD_IN_BARS } from '@/constants';
 import { SERIES, getCandles } from '@/data';
 import { CandleChart } from '@/components/CandleChart';
-import { blindWindow, revealedWindow } from '@/engine/normalize';
+import { blindWindow, leadInWindow, revealedWindow } from '@/engine/normalize';
 import { canConvert, displayP, totalP } from '@/engine/position';
 import { convert, currentRate, pause, setSpeed, start, tick } from '@/engine/session';
 import { fmtDate } from '@/engine/scenario';
 import type { ConvertDir, ConvertRatio, PlaySession, ScenarioEvent } from '@/types';
+import { PrimaryButton, SecondaryButton } from '@/components/ui';
 
 interface Props {
   session: PlaySession;
@@ -96,6 +98,13 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
   const window = session.blind
     ? blindWindow(candles, session.startIdx, session.day)
     : revealedWindow(candles, session.startIdx, session.day);
+  /**
+   * 미래 영역도 진행에 따라 늘린다. 처음부터 60칸을 잡아두면 초반에 대부분이 빈 격자다.
+   * 앞으로 6칸 여유를 두고, 최소 20칸에서 시작해 bars 까지 늘어난다.
+   */
+  const visibleSlots = Math.min(session.bars, Math.max(session.day + 6, 20));
+  const base = candles[session.startIdx]?.c ?? 1;
+  const leadIn = leadInWindow(candles, session.startIdx, LEAD_IN_BARS, session.blind, base);
   const cur = window[window.length - 1];
   const first = window[0];
   const changePct = cur && first ? ((cur.c - first.c) / first.c) * 100 : 0;
@@ -156,7 +165,8 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
 
         <CandleChart
           candles={window}
-          slots={session.bars}
+          slots={visibleSlots}
+          leadIn={leadIn}
           labels={labels}
           markers={session.conversions.map((c) => ({ day: c.day, kind: 'mine' as const }))}
         />
@@ -191,17 +201,17 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
 
       <div className="bottom">
         {finished ? (
-          <button className="btn" onClick={onFinish}>{t('play.finishedCta')}</button>
+          <PrimaryButton onClick={onFinish}>{t('play.finishedCta')}</PrimaryButton>
         ) : (
           <div className="ctrl">
-            <button className="btn sub" style={{ width: 'auto', padding: '0 20px' }}
+            <SecondaryButton style={{ width: 'auto', padding: '0 20px' }}
               onClick={() => onChange(
                 session.status === 'playing'
                   ? pause(sessionRef.current, new Date().toISOString())
                   : start(sessionRef.current, new Date().toISOString()),
               )}>
               {session.status === 'playing' ? t('play.pause') : t('play.resume')}
-            </button>
+            </SecondaryButton>
             <div className="speed">
               {([1, 2] as const).map((sp) => (
                 <button key={sp} data-on={session.speed === sp}
@@ -230,9 +240,9 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
             <p className="sub" style={{ margin: '0 0 16px', fontSize: 13 }}>
               {t('event.hint')}
             </p>
-            <button className="btn" onClick={dismissEvent}>
+            <PrimaryButton onClick={dismissEvent}>
               {t('event.continue')}
-            </button>
+            </PrimaryButton>
           </div>
         </div>
       )}

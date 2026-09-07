@@ -5,6 +5,7 @@ import { fmtMonth } from '@/engine/scenario';
 import type { Store } from '@/store';
 import { BannerAd } from '@/components/BannerAd';
 import type { Scenario } from '@/types';
+import { PrimaryButton, GhostButton } from '@/components/ui';
 
 interface Props {
   store: Store;
@@ -41,15 +42,15 @@ export function Home(p: Props) {
             <p className="sub">
               {progressLabel(state.session.timeframe, state.session.day, state.session.bars)}
             </p>
-            <button className="btn" onClick={p.onResume}>{t('home.resume.cta')}</button>
-            <button className="btn ghost" onClick={p.onQuit}>{t('home.resume.quit')}</button>
+            <PrimaryButton onClick={p.onResume}>{t('home.resume.cta')}</PrimaryButton>
+            <GhostButton onClick={p.onQuit}>{t('home.resume.quit')}</GhostButton>
           </div>
         )}
 
         <div className="card">
           <h3>{t('home.daily.title')}</h3>
           <p className="sub">{t('home.daily.sub')} · {remaining}</p>
-          <button className="btn" onClick={p.onStartDaily}>{t('home.daily.cta')}</button>
+          <PrimaryButton onClick={p.onStartDaily}>{t('home.daily.cta')}</PrimaryButton>
         </div>
 
         <div className="section">

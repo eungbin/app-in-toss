@@ -17,3 +17,5 @@ export const MEMO_MAX = 100;
 export const CHAPTER_OVERLAP_MAX = 30;
 /** 최근 구간 재등장 방지 반경 */
 export const SEGMENT_EXCLUDE_RADIUS = 30;
+/** 차트에 흐리게 까는 진입 이전 봉 개수 */
+export const LEAD_IN_BARS = 24;

@@ -13,9 +13,13 @@ export const CHILDREN_MAX = 10;
 /** 시간축 시작 연도 (docs/PRD.md 11-2 확정: 2021~현재) */
 export const TIMELINE_FROM_YEAR = 2021;
 
-/** 역산 허용 오차(월 실수령, 원) */
-export const REVERSE_TOL = 1_000;
-export const REVERSE_MAX_ITER = 40;
+/**
+ * 역산 이진 탐색용 연봉 격자.
+ * 실수령은 연봉에 대해 단조가 아니지만, 이 격자 위에서는 단조 증가다.
+ * 측정상 60만 원부터 안전하고(최대 단차 27,499원 < 격자당 세전 증가), 여유를 둬 120만 원.
+ * `net.test.ts`가 이 성질을 검증한다.
+ */
+export const REVERSE_GRID = 1_200_000;
 /** 역산 탐색 상한 연봉 */
 export const GROSS_MAX = 5_000_000_000;
 

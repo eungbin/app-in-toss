@@ -13,9 +13,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "lint:copy": "tsx scripts/lint-copy.ts",
-    "data:dev": "tsx scripts/gen-dev-tax-table.ts",
     "data:build": "tsx scripts/build-tax-table.ts",
-    "check:data": "tsx scripts/check-data.ts"
+    "check:data": "tsx scripts/check-data.ts",
+    "data:fetch": "tsx scripts/fetch-tax-table.ts"
   },
   "dependencies": {
     "@ait/kit": "*",

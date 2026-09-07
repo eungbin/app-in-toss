@@ -3,6 +3,7 @@ import { SERIES } from '@/data';
 import { displayP } from '@/engine/position';
 import { fmtDate } from '@/engine/scenario';
 import type { PlayResult, Scenario } from '@/types';
+import { PrimaryButton } from '@/components/ui';
 
 interface Props {
   scenario: Scenario;
@@ -51,7 +52,7 @@ export function Debrief({ scenario: s, result, onReplay }: Props) {
         </p>
       </div>
       <div className="bottom">
-        <button className="btn" onClick={onReplay}>{t('chapter.replay')}</button>
+        <PrimaryButton onClick={onReplay}>{t('chapter.replay')}</PrimaryButton>
       </div>
     </>
   );

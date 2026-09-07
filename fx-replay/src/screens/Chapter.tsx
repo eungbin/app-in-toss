@@ -2,6 +2,7 @@ import { t } from '@/i18n';
 import { SERIES } from '@/data';
 import { fmtDate } from '@/engine/scenario';
 import type { Scenario } from '@/types';
+import { PrimaryButton } from '@/components/ui';
 
 interface Props {
   scenario: Scenario;
@@ -40,9 +41,9 @@ export function Chapter({ scenario: s, owned, onPlay }: Props) {
         </ul>
       </div>
       <div className="bottom">
-        <button className="btn" disabled={!owned} onClick={onPlay}>
+        <PrimaryButton disabled={!owned} onClick={onPlay}>
           {owned ? t('chapter.ctaPlay') : t('chapter.ctaSoon')}
-        </button>
+        </PrimaryButton>
       </div>
     </>
   );

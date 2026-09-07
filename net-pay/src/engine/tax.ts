@@ -28,19 +28,19 @@ function findBracket(table: TaxTableFile, taxable: number): number[] | null {
   return null;
 }
 
-/** 표 상한(마지막 구간의 hi)을 넘는 급여의 세액 */
+/**
+ * 표 상한(마지막 구간의 hi) 이상인 급여의 세액.
+ * 원문은 "<상한>천원인 경우의 해당 세액 + 상수 + 초과분 × 98% × 세율" 형태이고,
+ * 구간을 누적하지 않는다. 해당 구간 하나만 적용한다.
+ */
 function overCapTax(table: TaxTableFile, taxable: number, col: number): number {
-  const last = table.brackets[table.brackets.length - 1];
-  if (!last) return 0;
-  const baseTax = last.tax[col] ?? 0;
-  let add = 0;
-  for (const seg of table.overCap.segments) {
-    // from 과 정확히 같을 때도 구간에 들어온 것으로 본다. add 는 표 마지막 구간과의 단차를 잇는 값이다
-    if (taxable < seg.from) break;
-    const upper = seg.to === null ? taxable : Math.min(taxable, seg.to);
-    add += seg.add + (upper - seg.from) * seg.factor * seg.rate;
-  }
-  return baseTax + add;
+  const base = table.overCap.baseTax[col] ?? 0;
+  const seg = table.overCap.segments.find(
+    (s) => taxable > s.from && (s.to === null || taxable <= s.to),
+  );
+  // 정확히 상한이면 기준 세액 그대로
+  if (!seg) return base;
+  return base + seg.add + (taxable - seg.from) * seg.factor * seg.rate;
 }
 
 /**

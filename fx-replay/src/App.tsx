@@ -24,6 +24,7 @@ import { Settings } from '@/screens/Settings';
 import { Sources } from '@/screens/Sources';
 import { TabBar, isTabRoute, type TabName } from '@/components/TabBar';
 import type { PlayResult, PlaySession, Scenario } from '@/types';
+import { PrimaryButton, GhostButton } from '@/components/ui';
 
 type Route =
   | { name: 'home' }
@@ -265,8 +266,10 @@ export function App() {
 
   if (!state.ready) return <div className="app" />;
 
+  const tabName = isTabRoute(route.name) ? route.name : null;
+
   return (
-    <div className="app">
+    <div className="app" data-tabs={tabName !== null}>
       {route.name === 'home' && (
         <Home
           store={store}
@@ -365,9 +368,9 @@ export function App() {
 
       {route.name === 'sources' && <Sources />}
 
-      {isTabRoute(route.name) && (
+      {tabName !== null && (
         <TabBar
-          current={route.name}
+          current={tabName}
           onSelect={(tab: TabName) => {
             setRoute(
               tab === 'home'
@@ -387,12 +390,12 @@ export function App() {
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <h3>{t('m01.title')}</h3>
             <p>{t('m01.body')}</p>
-            <button className="btn" disabled={adState !== 'loaded'} onClick={watchAd}>
+            <PrimaryButton disabled={adState !== 'loaded'} onClick={watchAd}>
               {t('m01.cta')}
-            </button>
+            </PrimaryButton>
             {adState === 'loading' && <p className="sub" style={{ marginTop: 8 }}>{t('m01.loading')}</p>}
             {adState === 'failed' && <p className="sub" style={{ marginTop: 8 }}>{t('m01.fail')}</p>}
-            <button className="btn ghost" onClick={() => setShowQuotaSheet(false)}>{t('m01.later')}</button>
+            <GhostButton onClick={() => setShowQuotaSheet(false)}>{t('m01.later')}</GhostButton>
           </div>
         </div>
       )}
@@ -411,9 +414,9 @@ export function App() {
             >
               {t('play.leaveConfirm')}
             </button>
-            <button className="btn ghost" onClick={() => setConfirmLeave(false)}>
+            <GhostButton onClick={() => setConfirmLeave(false)}>
               {t('play.leaveCancel')}
-            </button>
+            </GhostButton>
           </div>
         </div>
       )}

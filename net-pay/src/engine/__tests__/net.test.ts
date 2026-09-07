@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeNet } from '../net';
+import { REVERSE_GRID } from '@/constants';
 import { DATA, opts } from './fixtures';
 
 const net = (gross: number, over = {}) => computeNet(gross, opts(over), DATA);
@@ -103,11 +104,20 @@ describe('정방향 계산 — 번들 데이터 성질', () => {
     expect(computeNet(2_520_000, O).capped).toEqual({ nps: 'min', nhis: 'min' });
   });
 
-  it('보험료 하한을 벗어난 뒤에는 세액표 구간 폭(연봉 12만 원) 격자에서 실수령이 줄지 않는다', () => {
-    // 역산이 이 성질에 기대므로 반드시 지켜져야 한다.
-    // 시작점은 하한이 더 이상 걸리지 않는 연봉(과세 월급 > 국민연금 하한)보다 위로 잡는다.
+  it('실수령은 연봉에 대해 단조가 아니다 — 표 상한 경계에 큰 계단이 있다', () => {
+    // 별표2는 표 상한(과세 월급 1,000만 원)을 넘는 순간 상한 기준 세액에 25,000원을 더한다.
+    // 이 때문에 연봉이 12원 오를 때 실수령이 월 2만 원 넘게 떨어진다. 역산이 이를 전제로 설계됐다.
+    const before = computeNet(122_400_000, O).netMonthly;
+    const after = computeNet(122_400_012, O).netMonthly;
+    expect(after).toBeLessThan(before);
+    expect(before - after).toBeGreaterThan(20_000);
+  });
+
+  it('역산 격자(연봉 120만 원) 위에서는 실수령이 줄지 않는다', () => {
+    // 역산의 이진 탐색이 이 성질에만 기대므로 반드시 지켜져야 한다.
+    // 시작점은 보험료 하한이 더 이상 걸리지 않는 연봉보다 위로 잡는다.
     let prev = -Infinity;
-    for (let g = 12_000_000; g <= 600_000_000; g += 120_000) {
+    for (let g = 12_000_000; g <= 900_000_000; g += REVERSE_GRID) {
       const n = computeNet(g, O).netMonthly;
       expect(n, `연봉 ${g}에서 실수령이 감소했다`).toBeGreaterThanOrEqual(prev);
       prev = n;

@@ -18,10 +18,29 @@ const year = Number(today.slice(0, 4));
 const errors: string[] = [];
 const warns: string[] = [];
 
-/* 1. 합성 세액표 차단 */
+/**
+ * 알려진 최신 시행판. 공공데이터포털이 아직 올리지 않은 판이 있으면 여기에 적어 두고,
+ * 번들이 그 판을 담을 때까지 프로덕션 빌드를 막는다.
+ * 근거: 국세청 2026년 근로소득 간이세액 개정(개정 2026-02-27, 시행 2026-03-01) —
+ *      8세 이상 20세 이하 자녀 차감액이 20,830 / 45,830 / 33,330원으로 바뀌었다.
+ */
+const KNOWN_LATEST = {
+  effectiveFrom: '2026-03-01',
+  how: '홈택스 > 세금신고 > 원천세 신고 > 근로소득 간이세액표에서 조견표를 받아 data-src/tax-table/2026-03-01.hwpx 로 두고 npm run data:build',
+};
+
+/* 1. 손으로 만든 표 차단 */
 for (const t of tables) {
-  if (t.meta.dev) errors.push(`개발용 합성 세액표(${t.meta.effectiveFrom})가 들어 있습니다. npm run data:build 로 실제 표를 넣으세요.`);
+  if (t.meta.dev) errors.push(`손으로 만든 세액표(${t.meta.effectiveFrom})가 들어 있습니다. npm run data:build 로 원본에서 만드세요.`);
 }
+
+/* 1b. 최신 시행판 누락 차단 */
+const newest = tables[tables.length - 1];
+if (!newest) errors.push('세액표가 하나도 없습니다. npm run data:fetch → npm run data:build');
+else if (newest.meta.effectiveFrom < KNOWN_LATEST.effectiveFrom && KNOWN_LATEST.effectiveFrom <= today)
+  errors.push(
+    `번들의 최신 세액표가 ${newest.meta.effectiveFrom} 시행판인데 ${KNOWN_LATEST.effectiveFrom} 시행판이 이미 적용 중입니다.\n    → ${KNOWN_LATEST.how}`,
+  );
 
 /* 2. 세액표 시행일·무결성 */
 const applicable = tables.filter((t) => t.meta.effectiveFrom <= today);

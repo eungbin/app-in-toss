@@ -11,6 +11,7 @@ import { renderShareCard, shareHeadline } from '@/components/shareCard';
 import { canSaveImage, saveCardImage, shareLink } from '@ait/kit';
 import { candleEnd } from '@/types';
 import type { PlayResult, PlaySession, ScenarioEvent } from '@/types';
+import { PrimaryButton, SecondaryButton, GhostButton } from '@/components/ui';
 
 interface Props {
   session: PlaySession;
@@ -169,7 +170,7 @@ export function Result({
           {scenario ? scenario.debrief.slice(0, 3).join(' ') : dailyDebrief(window, series.name)}
         </p>
         {scenario && onDebrief && (
-          <button className="btn ghost" onClick={onDebrief}>{t('result.debriefMore')} ›</button>
+          <GhostButton onClick={onDebrief}>{t('result.debriefMore')} ›</GhostButton>
         )}
 
         {!saved && (
@@ -188,16 +189,16 @@ export function Result({
 
       <div className="bottom">
         <div className="btn-row">
-          <button className="btn sub" disabled={saved} onClick={() => onSave(memo)}>
+          <SecondaryButton disabled={saved} onClick={() => onSave(memo)}>
             {saved ? t('result.saved') : t('result.save')}
-          </button>
-          <button className="btn" onClick={onAgain}>{t('result.again')}</button>
+          </SecondaryButton>
+          <PrimaryButton onClick={onAgain}>{t('result.again')}</PrimaryButton>
         </div>
         <div className="btn-row">
-          <button className="btn ghost" onClick={() => setShareOpen(true)}>
+          <GhostButton onClick={() => setShareOpen(true)}>
             {t('result.share')}
-          </button>
-          <button className="btn ghost" onClick={onHome}>{t('result.home')}</button>
+          </GhostButton>
+          <GhostButton onClick={onHome}>{t('result.home')}</GhostButton>
         </div>
       </div>
 
@@ -206,15 +207,15 @@ export function Result({
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <h3>{t('share.title')}</h3>
             <p>{t('share.body')}</p>
-            <button className="btn" onClick={() => void onSaveImage()}>
+            <PrimaryButton onClick={() => void onSaveImage()}>
               {t('share.saveImage')}
-            </button>
-            <button className="btn sub" onClick={() => void onSendLink()}>
+            </PrimaryButton>
+            <SecondaryButton onClick={() => void onSendLink()}>
               {t('share.sendLink')}
-            </button>
-            <button className="btn ghost" onClick={() => setShareOpen(false)}>
+            </SecondaryButton>
+            <GhostButton onClick={() => setShareOpen(false)}>
               {t('m03.cancel')}
-            </button>
+            </GhostButton>
           </div>
         </div>
       )}

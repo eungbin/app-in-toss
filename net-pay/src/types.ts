@@ -57,11 +57,16 @@ export interface TaxBracket {
 }
 
 /**
- * 월 과세급여가 표의 상한(1,000만 원)을 넘을 때의 산식.
- * 세액 = (상한 구간 세액) + add + (과세급여 − from) × factor × rate
+ * 월 과세급여가 표 상한을 넘을 때의 산식 (별표2 원문).
+ * 세액 = baseTax[가족수] + add + (과세급여 − from) × factor × rate
+ *
+ * 구간은 **누적하지 않는다.** 각 구간의 식이 그 자체로 완결된다.
+ * factor 0.98은 원문의 "초과하는 금액에 98%를 곱한 금액의 N% 상당액"에서 온다.
  */
 export interface OverCapSegment {
+  /** 초과(exclusive) */
   from: number;
+  /** 이하(inclusive). null이면 상한 없음 */
   to: number | null;
   add: number;
   factor: number;
@@ -76,15 +81,19 @@ export interface TaxTableFile {
     fetchedAt: string;
     url: string;
     license: string;
-    /** 개발용 합성 표. true면 프로덕션 빌드가 차단된다 */
+    /** 원문 개정일. 시행일(effectiveFrom)과 다르다 */
+    amendedOn?: string;
+    /** 손으로 만든 표. true면 프로덕션 빌드가 차단된다 */
     dev?: true;
   };
   brackets: TaxBracket[];
-  /** 8세 이상 20세 이하 자녀 수별 차감액 */
+  /** 8세 이상 20세 이하 자녀 수별 차감액 (비고 3) */
   childDeduction: { one: number; two: number; extraPerChild: number };
   overCap: {
-    /** 원문(별표2 비고) 대조 완료 여부. false면 프로덕션 빌드가 차단된다 */
+    /** 원문에서 읽어냈는가. false면 프로덕션 빌드가 차단된다 */
     verified: boolean;
+    /** 표 상한(마지막 구간의 hi)에서의 세액. 공제대상가족 1~11명 */
+    baseTax: number[];
     segments: OverCapSegment[];
   };
 }

@@ -47,10 +47,12 @@ export const TABLE: TaxTableFile = {
   childDeduction: { one: 20_830, two: 45_830, extraPerChild: 33_330 },
   overCap: {
     verified: true,
-    // 1,030,000 초과부터: 구간별 (초과분 × 0.98 × rate)
+    // 표 상한(1,030,000)에서의 세액. 마지막 구간(3000…)보다 조금 높다
+    baseTax: [3500, 3400, 3300, 3200, 3100, 3000, 2900, 2800, 2700, 2600, 2500],
+    // 각 구간은 누적하지 않는다: baseTax + add + (초과분 × factor × rate)
     segments: [
-      { from: 1_030_000, to: 2_000_000, add: 500, factor: 0.98, rate: 0.1 },
-      { from: 2_000_000, to: null, add: 0, factor: 0.98, rate: 0.2 },
+      { from: 1_030_000, to: 2_000_000, add: 0, factor: 0.98, rate: 0.1 },
+      { from: 2_000_000, to: null, add: 95_060, factor: 0.98, rate: 0.2 },
     ],
   },
 };
