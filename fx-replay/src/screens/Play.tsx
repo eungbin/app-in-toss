@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pushBackHandler } from '@ait/kit';
-import { t } from '@/i18n';
+import { progressLabel, t } from '@/i18n';
 import { SERIES, getCandles } from '@/data';
 import { CandleChart } from '@/components/CandleChart';
 import { blindWindow, revealedWindow } from '@/engine/normalize';
 import { canConvert, displayP, totalP } from '@/engine/position';
 import { convert, currentRate, pause, setSpeed, start, tick } from '@/engine/session';
 import { fmtDate } from '@/engine/scenario';
-import type { ConvertDir, ConvertRatio, PlaySession, Timeframe } from '@/types';
-
-const unitLabel = (tf: Timeframe) => t(`play.unit.${tf}` as 'play.unit.day');
+import type { ConvertDir, ConvertRatio, PlaySession } from '@/types';
 
 interface Props {
   session: PlaySession;
@@ -97,7 +95,7 @@ export function Play({ session, onChange, onFinish }: Props) {
       <div className="scroll">
         <p className="day-counter">
           {session.blind ? '' : `${SERIES[session.series].name} · `}
-          {unitLabel(session.timeframe)} {session.day} / {session.bars}
+          {progressLabel(session.timeframe, session.day, session.bars)}
         </p>
         <div className="play-head">
           <div>

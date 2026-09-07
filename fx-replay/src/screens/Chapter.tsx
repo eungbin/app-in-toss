@@ -30,7 +30,11 @@ export function Chapter({ scenario: s, owned, onPlay }: Props) {
         ))}
         <div className="section"><h2>{t('chapter.what')}</h2></div>
         <ul className="timeline">
-          <li><div className="l">{t('chapter.point1')}</div></li>
+          <li>
+            <div className="l">
+              {t(`chapter.point1.${s.timeframe ?? 'day'}` as 'chapter.point1.day', { n: s.bars })}
+            </div>
+          </li>
           <li><div className="l">{t('chapter.point2')}</div></li>
           <li><div className="l">{t('chapter.point3')}</div></li>
         </ul>

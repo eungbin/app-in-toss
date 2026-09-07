@@ -32,7 +32,8 @@ describe('markers', () => {
     ];
     const m = baseRateMarkers(window, rates);
     expect(m).toHaveLength(1);
-    expect(m[0]).toMatchObject({ d: '20081006', label: '기준금리 5.25%→5.00%' });
+    expect(m[0]).toMatchObject({ d: '20081006', label: '금리 5.25→5.00%' });
+    expect(m[0]!.label.length).toBeLessThanOrEqual(14);
   });
 
   it('빈 구간에서 안전하다', () => {

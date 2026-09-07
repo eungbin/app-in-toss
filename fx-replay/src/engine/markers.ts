@@ -30,7 +30,7 @@ export function baseRateMarkers(window: Candle[], baseRate: BaseRatePoint[]): Sc
     }
     if (p.d > lastDate) break;
     if (prev !== undefined && p.v !== prev) {
-      out.push({ d: p.d, label: `기준금리 ${prev.toFixed(2)}%→${p.v.toFixed(2)}%`, body: '' });
+      out.push({ d: p.d, label: `금리 ${prev.toFixed(2)}→${p.v.toFixed(2)}%`, body: '' });
     }
     prev = p.v;
   }

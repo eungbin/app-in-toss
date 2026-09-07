@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { progressLabel, t } from '@/i18n';
 import { SCENARIOS, SERIES, isDevData } from '@/data';
 import { available } from '@/engine/quota';
 import { fmtMonth } from '@/engine/scenario';
@@ -40,7 +40,7 @@ export function Home(p: Props) {
           <div className="card">
             <h3>{t('home.resume.title')}</h3>
             <p className="sub">
-              {t('home.resume.sub', { day: state.session.day, days: state.session.bars })}
+              {progressLabel(state.session.timeframe, state.session.day, state.session.bars)}
             </p>
             <button className="btn" onClick={p.onResume}>{t('home.resume.cta')}</button>
             <button className="btn ghost" onClick={p.onQuit}>{t('home.resume.quit')}</button>
