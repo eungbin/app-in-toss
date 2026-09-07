@@ -1,0 +1,122 @@
+/* 최소 디자인 토큰 — docs/SCREEN_FLOW.md 6장. 라이트 모드 고정 */
+:root {
+  --bg: #ffffff;
+  --surface: #f7f8fa;
+  --text: #191f28;
+  --sub: #6b7684;
+  --primary: #3182f6;
+  --lock: #8b95a1;
+  --radius: 16px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  touch-action: pan-y;
+}
+
+.screen { padding: 20px 20px 40px; max-width: 520px; margin: 0 auto; }
+
+.dev-banner {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff4e6;
+  color: #9a5b00;
+  font-size: 13px;
+}
+
+/* 큰 숫자 입력 */
+.money-input {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.money-input__prefix, .money-input__suffix { color: var(--text); }
+.money-input__field {
+  flex: 1 1 120px;
+  min-width: 100px;
+  border: none;
+  border-bottom: 2px solid var(--primary);
+  background: transparent;
+  color: var(--text);
+  font: 700 32px/1.2 inherit;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 0;
+  outline: none;
+}
+.money-input__field::placeholder { color: #c4cad2; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 0; }
+.chip {
+  border: 1px solid #e5e8eb;
+  background: var(--bg);
+  color: var(--sub);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  min-height: 36px;
+  cursor: pointer;
+}
+.chip--on { border-color: var(--primary); color: var(--primary); }
+
+.note, .hint { color: var(--sub); font-size: 13px; margin: 12px 0 0; }
+
+.card {
+  margin: 20px 0 0;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.card__headline { margin: 0; font-size: 20px; font-weight: 700; }
+.card__sub { margin: 6px 0 0; color: var(--sub); font-variant-numeric: tabular-nums; }
+.card__link {
+  margin: 12px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.card__items { margin: 8px 0 0; color: var(--sub); font-size: 12px; }
+
+.detail { width: 100%; margin: 12px 0 0; border-collapse: collapse; font-size: 14px; }
+.detail__row th { text-align: left; font-weight: 400; color: var(--sub); padding: 6px 0; }
+.detail__row td { text-align: right; font-variant-numeric: tabular-nums; padding: 6px 0; }
+.detail__row--strong th, .detail__row--strong td { color: var(--text); font-weight: 700; border-top: 1px solid #e5e8eb; }
+.badge {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #e8f3ff;
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.switch {
+  display: block;
+  margin: 20px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: 14px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.basis { margin: 28px 0 0; color: var(--sub); font-size: 12px; }
+.basis p { margin: 4px 0; }

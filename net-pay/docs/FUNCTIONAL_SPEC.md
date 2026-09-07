@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.1 (2026-09-07) |
+| 문서 버전 | v0.2 (2026-09-07) |
 | 상위 문서 | [PRD.md](PRD.md) v0.3 — 요구사항 ID(CE-, DT-, UI-, MZ-, US-)는 PRD와 동일 |
 | 공용 코드 | [../../docs/SHARED_PACKAGE.md](../../docs/SHARED_PACKAGE.md) `@ait/kit` |
 | 적용 범위 | **v1.0 (광고 전용, 서버 없음)**. P1·P2 항목은 `[P1]` `[P2]` 표시 |
@@ -36,7 +36,7 @@
 
 ## 1. 데이터 모델
 
-### 1-1. 간이세액표 (`src/data/tax-table/<effectiveFrom>.json`)
+### 1-1. 간이세액표 (`src/data/tax-tables.json` — 시행판 전체를 한 파일에 담는다)
 
 ```ts
 interface TaxTableFile {
@@ -51,10 +51,19 @@ interface TaxTableFile {
   brackets: { lo: number; hi: number; tax: number[] /* length 11, 공제대상가족 1~11명 */ }[];
   /** 8세 이상 20세 이하 자녀 차감 (2026-03-01 시행판: 20,830 / 45,830 / 45,830 + 33,330×(n−2)) */
   childDeduction: { one: number; two: number; extraPerChild: number };
-  /** 1,000만 원 초과 산식. 세액표 원본 각주에서 확정한다(오픈 이슈 O-1) */
-  overCap: { from: number; to: number | null; rate: number; factor: number; add: number }[];
+  /** 개발용 합성 표. true면 프로덕션 빌드가 차단된다 */
+  meta.dev?: true;
+  /**
+   * 표 상한(1,000만 원) 초과 산식. 세액표 원본 비고에서 확정한다(오픈 이슈 O-1).
+   * 세액 = (마지막 구간 세액) + add + (과세급여 − from) × factor × rate, 구간 누적.
+   * verified=false면 프로덕션 빌드가 차단된다.
+   */
+  overCap: { verified: boolean; segments: { from, to, add, factor, rate }[] };
 }
 ```
+
+> 시행판을 파일로 쪼개면 정적 번들에 넣을 때 파일 목록을 따로 관리해야 한다.
+> 시행판 4개를 합쳐도 300KB 안쪽이라 **한 파일에 배열로** 담고 `import` 한 번으로 끝낸다.
 
 - 무결성 규칙(빌드 테스트): `brackets[i].hi === brackets[i+1].lo`, 각 행 `tax.length === 11`, 같은 열에서 세액 단조 비감소, 같은 행에서 가족 수가 늘수록 세액 단조 비증가, `lo` 미만(1,060,000원 미만)은 세액 0.
 - 과거 시행판(2021-02, 2023-02, 2024-02)은 같은 스키마로 `tax-table/` 아래 병렬 보관. 확보 못 한 연도는 파일 없음(1-3 참조).
@@ -64,13 +73,18 @@ interface TaxTableFile {
 ```ts
 interface RateRow {
   from: string;                        // 시행일 "2026-07-01"
-  nps:  { employeeRate: number; baseMin: number; baseMax: number; baseTrunc: 1000; rounding: "floor1" };
-  nhis: { employeeRate: number; ltcRateOnPremium: number; employeePremiumMin: number; employeePremiumMax: number; rounding: "floor10" };
-  ei:   { employeeRate: number; rounding: "floor10" };
-  sources: { label: string; url: string; checkedAt: string }[];
+  nps:  { totalRate; employeeShare; baseMin; baseMax };
+  nhis: { totalRate; employeeShare; ltcRateOnPremium; premiumMin; premiumMax };  // 보험료는 총액 기준
+  ei:   { totalRate; employeeShare };  // 실업급여 근로자 부담은 절반이 아니라 전액
+  sources: { label; url; checkedAt }[];
+  needsVerification?: string[];        // 원문 대조 전인 항목
 }
 type RatesFile = RateRow[];            // from 오름차순
 ```
+
+> 고시는 **총요율과 총 보험료 상·하한**으로 정해지고 근로자는 그 절반을 낸다(고용보험은 예외).
+> 그래서 근로자 부담값을 그대로 저장하지 않고 `totalRate × employeeShare`로 계산한다.
+> "상한이 총액인지 본인 부담인지" 같은 해석 오류가 데이터에 굳는 것을 막는다.
 
 - 조회 규칙 `rateFor(date)`: `from <= date`인 마지막 행. 2026년은 1월·7월 두 행(국민연금 상하한 변경).
 - 2026-07-01 행(확인됨): `nps.employeeRate 0.0475, baseMin 410,000, baseMax 6,590,000` / `nhis.employeeRate 0.03595, ltcRateOnPremium 0.1314, employeePremiumMax 4,591,740` / `ei.employeeRate 0.009`.
@@ -196,15 +210,25 @@ AC
 
 ### 3-4. 역산 엔진 (CE-6) — `computeGross(targetNet, opts, data): ReverseResult`
 
-동작
-1. `targetNet <= 0` → 연봉 0.
-2. `lo = 0, hi = GROSS_MAX`. 불변식: `net(lo) < targetNet <= net(hi)`. `net(hi) < targetNet`이면 "계산 범위를 넘었어요" 예외.
-3. 반복(최대 40): `mid = floor((lo + hi) / 2)`; `net(mid) >= targetNet ? hi = mid : lo = mid`. 종료: `hi − lo <= 12` (연봉 원 단위 수렴, 월 1원).
-4. `annualGross = hi`; `annualGrossDisplay = ceil(hi / 10,000) × 10,000`; `achievedNet = net(hi).netMonthly`.
-5. 표시: 헤드라인 "연봉 약 4,470만 원이 필요해요", 부제 "이 연봉의 월 실수령 3,001,240원". 상세(S03)에 `annualGross` 원 단위와 "실수령이 목표와 1,000원 이내로 맞는 최소 연봉" 설명.
+**측정 결과(2026-09-07): 정방향은 단조 증가가 아니다.** 연봉 1,200만~2억 구간을 12원(월 1원) 간격으로
+훑으면 실수령이 내려가는 지점이 284,414곳 있고 최대 낙폭은 **월 2,417원**이다. 원인은 두 가지다.
+간이세액표가 월 과세급여 10,000원 단위 계단이고, 국민연금 기준소득월액이 1,000원 단위로 절사된다.
+따라서 단순 이진 탐색은 목표에 못 미치는 연봉을 답으로 낼 수 있다.
 
-예외
-- 정방향이 단조라는 전제가 세액표 계단 때문에 깨지는 구간이 발견되면(3-2 AC) 이진 탐색 대신 `lo`부터 1만 원 스텝 선형 탐색으로 폴백. 폴백 사용 여부는 테스트가 아니라 데이터 검증 단계에서 결정한다.
+동작
+1. `targetNet <= 0` → 연봉 0. `net(GROSS_MAX) < targetNet` → `outOfRange`.
+2. **격자 이진 탐색**: 세액표 구간 폭에 대응하는 연봉 격자(120,000원) 위에서 탐색한다.
+   격자 한 칸에서 세전은 월 10,000원 늘고 공제는 많아야 약 3,700원 느는 것이 보장되므로 격자 위에서는 단조다.
+   불변식 `net(lo) < target <= net(hi)`, 둘 다 격자점.
+3. **칸 안 선형 탐색**: `[lo, hi]`를 12원 간격으로 훑어 목표를 만족하는 가장 낮은 연봉을 고른다.
+4. **뒤따르는 하락 보정**: 답 이후 `hi`까지 목표 아래로 떨어지는 지점이 있으면 그 뒤로 옮긴다.
+   `hi`는 격자점이라 `net(hi) >= target`이 보장되므로 반드시 끝난다.
+5. `annualGrossDisplay = ceil(annualGross / 10,000) × 10,000`.
+
+예외 — **저소득 계단**: 과세 월급이 0원에서 막 생기는 순간 국민연금·건강보험 **하한**이 한꺼번에
+걸려 실수령이 크게 한 번 떨어진다(비과세 20만 원 기준 연봉 240만 → 252만에서 월 200,000 → 179,035원).
+제도상 계단이며 계산 오류가 아니다. 최저임금에 한참 못 미치는 구간에서만 나타나므로 격자 탐색의
+전제는 실사용 구간에서 성립한다. 테스트로 동작을 고정해 둔다.
 
 AC
 - [ ] 목표 100만/200만/300만/500만/1,000만/3,000만 원에서 `achievedNet >= target` 그리고 `net(annualGross − 12) < target`.
@@ -436,7 +460,10 @@ npm run build = check(typecheck + lint:copy + test) + check:data + check-ad-ids 
 | O-3 | 과거 간이세액표(2021-02, 2023-02, 2024-02) 홈택스 과거판 다운로드 가능 여부. 불가 연도는 fallback | W1 데이터 |
 | O-4 | 2021~2025 각 연도 요율·상하한 원문 대조(보도자료). 알려진 값: 건보 2024·2025 7.09%, 장기요양 2025 12.95% | W1 데이터 |
 | O-5 | 게이트 해제를 "광고 1회 = 전체" 대신 기능별로 나눌지. 출시 후 시청률로 판단 | 출시 후 4주 |
-| O-6 | `@ait/kit` 마이그레이션이 fx-replay 심사 일정과 겹칠 때의 순서(kit 먼저 vs fx-replay 제출 먼저) | 착수 시 |
+| ~~O-6~~ | ~~`@ait/kit` 마이그레이션 순서~~ → 2026-09-07 kit 추출 완료, net-pay는 처음부터 사용 | 해결 |
+| O-7 | 세액표 원본은 홈택스에서 **수동 다운로드** 후 CSV로 저장해야 한다(엑셀 파서를 넣지 않기로 함 — 의존성 0 유지). 절차는 `scripts/build-tax-table.ts` 상단 주석 | 상시 |
 
 ## 8. 변경 이력
 - 2026-09-07 v0.1 초안. PRD v0.3(협상 카드 무료, 공용 패키지, 시간축 5년) 반영.
+- 2026-09-07 v0.2 구현 반영: 세액표를 단일 `tax-tables.json`으로, 요율을 총요율+부담 비율로,
+  역산을 격자 탐색+선형 보정으로 변경(단조성 반증 측정), 저소득 계단 문서화, O-6 해결·O-7 추가.

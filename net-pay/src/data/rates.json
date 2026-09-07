@@ -1,0 +1,421 @@
+[
+  {
+    "from": "2021-01-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 320000,
+      "baseMax": 5030000
+    },
+    "nhis": {
+      "totalRate": 0.0686,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1152,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.008,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민건강보험공단 2022년도 건강보험료 및 장기요양보험료 인상 안내",
+        "url": "https://www.nhis.or.kr/_custom/nhis/_common/board/index/726.do",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "국민연금 기준소득월액 상·하한액",
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2021-07-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 330000,
+      "baseMax": 5240000
+    },
+    "nhis": {
+      "totalRate": 0.0686,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1152,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.008,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민건강보험공단 2022년도 건강보험료 및 장기요양보험료 인상 안내",
+        "url": "https://www.nhis.or.kr/_custom/nhis/_common/board/index/726.do",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "국민연금 기준소득월액 상·하한액",
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2022-01-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 330000,
+      "baseMax": 5240000
+    },
+    "nhis": {
+      "totalRate": 0.0699,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1227,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.008,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민건강보험공단 2022년도 건강보험료 및 장기요양보험료 인상 안내",
+        "url": "https://www.nhis.or.kr/_custom/nhis/_common/board/index/726.do",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "정책브리핑 2022년 장기요양보험료율 12.27%",
+        "url": "https://www.korea.kr/news/pressReleaseView.do?newsId=156470917",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "국민연금 기준소득월액 상·하한액",
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2022-07-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 350000,
+      "baseMax": 5530000
+    },
+    "nhis": {
+      "totalRate": 0.0699,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1227,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민건강보험공단 2022년도 건강보험료 및 장기요양보험료 인상 안내",
+        "url": "https://www.nhis.or.kr/_custom/nhis/_common/board/index/726.do",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "정책브리핑 2022년 장기요양보험료율 12.27%",
+        "url": "https://www.korea.kr/news/pressReleaseView.do?newsId=156470917",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "국민연금 기준소득월액 상·하한액",
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2023-01-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 350000,
+      "baseMax": 5530000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1281,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "보건복지부 2024년도 건강보험료율 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=378386",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "국민연금 기준소득월액 상·하한액",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2023-07-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 370000,
+      "baseMax": 5900000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1281,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민연금공단 2026년도 기준소득월액 상·하한액 조정 안내",
+        "url": "https://www.nps.or.kr/pnsgdnc/newgdnc/getOHAE0001M1.do?menuId=MN24000897&pstId=NE202500000000030479",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 2024년도 건강보험료율 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=378386",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2024-01-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 370000,
+      "baseMax": 5900000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1295,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "보건복지부 2024년도 건강보험료율 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=378386",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 2025년도 건강보험료율 2년 연속 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503000000&bid=0027&list_no=1483034&act=view",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2024-07-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 390000,
+      "baseMax": 6170000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1295,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민연금공단 2026년도 기준소득월액 상·하한액 조정 안내",
+        "url": "https://www.nps.or.kr/pnsgdnc/newgdnc/getOHAE0001M1.do?menuId=MN24000897&pstId=NE202500000000030479",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 2024년도 건강보험료율 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=378386",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 2025년도 건강보험료율 2년 연속 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503000000&bid=0027&list_no=1483034&act=view",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2025-01-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 390000,
+      "baseMax": 6170000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1295,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "보건복지부 2025년도 건강보험료율 2년 연속 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503000000&bid=0027&list_no=1483034&act=view",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2025-07-01",
+    "nps": {
+      "totalRate": 0.09,
+      "employeeShare": 0.5,
+      "baseMin": 400000,
+      "baseMax": 6370000
+    },
+    "nhis": {
+      "totalRate": 0.0709,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1295,
+      "premiumMin": null,
+      "premiumMax": null
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민연금공단 2026년도 기준소득월액 상·하한액 조정 안내",
+        "url": "https://www.nps.or.kr/pnsgdnc/newgdnc/getOHAE0001M1.do?menuId=MN24000897&pstId=NE202500000000030479",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 2025년도 건강보험료율 2년 연속 동결 보도자료",
+        "url": "https://www.mohw.go.kr/board.es?mid=a10503000000&bid=0027&list_no=1483034&act=view",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "고용보험 근로자 요율",
+      "건강보험 보수월액보험료 상·하한"
+    ]
+  },
+  {
+    "from": "2026-01-01",
+    "nps": {
+      "totalRate": 0.095,
+      "employeeShare": 0.5,
+      "baseMin": 400000,
+      "baseMax": 6370000
+    },
+    "nhis": {
+      "totalRate": 0.0719,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1314,
+      "premiumMin": 20160,
+      "premiumMax": 9183480
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민연금공단 2026년도 기준소득월액 상·하한액 조정 안내",
+        "url": "https://www.nps.or.kr/pnsgdnc/newgdnc/getOHAE0001M1.do?menuId=MN24000897&pstId=NE202500000000030479",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 월별 건강보험료액의 상한과 하한에 관한 고시",
+        "url": "https://www.law.go.kr/LSW//admRulInfoP.do?admRulSeq=2100000270472&chrClsCd=010201",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "건강보험 보수월액보험료 하한 20,160원이 총액인지 본인 부담인지"
+    ]
+  },
+  {
+    "from": "2026-07-01",
+    "nps": {
+      "totalRate": 0.095,
+      "employeeShare": 0.5,
+      "baseMin": 410000,
+      "baseMax": 6590000
+    },
+    "nhis": {
+      "totalRate": 0.0719,
+      "employeeShare": 0.5,
+      "ltcRateOnPremium": 0.1314,
+      "premiumMin": 20160,
+      "premiumMax": 9183480
+    },
+    "ei": {
+      "totalRate": 0.009,
+      "employeeShare": 1.0
+    },
+    "sources": [
+      {
+        "label": "국민연금공단 2026년도 기준소득월액 상·하한액 조정 안내",
+        "url": "https://www.nps.or.kr/pnsgdnc/newgdnc/getOHAE0001M1.do?menuId=MN24000897&pstId=NE202500000000030479",
+        "checkedAt": "2026-09-07"
+      },
+      {
+        "label": "보건복지부 월별 건강보험료액의 상한과 하한에 관한 고시",
+        "url": "https://www.law.go.kr/LSW//admRulInfoP.do?admRulSeq=2100000270472&chrClsCd=010201",
+        "checkedAt": "2026-09-07"
+      }
+    ],
+    "needsVerification": [
+      "건강보험 보수월액보험료 하한 20,160원이 총액인지 본인 부담인지"
+    ]
+  }
+]

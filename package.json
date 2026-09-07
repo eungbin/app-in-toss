@@ -1,7 +1,11 @@
 {
   "name": "app-in-toss",
   "private": true,
-  "workspaces": ["packages/*", "fx-replay"],
+  "workspaces": [
+    "packages/*",
+    "fx-replay",
+    "net-pay"
+  ],
   "scripts": {
     "check": "npm run check --workspaces --if-present",
     "test": "npm run test:run --workspaces --if-present"
