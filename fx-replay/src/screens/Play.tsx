@@ -143,7 +143,6 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
     <>
       <div className="scroll">
         <p className="day-counter">
-          {session.blind ? '' : `${SERIES[session.series].name} · `}
           {progressLabel(session.timeframe, session.day, session.bars)}
         </p>
         <div className="play-head">
