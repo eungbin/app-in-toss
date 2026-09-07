@@ -1,4 +1,5 @@
 /** 도메인 타입 — docs/FUNCTIONAL_SPEC.md §1 */
+import type { AnonProfile } from '@ait/kit';
 
 /* ── 요율 (src/data/rates.json) ────────────────────────────── */
 
@@ -196,12 +197,8 @@ export interface LeavePayResult {
 
 /* ── 저장 ─────────────────────────────────────────────────── */
 
-export interface Profile {
-  anonKey: string;
-  schema: number;
-  createdAt: string;
-  anonKeyPending?: true;
-}
+/** 익명 프로필 — 구조는 @ait/kit AnonProfile. 앱 고유 필드가 생기면 여기서 확장한다 */
+export type Profile = AnonProfile;
 
 export interface CalcInput extends CalcOptions {
   mode: CalcMode;

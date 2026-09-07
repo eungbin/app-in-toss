@@ -1,40 +1,11 @@
 /**
  * 사용자 식별 — docs/FUNCTIONAL_SPEC.md §3-1 (US-1)
- * 익명 키만 쓴다. 토스 로그인은 결제를 넣는 릴리즈부터.
+ * 익명 키 발급 흐름은 @ait/kit loadAnonProfile. 이 파일은 저장 위치와 앱 스키마만 정한다.
+ * 토스 로그인은 결제를 넣는 릴리즈부터.
  */
-import { User } from '@apps-in-toss/web-framework';
+import { loadAnonProfile } from '@ait/kit';
 import type { Profile } from '@/types';
 import { SCHEMA_VERSION } from '@/constants';
-import { KEY, readJson, writeJson } from './storage';
+import { KEY, store } from './storage';
 
-function tempKey(): string {
-  return `local-${crypto.randomUUID()}`;
-}
-
-export async function loadProfile(): Promise<Profile> {
-  const existing = await readJson<Profile | null>(KEY.profile, null);
-  if (existing && !existing.anonKeyPending) return existing;
-
-  let anonKey = existing?.anonKey ?? tempKey();
-  let pending = true;
-  try {
-    if (User.getAnonymousKey.isSupported()) {
-      const res = await User.getAnonymousKey();
-      if (res.type === 'HASH' && res.hash) {
-        anonKey = res.hash;
-        pending = false;
-      }
-    }
-  } catch {
-    // 실패해도 앱은 정상 시작한다. 다음 시작 때 재시도.
-  }
-
-  const profile: Profile = {
-    anonKey,
-    schema: SCHEMA_VERSION,
-    createdAt: existing?.createdAt ?? new Date().toISOString(),
-    ...(pending ? { anonKeyPending: true as const } : {}),
-  };
-  await writeJson(KEY.profile, profile);
-  return profile;
-}
+export const loadProfile = (): Promise<Profile> => loadAnonProfile(store, KEY.profile, SCHEMA_VERSION);
