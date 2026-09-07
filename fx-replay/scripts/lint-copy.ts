@@ -4,16 +4,9 @@
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { createCopyLinter, reportAndExit, type Allow, type Finding, type Rule } from '@ait/kit/scripts/copy-lint';
 
 const ROOT = resolve(import.meta.dirname, '..');
-
-interface Rule {
-  /** 규칙 이름 */
-  name: string;
-  re: RegExp;
-  /** 원칙 B(예측·권고) / C(경쟁·게임) / EVAL(평가) */
-  group: 'B' | 'C' | 'EVAL';
-}
 
 const RULES: Rule[] = [
   // 원칙 B — 예측·권고·현재 시점
@@ -50,7 +43,7 @@ const RULES: Rule[] = [
 ];
 
 /** 예외: 문맥상 안전하다고 확인한 (파일, 키) 조합 */
-const ALLOW: Array<{ file: string; key: string; rule: string; why: string }> = [
+const ALLOW: Allow[] = [
   {
     file: 'src/i18n/ko.json',
     key: 'home.resume.quitConfirm',
@@ -65,36 +58,12 @@ const ALLOW: Array<{ file: string; key: string; rule: string; why: string }> = [
   },
 ];
 
-interface Finding {
-  file: string;
-  key: string;
-  rule: string;
-  group: string;
-  text: string;
-}
-
-function isAllowed(file: string, key: string, rule: string): boolean {
-  return ALLOW.some((a) => a.file === file && a.key === key && a.rule === rule);
-}
-
 /**
  * EVAL(평가 어휘) 규칙은 시나리오 서술문에만 적용한다.
  * UI 안내 문구의 "불러오지 못했어요" 같은 표현은 사용자 판단에 대한 평가가 아니다.
+ * groups를 생략하면 전체(B, C, EVAL) 적용.
  */
-function check(
-  file: string,
-  key: string,
-  text: string,
-  findings: Finding[],
-  groups: ReadonlyArray<Rule['group']> = ['B', 'C', 'EVAL'],
-) {
-  for (const r of RULES) {
-    if (!groups.includes(r.group)) continue;
-    if (r.re.test(text) && !isAllowed(file, key, r.name)) {
-      findings.push({ file, key, rule: r.name, group: r.group, text });
-    }
-  }
-}
+const { check } = createCopyLinter(RULES, ALLOW);
 
 function lintI18n(findings: Finding[]) {
   const file = 'src/i18n/ko.json';
@@ -144,14 +113,4 @@ lintI18n(findings);
 lintScenarios(findings);
 lintLengths(findings);
 
-if (findings.length > 0) {
-  console.error(`문구 린트 실패: ${findings.length}건\n`);
-  for (const f of findings) {
-    console.error(`  ${f.file} › ${f.key}`);
-    console.error(`    [${f.group}] ${f.rule}`);
-    console.error(`    "${f.text}"\n`);
-  }
-  console.error('docs/PRD.md 2-2절(원칙 B), 2-3절(원칙 C)를 확인하세요.');
-  process.exit(1);
-}
-console.log('문구 린트 통과');
+reportAndExit(findings, 'docs/PRD.md 2-2절(원칙 B), 2-3절(원칙 C)를 확인하세요.');

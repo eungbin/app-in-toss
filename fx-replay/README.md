@@ -10,10 +10,13 @@
 ## 시작하기
 
 ```bash
-npm install
+# 의존성은 모노레포 루트에서 설치한다 (공용 패키지 @ait/kit 심링크 포함)
+(cd .. && npm install)
 npm run data:dev   # 개발용 합성 시계열 생성 (ECOS 키 없이 앱 실행)
 npm run dev
 ```
+
+앱인토스 SDK 연동(광고·저장·네비게이션·공유)은 [`packages/ait-kit`](../packages/ait-kit)에 있다. 설계: [docs/SHARED_PACKAGE.md](../docs/SHARED_PACKAGE.md).
 
 실데이터로 교체하려면 [ECOS](https://ecos.bok.or.kr/api/)에서 인증키를 무료로 발급받은 뒤:
 

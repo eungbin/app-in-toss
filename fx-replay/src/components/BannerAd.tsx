@@ -4,7 +4,7 @@
  * 프리미엄 사용자와 미지원 환경에서는 아무것도 렌더하지 않는다.
  */
 import { useEffect, useRef, useState } from 'react';
-import { attachBanner, bannerSupported, initBannerSdk } from '@/platform/ads';
+import { attachBanner, bannerSupported, initBannerSdk } from '@ait/kit';
 
 export function BannerAd({ hidden = false }: { hidden?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);

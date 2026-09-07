@@ -8,9 +8,9 @@ import { buildResult, createSession, isSessionValid, reveal, start } from '@/eng
 import { newlyEarned } from '@/engine/badges';
 import { dailyScenarioId, pickSegment } from '@/engine/segment';
 import { resolveRange } from '@/engine/scenario';
-import { preloadRewarded, showRewarded, type RewardedState } from '@/platform/ads';
-import { closeApp, onBack } from '@/platform/nav';
-import { pushBackHandler, runBackHandlers } from '@/platform/backstack';
+import { preloadRewarded, showRewarded, type RewardedState } from '@ait/kit';
+import { closeApp, onBack } from '@ait/kit';
+import { pushBackHandler, runBackHandlers } from '@ait/kit';
 import { pause } from '@/engine/session';
 import { Home } from '@/screens/Home';
 import { Play } from '@/screens/Play';

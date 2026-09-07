@@ -8,7 +8,7 @@ import { displayP } from '@/engine/position';
 import { autoMarkers, dailyDebrief } from '@/engine/markers';
 import { fmtDate } from '@/engine/scenario';
 import { renderShareCard, shareHeadline } from '@/components/shareCard';
-import { canSaveImage, saveCardImage, shareLink } from '@/platform/share';
+import { canSaveImage, saveCardImage, shareLink } from '@ait/kit';
 import { candleEnd } from '@/types';
 import type { PlayResult, PlaySession, ScenarioEvent } from '@/types';
 

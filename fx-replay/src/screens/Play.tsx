@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { pushBackHandler } from '@/platform/backstack';
+import { pushBackHandler } from '@ait/kit';
 import { t } from '@/i18n';
 import { SERIES, getCandles } from '@/data';
 import { CandleChart } from '@/components/CandleChart';

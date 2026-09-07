@@ -1,0 +1,15 @@
+{
+  "name": "@ait/kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "앱인토스 미니앱 공용: SDK 연동(광고·저장·네비게이션·공유·환경)과 빌드 스크립트",
+  "exports": {
+    ".": "./src/index.ts",
+    "./scripts/*": "./scripts/*.ts"
+  },
+  "peerDependencies": {
+    "@apps-in-toss/web-framework": ">=3.3.0",
+    "react": ">=18"
+  }
+}

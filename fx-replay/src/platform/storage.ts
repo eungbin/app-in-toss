@@ -1,56 +1,10 @@
 /**
- * 저장소 — docs/FUNCTIONAL_SPEC.md §3-11 (US-2)
- * 앱인토스 Storage API를 쓴다. localStorage·IndexedDB는 프로덕션에서 쓰지 않는다.
- * 브라우저 개발 중에는 SDK가 없으므로 메모리+localStorage 폴백을 쓴다(개발 전용).
+ * 저장소 키 — docs/FUNCTIONAL_SPEC.md §3-11 (US-2)
+ * 구현은 @ait/kit createStore. 이 파일은 앱 고유 키 이름만 가진다.
  */
-import { Storage } from '@apps-in-toss/web-framework';
-import { isDev } from './env';
+import { createStore } from '@ait/kit';
 
-const memory = new Map<string, string>();
-
-async function withFallback<T>(sdk: () => Promise<T>, fallback: () => T): Promise<T> {
-  try {
-    return await sdk();
-  } catch (e) {
-    if (!isDev) throw e;
-    return fallback();
-  }
-}
-
-export const store = {
-  async get(key: string): Promise<string | null> {
-    return withFallback(
-      () => Storage.getItem(key),
-      () => memory.get(key) ?? globalThis.localStorage?.getItem(key) ?? null,
-    );
-  },
-  async set(key: string, value: string): Promise<void> {
-    return withFallback(
-      () => Storage.setItem(key, value),
-      () => {
-        memory.set(key, value);
-        try {
-          globalThis.localStorage?.setItem(key, value);
-        } catch {
-          /* 개발 폴백 */
-        }
-      },
-    );
-  },
-  async remove(key: string): Promise<void> {
-    return withFallback(
-      () => Storage.removeItem(key),
-      () => {
-        memory.delete(key);
-        try {
-          globalThis.localStorage?.removeItem(key);
-        } catch {
-          /* 개발 폴백 */
-        }
-      },
-    );
-  },
-};
+export const store = createStore('fxr');
 
 /** 키 이름 — §3-11 */
 export const KEY = {
@@ -65,24 +19,5 @@ export const KEY = {
   settings: 'fxr.settings',
 } as const;
 
-export async function readJson<T>(key: string, fallback: T): Promise<T> {
-  try {
-    const raw = await store.get(key);
-    if (raw === null) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-export async function writeJson(key: string, value: unknown): Promise<void> {
-  try {
-    await store.set(key, JSON.stringify(value));
-  } catch {
-    try {
-      await store.set(key, JSON.stringify(value));
-    } catch {
-      console.warn(`[storage] 쓰기 실패: ${key}`);
-    }
-  }
-}
+export const readJson: typeof store.readJson = (key, fallback) => store.readJson(key, fallback);
+export const writeJson: typeof store.writeJson = (key, value) => store.writeJson(key, value);

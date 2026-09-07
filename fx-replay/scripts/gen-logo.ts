@@ -3,14 +3,11 @@
  *   npx tsx scripts/gen-logo.ts
  * 외부 의존성 없이 Node zlib로 PNG를 직접 인코딩한다. 3배 슈퍼샘플링으로 계단현상을 줄인다.
  */
-import { deflateSync } from 'node:zlib';
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { mix, writeSquarePng, type RGB } from '@ait/kit/scripts/png';
 
 const SIZE = 600;
 const SS = 3; // 슈퍼샘플링 배율
-
-type RGB = [number, number, number];
 const BG: RGB = [0x31, 0x82, 0xf6];
 const WHITE: RGB = [255, 255, 255];
 
@@ -107,94 +104,14 @@ function isDimCandle(x: number, y: number): boolean {
   return false;
 }
 
-function render(): Buffer {
-  const px = Buffer.alloc(SIZE * SIZE * 3);
-  const step = 1 / SS;
-  for (let y = 0; y < SIZE; y++) {
-    for (let x = 0; x < SIZE; x++) {
-      let r = 0;
-      let g = 0;
-      let b = 0;
-      let n = 0;
-      for (let sy = 0; sy < SS; sy++) {
-        for (let sx = 0; sx < SS; sx++) {
-          const fx = x + (sx + 0.5) * step;
-          const fy = y + (sy + 0.5) * step;
-          const solid = sample(fx, fy);
-          let c: RGB;
-          if (solid) {
-            c = solid;
-          } else if (isDimCandle(fx, fy)) {
-            // 배경 위 55% 흰색
-            c = [
-              Math.round(BG[0] + (255 - BG[0]) * 0.55),
-              Math.round(BG[1] + (255 - BG[1]) * 0.55),
-              Math.round(BG[2] + (255 - BG[2]) * 0.55),
-            ];
-          } else {
-            c = BG;
-          }
-          r += c[0];
-          g += c[1];
-          b += c[2];
-          n++;
-        }
-      }
-      const i = (y * SIZE + x) * 3;
-      px[i] = Math.round(r / n);
-      px[i + 1] = Math.round(g / n);
-      px[i + 2] = Math.round(b / n);
-    }
-  }
-  return px;
+/** 최종 픽셀 색. 약한 캔들은 배경 위 55% 흰색 */
+function pixel(x: number, y: number): RGB {
+  const solid = sample(x, y);
+  if (solid) return solid;
+  if (isDimCandle(x, y)) return mix(BG, WHITE, 0.55);
+  return BG;
 }
 
-/* ── 최소 PNG 인코더 ─────────────────────────────────────────── */
-
-function crc32(buf: Buffer): number {
-  let c = ~0;
-  for (const byte of buf) {
-    c ^= byte;
-    for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1));
-  }
-  return ~c >>> 0;
-}
-
-function chunk(type: string, data: Buffer): Buffer {
-  const len = Buffer.alloc(4);
-  len.writeUInt32BE(data.length);
-  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
-  const crc = Buffer.alloc(4);
-  crc.writeUInt32BE(crc32(body));
-  return Buffer.concat([len, body, crc]);
-}
-
-function encodePng(rgb: Buffer, size: number): Buffer {
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(size, 0);
-  ihdr.writeUInt32BE(size, 4);
-  ihdr[8] = 8; // bit depth
-  ihdr[9] = 2; // color type: truecolor
-  // 10,11,12 = 0 (deflate / adaptive filter / no interlace)
-
-  // 각 행 앞에 필터 바이트 0
-  const raw = Buffer.alloc(size * (size * 3 + 1));
-  for (let y = 0; y < size; y++) {
-    const dst = y * (size * 3 + 1);
-    raw[dst] = 0;
-    rgb.copy(raw, dst + 1, y * size * 3, (y + 1) * size * 3);
-  }
-
-  return Buffer.concat([
-    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-    chunk('IHDR', ihdr),
-    chunk('IDAT', deflateSync(raw, { level: 9 })),
-    chunk('IEND', Buffer.alloc(0)),
-  ]);
-}
-
-const out = resolve(import.meta.dirname, '../assets');
-mkdirSync(out, { recursive: true });
-const png = encodePng(render(), SIZE);
-writeFileSync(resolve(out, 'logo-600.png'), png);
-console.log(`assets/logo-600.png — ${SIZE}×${SIZE}, ${(png.length / 1024).toFixed(1)}KB`);
+const out = resolve(import.meta.dirname, '../assets/logo-600.png');
+const bytes = writeSquarePng(out, SIZE, SS, pixel);
+console.log(`assets/logo-600.png — ${SIZE}×${SIZE}, ${(bytes / 1024).toFixed(1)}KB`);
