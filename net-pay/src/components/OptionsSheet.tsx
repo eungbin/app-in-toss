@@ -8,12 +8,20 @@ interface Props {
   dependents: number;
   children: number;
   meal: boolean;
+  bonusCount: number;
+  bonusAnnual: number | null;
   adjustedTo: number | null;
-  onChange: (patch: { dependents?: number; children?: number; meal?: boolean }) => void;
+  onChange: (patch: {
+    dependents?: number;
+    children?: number;
+    meal?: boolean;
+    bonusCount?: number;
+    bonusAnnual?: number | null;
+  }) => void;
   onClose: () => void;
 }
 
-export function OptionsSheet({ dependents, children, meal, adjustedTo, onChange, onClose }: Props) {
+export function OptionsSheet({ dependents, children, meal, bonusCount, bonusAnnual, adjustedTo, onChange, onClose }: Props) {
   return (
     <Sheet title={t('options.title')} onClose={onClose}>
       <Stepper
@@ -39,6 +47,32 @@ export function OptionsSheet({ dependents, children, meal, adjustedTo, onChange,
         </span>
       </label>
       {adjustedTo !== null && <p className="note">{t('options.childrenAdjusted', { n: adjustedTo })}</p>}
+
+      <Stepper
+        label={t('options.bonusCount')}
+        value={bonusCount}
+        min={0}
+        max={12}
+        onChange={(v) => onChange({ bonusCount: v })}
+        unit="회"
+      />
+      <label className="field">
+        <span className="field__label">{t('options.bonusAnnual')}</span>
+        <span className="field__row">
+          <input
+            className="field__input field__input--num"
+            type="text"
+            inputMode="numeric"
+            value={bonusAnnual === null ? '' : bonusAnnual.toLocaleString('ko-KR')}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 12);
+              onChange({ bonusAnnual: digits === '' ? null : Number(digits) });
+            }}
+          />
+          <span className="field__suffix">원</span>
+        </span>
+        <span className="field__hint">{t('options.bonusHint')}</span>
+      </label>
       <button type="button" className="cta" onClick={onClose}>
         {t('options.apply')}
       </button>

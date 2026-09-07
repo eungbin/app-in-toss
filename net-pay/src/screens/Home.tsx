@@ -21,6 +21,10 @@ export interface Draft {
   dependents: number;
   children: number;
   meal: boolean;
+  /** 연 상여 횟수. 0이면 상여 분리를 하지 않는다 */
+  bonusCount: number;
+  /** 연 상여 총액 (연봉에 포함된 금액) */
+  bonusAnnual: number | null;
 }
 
 interface Props {
@@ -29,6 +33,8 @@ interface Props {
   breakdown: Breakdown | null;
   reverse: ReverseResult | null;
   timelineLocked: boolean;
+  /** 상여가 입력돼 있으면 월별 실수령이 달라진다는 안내를 띄운다 */
+  hasBonus: boolean;
   savedCount: number;
   staleYear: string | null;
   onAmount: (v: number | null) => void;
@@ -74,6 +80,11 @@ export function Home(p: Props) {
         <button type="button" className={`chip ${draft.meal ? 'chip--on' : ''}`} onClick={p.onOptions}>
           식대 {draft.meal ? '포함' : '미포함'}
         </button>
+        {p.hasBonus && (
+          <button type="button" className="chip chip--on" onClick={p.onOptions}>
+            상여 {draft.bonusCount}회
+          </button>
+        )}
       </div>
 
       {!breakdown && <p className="hint">{reverseMode ? t('home.input.hint') : t('gross.input.hint')}</p>}
@@ -95,6 +106,7 @@ export function Home(p: Props) {
               {t('home.result.deductions', { ded: num(breakdown.deductions) })} ›
             </button>
             <p className="card__items">{t('home.result.items')}</p>
+            {p.hasBonus && <p className="note">{t('home.bonusHint')}</p>}
           </section>
 
           <button type="button" className="switch" onClick={p.onToggleMode}>

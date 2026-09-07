@@ -214,6 +214,10 @@ export interface CalcInput extends CalcOptions {
   mode: CalcMode;
   annualGross?: number;
   targetNet?: number;
+  /** 연 상여 횟수. 없거나 0이면 상여 분리를 하지 않는다 */
+  bonusCount?: number;
+  /** 연 상여 총액 (연봉에 포함된 금액) */
+  bonusAnnual?: number;
 }
 
 export interface Scenario {

@@ -10,6 +10,7 @@ import { RATES } from '@/data';
 import { computeNet } from '@/engine/net';
 import { computeGross } from '@/engine/reverse';
 import { isUnlocked, type GateFeature } from '@/engine/gate';
+import { hasBonus } from '@/engine/bonus';
 import { parseDeepLink } from '@/engine/deeplink';
 import { todayIso } from '@/engine/format';
 import { useAppStore } from '@/store';
@@ -49,6 +50,8 @@ const initialDraft: Draft = {
   dependents: 1,
   children: 0,
   meal: true,
+  bonusCount: 0,
+  bonusAnnual: null,
 };
 
 /** 딥링크는 앱 시작 시 한 번만 읽는다 */
@@ -61,6 +64,8 @@ function draftFromDeepLink(): Draft | null {
     dependents: dl.dependents ?? 1,
     children: dl.children ?? 0,
     meal: (dl.nonTaxableMonthly ?? NONTAX_MEAL_DEFAULT) > 0,
+    bonusCount: 0,
+    bonusAnnual: null,
   };
 }
 
@@ -122,6 +127,8 @@ export function App() {
       dependents: last.dependents,
       children: last.children,
       meal: last.nonTaxableMonthly > 0,
+      bonusCount: last.bonusCount ?? 0,
+      bonusAnnual: last.bonusAnnual ?? null,
     };
     setDraft(next);
     setCommitted(next.amountManwon);
@@ -163,11 +170,13 @@ export function App() {
     (): CalcInput => ({
       ...opts,
       mode: draft.mode,
+      ...(draft.bonusCount > 0 ? { bonusCount: draft.bonusCount } : {}),
+      ...(draft.bonusAnnual ? { bonusAnnual: draft.bonusAnnual } : {}),
       ...(draft.mode === 'reverse'
         ? { targetNet: (committed ?? 0) * 10_000 }
         : { annualGross: (committed ?? 0) * 10_000 }),
     }),
-    [opts, draft.mode, committed],
+    [opts, draft.mode, draft.bonusCount, draft.bonusAnnual, committed],
   );
   useEffect(() => {
     if (!state.ready || committed === null) return;
@@ -179,6 +188,11 @@ export function App() {
     const year = new Date().getFullYear();
     return RATES.some((r) => Number(r.from.slice(0, 4)) >= year) ? null : String(year);
   }, []);
+
+  const bonusPlan = useMemo(
+    () => ({ count: draft.bonusCount, annualTotal: draft.bonusAnnual ?? 0 }),
+    [draft.bonusCount, draft.bonusAnnual],
+  );
 
   const unlocked = isUnlocked(state.unlock, Date.now());
 
@@ -219,6 +233,8 @@ export function App() {
       dependents: s.input.dependents,
       children: s.input.children,
       meal: s.input.nonTaxableMonthly > 0,
+      bonusCount: s.input.bonusCount ?? 0,
+      bonusAnnual: s.input.bonusAnnual ?? null,
     });
     setCommitted(amount ? Math.round(amount / 10_000) : null);
     setStack([{ name: 'home' }]);
@@ -237,6 +253,7 @@ export function App() {
           breakdown={result?.breakdown ?? null}
           reverse={result?.reverse ?? null}
           timelineLocked={!unlocked}
+          hasBonus={hasBonus(bonusPlan)}
           savedCount={state.scenarios.length}
           staleYear={staleYear}
           onAmount={(v) => setDraft((d) => ({ ...d, amountManwon: v }))}
@@ -256,7 +273,7 @@ export function App() {
       )}
 
       {route.name === 'detail' && result && (
-        <Detail breakdown={result.breakdown} opts={opts} reverse={result.reverse} />
+        <Detail breakdown={result.breakdown} opts={opts} reverse={result.reverse} bonus={bonusPlan} />
       )}
 
       {route.name === 'timeline' && result && (
@@ -337,6 +354,8 @@ export function App() {
           dependents={draft.dependents}
           children={draft.children}
           meal={draft.meal}
+          bonusCount={draft.bonusCount}
+          bonusAnnual={draft.bonusAnnual}
           adjustedTo={adjustedTo}
           onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))}
           onClose={() => setShowOptions(false)}
