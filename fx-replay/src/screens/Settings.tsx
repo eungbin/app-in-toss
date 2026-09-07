@@ -56,7 +56,7 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
         <div className="kv">
           <span className="k">{t('settings.contact')}</span>
           <span className="v" style={{ fontWeight: 400, color: 'var(--sub)' }}>
-            support@example.com
+            {import.meta.env.VITE_SUPPORT_EMAIL ?? '—'}
           </span>
         </div>
         <p className="source">

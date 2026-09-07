@@ -463,6 +463,7 @@ AC
 3. 날짜 키 병합 → 결손 보정(`f`) → 무결성 검사(1-1) → `series/usdkrw.json` 기록. 동일하게 cnykrw(2014-12-01~), baserate(722Y001/0101000).
 4. 헤더 `source.fetchedAt = today`, `source.cutoff = CUTOFF`.
 5. `scripts/verify-data.test.ts`: 최대 `d` ≤ cutoff, 시나리오 구간 존재, 캔들 규칙. CI 필수.
+6. `scripts/check-prod-config.ts`: 프로덕션 빌드 가드. (a) 합성 데이터 잔존, (b) 광고 ID 미설정·테스트 ID, (c) 고객문의 이메일 미설정·자리표시자를 검사하고 하나라도 걸리면 빌드를 막는다. `npm run build` 가 `vite build` 앞에서 실행한다.
 
 번들: Vite 프로덕션 빌드 + 앱인토스 CLI 패키징. 데이터 포함 총 5MB 이하 목표(100MB 상한).
 

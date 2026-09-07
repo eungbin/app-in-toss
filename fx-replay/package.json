@@ -15,7 +15,7 @@
     "lint:copy": "tsx scripts/lint-copy.ts",
     "data:fetch": "tsx scripts/fetch-ecos.ts",
     "data:dev": "tsx scripts/gen-dev-series.ts",
-    "check:data": "tsx scripts/check-prod-data.ts",
+    "check:data": "tsx scripts/check-prod-config.ts",
     "data:meta": "tsx scripts/gen-series-meta.ts"
   },
   "dependencies": {
