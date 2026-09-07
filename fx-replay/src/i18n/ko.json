@@ -119,6 +119,8 @@
   "history.empty": "아직 복기한 기록이 없어요",
   "history.noteLimit": "노트는 10개까지 보관돼요",
   "history.delete": "삭제",
+  "note.memo": "내 메모",
+  "note.save": "메모 저장",
   "settings.title": "설정",
   "settings.speed": "재생 속도 기본값",
   "settings.revealAnim": "리빌 애니메이션",

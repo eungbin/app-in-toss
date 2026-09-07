@@ -20,6 +20,7 @@ import { Scenarios, ownsChapter } from '@/screens/Scenarios';
 import { Chapter } from '@/screens/Chapter';
 import { Debrief } from '@/screens/Debrief';
 import { History } from '@/screens/History';
+import { NoteDetail } from '@/screens/NoteDetail';
 import { Settings } from '@/screens/Settings';
 import { Sources } from '@/screens/Sources';
 import { TabBar, isTabRoute, type TabName } from '@/components/TabBar';
@@ -34,6 +35,7 @@ type Route =
   | { name: 'chapter'; id: string }
   | { name: 'debrief'; id: string }
   | { name: 'history' }
+  | { name: 'note'; id: string }
   | { name: 'settings' }
   | { name: 'sources' };
 
@@ -80,6 +82,9 @@ export function App() {
             return true;
           case 'sources':
             setRoute({ name: 'settings' });
+            return true;
+          case 'note':
+            setRoute({ name: 'history' });
             return true;
           default:
             setRoute({ name: 'home' });
@@ -157,12 +162,20 @@ export function App() {
         timeframe: 'day',
         startIdx,
         bars: PLAY_BARS,
+        speed: state.settings.speed,
         blind: true,
         startDate: candles[startIdx]!.d,
         now: new Date().toISOString(),
       }),
     );
-  }, [state.quota, state.entitlements.premium, state.recentSegments, store, startSession]);
+  }, [
+    state.quota,
+    state.entitlements.premium,
+    state.recentSegments,
+    state.settings.speed,
+    store,
+    startSession,
+  ]);
 
   const startChapter = useCallback(
     async (sc: Scenario) => {
@@ -184,6 +197,7 @@ export function App() {
           startIdx: range.startIdx,
           bars: sc.bars,
           ...(sc.tickMs === undefined ? {} : { tickMs: sc.tickMs }),
+          speed: store.stateRef.current.settings.speed,
           blind: sc.blind,
           startDate: range.startDate,
           now: new Date().toISOString(),
@@ -319,6 +333,7 @@ export function App() {
           }}
           onHome={() => setRoute({ name: 'home' })}
           onToast={notify}
+          revealAnim={state.settings.revealAnim}
           {...(getScenario(route.session.scenarioId)
             ? { onDebrief: () => setRoute({ name: 'debrief', id: route.session.scenarioId }) }
             : {})}
@@ -357,7 +372,7 @@ export function App() {
           history={state.history}
           badges={state.badges}
           premium={state.entitlements.premium}
-          onDeleteNote={store.deleteNote}
+          onOpenNote={(id) => setRoute({ name: 'note', id })}
         />
       )}
 
@@ -371,6 +386,20 @@ export function App() {
       )}
 
       {route.name === 'sources' && <Sources />}
+
+      {route.name === 'note' &&
+        (() => {
+          const note = state.notes.find((n) => n.id === route.id);
+          if (!note) return null;
+          return (
+            <NoteDetail
+              note={note}
+              onSaveMemo={store.updateNote}
+              onDelete={store.deleteNote}
+              onBack={() => setRoute({ name: 'history' })}
+            />
+          );
+        })()}
 
       {tabName !== null && (
         <TabBar

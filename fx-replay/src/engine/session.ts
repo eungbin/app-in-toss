@@ -24,6 +24,8 @@ export interface CreateSessionInput {
   startIdx: number;
   bars: number;
   tickMs?: number;
+  /** 설정의 재생 속도 기본값. 없으면 1x */
+  speed?: 1 | 2;
   blind: boolean;
   startDate: string;
   now: string;
@@ -40,7 +42,7 @@ export function createSession(input: CreateSessionInput): PlaySession {
     tickMs: input.tickMs ?? TICK_MS,
     blind: input.blind,
     day: 1,
-    speed: 1,
+    speed: input.speed ?? 1,
     status: 'ready',
     holdings: initialHoldings(),
     conversions: [],
@@ -116,6 +118,8 @@ export function buildResult(s: PlaySession, candles: Candle[], now: string): Pla
     sessionId: s.id,
     scenarioId: s.scenarioId,
     series: s.series,
+    timeframe: s.timeframe,
+    bars: s.bars,
     startDate: first.d,
     endDate: candleEnd(last),
     finalP,

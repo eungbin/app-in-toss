@@ -11,11 +11,11 @@ interface Props {
   notes: ReplayNote[];
   history: PlayResult[];
   badges: Badge[];
-  onDeleteNote: (id: string) => void;
+  onOpenNote: (id: string) => void;
   premium: boolean;
 }
 
-export function History({ notes, history, badges, onDeleteNote, premium }: Props) {
+export function History({ notes, history, badges, onOpenNote, premium }: Props) {
   const [tab, setTab] = useState<'notes' | 'badges' | 'plays'>('notes');
   const earned = new Set(badges.map((b) => b.id));
 
@@ -38,7 +38,12 @@ export function History({ notes, history, badges, onDeleteNote, premium }: Props
           notes.length === 0 ? <p className="empty">{t('history.empty')}</p> : (
             <>
               {notes.map((n) => (
-                <div className="card" key={n.id}>
+                <button
+                  className="card"
+                  key={n.id}
+                  onClick={() => onOpenNote(n.id)}
+                  style={{ display: 'block', width: '100%', textAlign: 'left' }}
+                >
                   <h3 style={{ fontSize: 14 }}>
                     {fmtMonth(n.result.startDate)} {SERIES[n.result.series].name}
                   </h3>
@@ -47,8 +52,7 @@ export function History({ notes, history, badges, onDeleteNote, premium }: Props
                     {t('result.diff')} {displayP(n.result.diffP) >= 0 ? '+' : ''}
                     {displayP(n.result.diffP).toLocaleString('ko-KR')} P
                   </p>
-                  <button className="btn ghost" onClick={() => onDeleteNote(n.id)}>{t('history.delete')}</button>
-                </div>
+                </button>
               ))}
               <p className="sub" style={{ textAlign: 'center' }}>{t('history.noteLimit')}</p>
             </>

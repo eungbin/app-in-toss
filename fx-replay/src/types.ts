@@ -126,6 +126,9 @@ export interface PlayResult {
   sessionId: string;
   scenarioId: string;
   series: SeriesId;
+  /** 노트 상세에서 차트를 되살리기 위해 남긴다. 이전 기록에는 없을 수 있다 */
+  timeframe?: Timeframe;
+  bars?: number;
   startDate: string;
   endDate: string;
   finalP: number;

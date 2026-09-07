@@ -4,6 +4,7 @@ import { SERIES, baseRatePointsOf, getCandles, getScenario } from '@/data';
 import { MEMO_MAX } from '@/constants';
 import { CandleChart } from '@/components/CandleChart';
 import { revealedWindow, windowRange } from '@/engine/normalize';
+import { useReveal } from '@/hooks/useReveal';
 import { displayP } from '@/engine/position';
 import { autoMarkers, dailyDebrief } from '@/engine/markers';
 import { fmtDate } from '@/engine/scenario';
@@ -22,6 +23,8 @@ interface Props {
   onHome: () => void;
   onDebrief?: () => void;
   onToast: (msg: string) => void;
+  /** 리빌 트윈 사용 여부 (설정) */
+  revealAnim: boolean;
 }
 
 export function Result({
@@ -33,6 +36,7 @@ export function Result({
   onHome,
   onDebrief,
   onToast,
+  revealAnim,
 }: Props) {
   const [memo, setMemo] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
@@ -49,6 +53,24 @@ export function Result({
   );
   const dayOf = (d: string) => window.findIndex((c) => candleEnd(c) >= d) + 1;
   const { high, low } = windowRange(window);
+
+  /**
+   * 리빌 트윈 — 정규화 축(시작=100)에서 실제 값 축으로 옮겨 간다.
+   * 블라인드로 플레이한 판에서만 의미가 있다.
+   */
+  const reveal = useReveal(revealAnim && session.blind);
+  const base = window[0]?.c ?? 1;
+  const animCandles = useMemo(
+    () =>
+      reveal >= 1
+        ? window
+        : window.map((c) => {
+            // 정규화 값과 실제 값 사이를 진행도만큼 보간한다
+            const k = (v: number) => ((v / base) * 100) * (1 - reveal) + v * reveal;
+            return { ...c, o: k(c.o), h: k(c.h), l: k(c.l), c: k(c.c) };
+          }),
+    [window, reveal, base],
+  );
   const diff = displayP(result.diffP);
   const sourceLine = t('result.source', {
     series: series.name,
@@ -102,15 +124,23 @@ export function Result({
     <>
       <div className="scroll">
         <h1 className="screen-title">{t('result.title')}</h1>
-        <h2 className="h1" style={{ fontSize: 18 }}>{series.name}</h2>
-        <p className="body" style={{ marginBottom: 12 }}>
+        <h2
+          className="h1"
+          style={{ fontSize: 18, opacity: Math.max(0, (reveal - 0.35) / 0.65) }}
+        >
+          {reveal < 0.35 ? t('play.asset.blind') : series.name}
+        </h2>
+        <p
+          className="body"
+          style={{ marginBottom: 12, opacity: Math.max(0, (reveal - 0.5) / 0.5) }}
+        >
           {fmtDate(result.startDate)} ~ {fmtDate(result.endDate)}
         </p>
 
         <CandleChart
-          candles={window}
+          candles={animCandles}
           slots={session.bars}
-          labels={window.map((c) => fmtDate(c.d).slice(2))}
+          {...(reveal >= 0.55 ? { labels: window.map((c) => fmtDate(c.d).slice(2)) } : {})}
           markers={[
             ...events.map((e) => ({ day: dayOf(e.d), kind: 'event' as const })),
             ...result.conversions.map((c) => ({ day: c.day, kind: 'mine' as const })),
