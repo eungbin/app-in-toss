@@ -2,11 +2,11 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.2 (2026-09-08) |
+| 문서 버전 | v0.3 (2026-09-08) |
 | 상위 문서 | [PRD.md](PRD.md) v0.2 — 요구사항 ID(CE-, DT-, UI-, MZ-, US-)는 PRD와 동일 |
 | 공용 코드 | [../../docs/SHARED_PACKAGE.md](../../docs/SHARED_PACKAGE.md) `@ait/kit` |
 | 적용 범위 | **v1.0 (광고 전용, 서버 없음)**. P1·P2 항목은 `[P1]` `[P2]` 표시 |
-| 관련 문서 | 화면 흐름·와이어프레임 ([SCREEN_FLOW.md](SCREEN_FLOW.md)), 계산 검증 기록 (FACT_CHECK.md, W1 작성) |
+| 관련 문서 | 화면 흐름·와이어프레임 ([SCREEN_FLOW.md](SCREEN_FLOW.md)), 계산 검증 기록 ([FACT_CHECK.md](FACT_CHECK.md) — 골든 케이스 37건) |
 
 이 문서는 "무엇을 어떻게 동작시키는가"를 구현 가능한 수준으로 적는다. 화면 배치·비주얼은 SCREEN_FLOW에서 다룬다.
 
@@ -153,8 +153,8 @@ AC
 
 ```ts
 legalConversionRate(baseRate) = Math.min(CONVERSION_CEILING, baseRate + CONVERSION_SPREAD)
-depositToRent(amount, rate)   = Math.floor(amount * rate / 12)
-rentToDeposit(rent, rate)     = Math.floor(rent * 12 / rate)
+depositToRent(amount, rate)   = Math.round(amount * rate / 12)   // 공공 계산기(부동산원·렌트홈)와 같은 반올림, FACT_CHECK 5장
+rentToDeposit(rent, rate)     = Math.round(rent * 12 / rate)
 equivalentDeposit(t, rate)    = t.deposit + t.rent * 12 / rate      // 실수 유지, 표시 시 절사
 ```
 
@@ -163,7 +163,7 @@ equivalentDeposit(t, rate)    = t.deposit + t.rent * 12 / rate      // 실수 �
 
 AC
 - [ ] 기준금리 3.00% → 전환율 5.00%. 기준금리 8.5% → 10.00%(상한).
-- [ ] 보증금 1억, 5% → 월세 416,666원(절사).
+- [ ] 보증금 1억, 5% → 월세 416,667원(반올림).
 - [ ] 월세 50만, 5% → 보증금 1억 2,000만 원.
 
 ### 3-3. 갱신 판정 (CE-4) — `judgeRenewal(input, data): JudgeResult`
@@ -175,9 +175,9 @@ AC
 3. `increase = proposedEq / currentEq − 1`.
 4. `allowedEq = currentEq × (1 + INCREASE_CAP)`.
 5. `excessEq = max(0, proposedEq − allowedEq)`. `verdict = excessEq > 0 ? 'exceeds' : 'within'`. 부동소수 오차 방지: `excessEq < 1(원)`이면 0으로.
-6. `excessAsRent = floor(excessEq × rate / 12)`, `excessAsDeposit = floor(excessEq)`.
-7. `maxRentForProposedDeposit`: `m = (allowedEq − proposed.deposit) × rate / 12`. `m < 0`이면 `null`(보증금만으로 초과), 아니면 `floor(m)`.
-8. `maxDepositForProposedRent`: `d = allowedEq − proposed.rent × 12 / rate`. `d < 0`이면 `null`, 아니면 `floor(d)`.
+6. `excessAsRent = round(excessEq × rate / 12)`, `excessAsDeposit = round(excessEq)`.
+7. `maxRentForProposedDeposit`: `m = (allowedEq − proposed.deposit) × rate / 12`. `m < 0`이면 `null`(보증금만으로 초과), 아니면 `round(m)`.
+8. `maxDepositForProposedRent`: `d = allowedEq − proposed.rent × 12 / rate`. `d < 0`이면 `null`, 아니면 `round(d)`.
 9. `itemIncrease`: 항목별 `proposed.x / current.x − 1`(current.x가 0이면 null). 참고 표시용.
 10. `withinOneYear`: `lastChangeDate` 있으면 `today − lastChangeDate < INCREASE_INTERVAL_DAYS`.
 
@@ -185,9 +185,9 @@ AC
 
 AC (기준금리 3.00%, 전환율 5%)
 - [ ] 현재 1억/0 → 제안 1억 500만/0: 인상률 5.00%, `within`, excess 0.
-- [ ] 현재 1억/0 → 제안 1억 600만/0: `exceeds`, excessAsDeposit 1,000,000, excessAsRent 4,166.
+- [ ] 현재 1억/0 → 제안 1억 600만/0: `exceeds`, excessAsDeposit 1,000,000, excessAsRent 4,167.
 - [ ] 현재 1억/0 → 제안 5,000만/월 20만: proposedEq = 5,000만 + 4,800만 = 9,800만 → `within`(인하). 헤드라인 `within`.
-- [ ] 현재 1억/0 → 제안 5,000만/월 25만: proposedEq 1억 1,000만 → 인상률 10%, `exceeds`, maxRentForProposedDeposit = (1억 500만 − 5,000만) × 5% ÷ 12 = 229,166.
+- [ ] 현재 1억/0 → 제안 5,000만/월 25만: proposedEq 1억 1,000만 → 인상률 10%, `exceeds`, maxRentForProposedDeposit = (1억 500만 − 5,000만) × 5% ÷ 12 = 229,167 (부동산원·렌트홈 동일값).
 - [ ] 현재 5,000만/30만 → 제안 5,000만/31만 5천: currentEq 1억 2,200만, proposedEq 1억 2,560만 → 2.95%, `within`. itemIncrease.rent 5.00%.
 - [ ] 제안 보증금이 allowedEq 초과 → maxRentForProposedDeposit `null`.
 - [ ] lastChangeDate = 오늘 − 200일 → `withinOneYear: true`.
@@ -345,7 +345,7 @@ localStorage·IndexedDB 금지(ESLint). 마이그레이션은 `profile.schema` �
 | 영역 | 종류 | 케이스 |
 |---|---|---|
 | 엔진 3-2~3-7 | 단위 | 위 AC 전부 + 경계(0원, 상한 정확히 5%, 전환율 상한 10%) |
-| 골든 | 대조 | 한국부동산원 전월세 전환 10건, 렌트홈 인상률 6건, 서울시 중개보수 예시 4건 → FACT_CHECK.md |
+| 골든 | 대조 | FACT_CHECK.md 3장 37건 — 부동산원·렌트홈 전환 10건 + 최대 보증금 2건 + 인상률 9건, 마이홈 중개보수 10건, 신고 리터럴 6건 |
 | 데이터 | 검증 | 별표 파서 단정, legal.json ↔ 상수 일치, baserate 변동 시점 단조 |
 | 모드 | DOM | 신규 모드에 판정 문구 없음 |
 | 게이트 | 시간 모킹 | 23:59 해제 → 00:00 잠금 |
@@ -366,3 +366,4 @@ PRD 11장 O-1~O-5와 동일. 추가:
 ## 8. 변경 이력
 - 2026-09-08 v0.1 초안. PRD v0.1 기준. 환산보증금 판정 방식(O-1 전제), 신규 모드 분리, 오피스텔 3상태 토글, 비교 화면 제외.
 - 2026-09-08 v0.2 O-1 해결 근거 기록, 해설집 예시 골든 케이스 추가, B5 문구 키 분리(`judge.consentRenewal` / `judge.consentNew`).
+- 2026-09-08 v0.3 FACT_CHECK 37건 반영. CE-2·CE-4 절사 → 반올림(공공 계산기와 일치). AC 수치 갱신.

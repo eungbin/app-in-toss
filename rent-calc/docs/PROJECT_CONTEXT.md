@@ -121,7 +121,8 @@
 2. ~~PRD 작성~~ → [PRD.md](PRD.md) v0.1 (2026-09-08)
 3. ~~기능 명세 → 화면 흐름~~ → [FUNCTIONAL_SPEC.md](FUNCTIONAL_SPEC.md) v0.1, [SCREEN_FLOW.md](SCREEN_FLOW.md) v0.1 (2026-09-08)
 4. ~~O-1 해설집 확인~~ → 해결, 환산보증금 방식 유지. ~~사전 상담 메시지~~ → [SUBMISSION.md](SUBMISSION.md) 2장 (2026-09-08). **발송은 사용자가 한다**
-5. net-pay 심사 제출 후 개발 착수 (워크스페이스 `rent-calc` 추가, W1 데이터·엔진). 문서 단계 완료
+5. ~~골든 케이스 수집~~ → [FACT_CHECK.md](FACT_CHECK.md) 37건 (2026-09-08). 조례 편차(중개보수)도 16개 시·도 동일 확인
+6. net-pay 심사 제출 후 개발 착수 (워크스페이스 `rent-calc` 추가, W1 데이터·엔진). 문서 단계 완료
 
 ## 9. 출처
 
