@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { t } from '@/i18n';
+import { barLabel, barPrefix, t } from '@/i18n';
 import { SERIES, baseRatePointsOf, getCandles, getScenario } from '@/data';
 import { MEMO_MAX } from '@/constants';
 import { CandleChart } from '@/components/CandleChart';
@@ -140,6 +140,7 @@ export function Result({
         <CandleChart
           candles={animCandles}
           slots={session.bars}
+          unitPrefix={barPrefix(session.timeframe)}
           {...(reveal >= 0.55 ? { labels: window.map((c) => fmtDate(c.d).slice(2)) } : {})}
           markers={[
             ...events.map((e) => ({ day: dayOf(e.d), kind: 'event' as const })),
@@ -169,7 +170,9 @@ export function Result({
                 const ev = day ? events.find((e) => e.d === day.d) : undefined;
                 return (
                   <li key={i}>
-                    <div className="d">Day {c.day} · {day ? fmtDate(day.d) : ''}</div>
+                    <div className="d">
+                      {barLabel(session.timeframe, c.day)} · {day ? fmtDate(day.d) : ''}
+                    </div>
                     <div className="l">
                       {c.dir === 'toFx' ? t('play.toFx') : t('play.toKrw')} {c.ratio}%
                     </div>

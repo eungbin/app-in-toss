@@ -12,3 +12,10 @@ export const progressLabel = (tf: Timeframe, n: number, total: number): string =
   t(`play.progress.${tf}` as 'play.progress.day', { n, total });
 
 export { ko };
+
+/** 봉 번호 표기 — "Day 7", "7주", "7개월" */
+export const barLabel = (tf: Timeframe, n: number): string =>
+  tf === 'day' ? `Day ${n}` : tf === 'week' ? `${n}주` : `${n}개월`;
+
+/** 차트 x축 눈금 접두어 — "Day ", "", "" */
+export const barPrefix = (tf: Timeframe): string => (tf === 'day' ? 'Day ' : '');

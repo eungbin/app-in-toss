@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pushBackHandler } from '@ait/kit';
-import { progressLabel, t } from '@/i18n';
+import { barPrefix, progressLabel, t } from '@/i18n';
 import { LEAD_IN_BARS } from '@/constants';
 import { SERIES, getCandles } from '@/data';
 import { CandleChart } from '@/components/CandleChart';
@@ -167,7 +167,8 @@ export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }:
           candles={window}
           slots={visibleSlots}
           leadIn={leadIn}
-          labels={labels}
+          unitPrefix={barPrefix(session.timeframe)}
+          {...(labels ? { labels } : {})}
           markers={session.conversions.map((c) => ({ day: c.day, kind: 'mine' as const }))}
         />
         {paused && <p className="sub" style={{ textAlign: 'center' }}>{t('play.paused')}</p>}

@@ -26,6 +26,8 @@ interface Props {
   markers?: ChartMarker[];
   /** 리빌 후 축 라벨용 */
   labels?: string[];
+  /** labels 가 없을 때 눈금 접두어. 기본 "Day " */
+  unitPrefix?: string;
   height?: number;
 }
 
@@ -42,6 +44,7 @@ export function CandleChart({
   leadIn = [],
   markers = [],
   labels,
+  unitPrefix = 'Day ',
   height = 260,
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -147,23 +150,30 @@ export function CandleChart({
       }
     }
 
-    // x축 라벨 — 본 구간 기준
+    // x축 라벨 — 본 구간 기준. 겹치는 눈금은 버린다
     ctx.fillStyle = AXIS;
     ctx.textAlign = 'center';
     const ticks = labels
       ? [0, Math.floor(candles.length / 2), candles.length - 1]
       : [0, Math.floor(slots / 3), Math.floor((slots * 2) / 3), slots - 1];
+
+    const placed: Array<{ x: number; half: number }> = [];
+    const GAP = 8;
     for (const i of ticks) {
       if (i < 0) continue;
-      const cx = slotX(leadIn.length + i);
-      const text = labels ? (labels[i] ?? '') : `Day ${i + 1}`;
+      const text = labels ? (labels[i] ?? '') : `${unitPrefix}${i + 1}`;
       if (!text) continue;
-      // 가장자리 라벨이 잘리지 않게 안쪽으로 당긴다
       const half = ctx.measureText(text).width / 2;
+      // 가장자리 라벨이 잘리지 않게 안쪽으로 당긴다
+      const cx = slotX(leadIn.length + i);
       const x = Math.min(Math.max(cx, padL + half), padL + plotW - half);
+      // 이미 그린 라벨과 겹치면 건너뛴다
+      const collides = placed.some((p) => Math.abs(p.x - x) < p.half + half + GAP);
+      if (collides) continue;
+      placed.push({ x, half });
       ctx.fillText(text, x, h - 8);
     }
-  }, [candles, slots, leadIn, markers, labels, height]);
+  }, [candles, slots, leadIn, markers, labels, unitPrefix, height]);
 
   const last = candles[candles.length - 1];
   return (

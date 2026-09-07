@@ -4,7 +4,7 @@
  * 메모만 고칠 수 있다.
  */
 import { useMemo, useState } from 'react';
-import { t } from '@/i18n';
+import { barLabel, t } from '@/i18n';
 import { MEMO_MAX, PLAY_BARS } from '@/constants';
 import { SERIES, baseRatePointsOf, getCandles, getScenario } from '@/data';
 import { CandleChart } from '@/components/CandleChart';
@@ -114,7 +114,7 @@ export function NoteDetail({ note, onSaveMemo, onDelete, onBack }: Props) {
                 return (
                   <li key={i}>
                     <div className="d">
-                      {c.day} · {bar ? fmtDate(bar.d) : ''}
+                      {barLabel(timeframe, c.day)} · {bar ? fmtDate(bar.d) : ''}
                     </div>
                     <div className="l">
                       {c.dir === 'toFx' ? t('play.toFx') : t('play.toKrw')} {c.ratio}%
