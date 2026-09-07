@@ -20,6 +20,8 @@ import { emptyQuota, localDate, rollover } from '@/engine/quota';
 export interface Settings {
   speed: 1 | 2;
   revealAnim: boolean;
+  /** 챕터에서 사건이 있는 봉에 도달하면 자동으로 멈춘다 */
+  pauseOnEvent: boolean;
 }
 
 export interface AppState {
@@ -47,7 +49,7 @@ const initial: AppState = {
   badges: [],
   entitlements: { premium: false, chapters: [], source: 'local' },
   recentSegments: [],
-  settings: { speed: 1, revealAnim: true },
+  settings: { speed: 1, revealAnim: true, pauseOnEvent: true },
 };
 
 export function useAppStore() {
@@ -69,7 +71,7 @@ export function useAppStore() {
             readJson<Badge[]>(KEY.badges, []),
             readJson<Entitlements>(KEY.entitlements, initial.entitlements),
             readJson<number[]>(KEY.recentSegments, []),
-            readJson<Settings>(KEY.settings, initial.settings),
+            readJson<Partial<Settings>>(KEY.settings, {}),
           ]);
         if (!alive) return;
         const rolled = rollover(quota, localDate());
@@ -85,7 +87,8 @@ export function useAppStore() {
           badges,
           entitlements,
           recentSegments,
-          settings,
+          // 저장본에 없는 키는 기본값으로 채운다(설정 추가 시 하위 호환)
+          settings: { ...initial.settings, ...settings },
         });
       } catch {
         if (alive) setState((s) => ({ ...s, ready: true, loadError: true }));

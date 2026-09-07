@@ -33,6 +33,16 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
             {settings.revealAnim ? '켬' : '끔'}
           </button>
         </div>
+        <div className="kv">
+          <span className="k">
+            {t('settings.pauseOnEvent')}
+            <br />
+            <span className="sub" style={{ fontSize: 12 }}>{t('settings.pauseOnEventHint')}</span>
+          </span>
+          <button onClick={() => onChange({ pauseOnEvent: !settings.pauseOnEvent })}>
+            {settings.pauseOnEvent ? '켬' : '끔'}
+          </button>
+        </div>
         <div className="hr" />
         <button className="btn ghost" style={{ textAlign: 'left' }} onClick={onSources}>
           {t('settings.sources')} ›

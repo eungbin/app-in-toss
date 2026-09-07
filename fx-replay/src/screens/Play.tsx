@@ -7,17 +7,21 @@ import { blindWindow, revealedWindow } from '@/engine/normalize';
 import { canConvert, displayP, totalP } from '@/engine/position';
 import { convert, currentRate, pause, setSpeed, start, tick } from '@/engine/session';
 import { fmtDate } from '@/engine/scenario';
-import type { ConvertDir, ConvertRatio, PlaySession } from '@/types';
+import type { ConvertDir, ConvertRatio, PlaySession, ScenarioEvent } from '@/types';
 
 interface Props {
   session: PlaySession;
   onChange: (s: PlaySession) => void;
   onFinish: () => void;
+  /** 봉 번호 → 그 봉에 걸린 사건. 챕터에서만 채워진다 */
+  eventsByBar: Map<number, ScenarioEvent[]>;
+  pauseOnEvent: boolean;
 }
 
-export function Play({ session, onChange, onFinish }: Props) {
+export function Play({ session, onChange, onFinish, eventsByBar, pauseOnEvent }: Props) {
   const candles = getCandles(session.series, session.timeframe);
   const [sheet, setSheet] = useState<ConvertDir | null>(null);
+  const [eventStop, setEventStop] = useState<ScenarioEvent[] | null>(null);
   const sessionRef = useRef(session);
   sessionRef.current = session;
 
@@ -30,15 +34,33 @@ export function Play({ session, onChange, onFinish }: Props) {
     return undefined;
   }, [session.status, onChange]);
 
+  /**
+   * 사건 당일 자동 정지 — docs/FUNCTIONAL_SPEC.md §3-3
+   * 블라인드에서는 사건이 날짜·자산을 노출하므로 적용하지 않는다.
+   * 봉 번호가 바뀔 때 한 번만 검사해, 재개 후 같은 봉에서 다시 멈추지 않는다.
+   */
+  const checkedBarRef = useRef(0);
+  useEffect(() => {
+    if (!pauseOnEvent || session.blind) return;
+    if (session.status !== 'playing' && session.status !== 'ready') return;
+    if (session.day === checkedBarRef.current) return;
+    checkedBarRef.current = session.day;
+    const hits = eventsByBar.get(session.day);
+    if (hits && hits.length > 0) {
+      onChange(pause(sessionRef.current, new Date().toISOString()));
+      setEventStop(hits);
+    }
+  }, [session.day, session.status, session.blind, pauseOnEvent, eventsByBar, onChange]);
+
   // 타이머
   useEffect(() => {
-    if (session.status !== 'playing' || sheet !== null) return undefined;
+    if (session.status !== 'playing' || sheet !== null || eventStop !== null) return undefined;
     const id = setTimeout(
       () => onChange(tick(sessionRef.current, new Date().toISOString())),
       session.tickMs / session.speed,
     );
     return () => clearTimeout(id);
-  }, [session.status, session.day, session.speed, session.tickMs, sheet, onChange]);
+  }, [session.status, session.day, session.speed, session.tickMs, sheet, eventStop, onChange]);
 
   // 전환 시트가 열려 있으면 뒤로가기는 시트만 닫는다
   useEffect(() => {
@@ -48,6 +70,15 @@ export function Play({ session, onChange, onFinish }: Props) {
       return true;
     });
   }, [sheet]);
+
+  // 사건 시트가 떠 있으면 뒤로가기는 시트만 닫는다
+  useEffect(() => {
+    if (eventStop === null) return undefined;
+    return pushBackHandler(() => {
+      dismissEventRef.current();
+      return true;
+    });
+  }, [eventStop]);
 
   // 백그라운드 전환 시 일시정지
   useEffect(() => {
@@ -86,6 +117,15 @@ export function Play({ session, onChange, onFinish }: Props) {
   );
   const closeSheetRef = useRef(closeSheet);
   closeSheetRef.current = closeSheet;
+
+  /**
+   * 사건 시트를 닫아도 재생은 멈춘 채로 둔다.
+   * 바로 재개하면 사건을 읽는 순간이 지나가 버려 판단 지점이 생기지 않는다.
+   * 사용자가 전환하거나 재생 버튼을 누를 때까지 기다린다.
+   */
+  const dismissEvent = useCallback(() => setEventStop(null), []);
+  const dismissEventRef = useRef(dismissEvent);
+  dismissEventRef.current = dismissEvent;
 
   const finished = session.status === 'finished' || session.status === 'revealed';
   const paused = session.status === 'paused';
@@ -173,6 +213,29 @@ export function Play({ session, onChange, onFinish }: Props) {
           </div>
         )}
       </div>
+
+      {eventStop && (
+        <div className="sheet-bg">
+          <div className="sheet">
+            <h3>{t('event.title')}</h3>
+            <ul className="timeline" style={{ marginBottom: 20 }}>
+              {eventStop.map((e, i) => (
+                <li key={i}>
+                  <div className="d">{fmtDate(e.d)}</div>
+                  <div className="l">{e.label}</div>
+                  {e.body && <div className="b">{e.body}</div>}
+                </li>
+              ))}
+            </ul>
+            <p className="sub" style={{ margin: '0 0 16px', fontSize: 13 }}>
+              {t('event.hint')}
+            </p>
+            <button className="btn" onClick={dismissEvent}>
+              {t('event.continue')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {sheet && (
         <div className="sheet-bg" onClick={() => closeSheet(null)}>

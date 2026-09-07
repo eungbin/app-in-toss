@@ -6,6 +6,7 @@ import { useAppStore } from '@/store';
 import { available, consume, grantBonus } from '@/engine/quota';
 import { buildResult, createSession, isSessionValid, reveal, start } from '@/engine/session';
 import { newlyEarned } from '@/engine/badges';
+import { mapEventsToBars } from '@/engine/events';
 import { dailyScenarioId, pickSegment } from '@/engine/segment';
 import { resolveRange } from '@/engine/scenario';
 import { preloadRewarded, showRewarded, type RewardedState } from '@ait/kit';
@@ -242,6 +243,20 @@ export function App() {
     });
   }, [adState, store, notify]);
 
+  /** 진행 중인 챕터의 사건을 봉 번호에 매핑한다 */
+  const eventsByBar = useMemo(() => {
+    const s = state.session;
+    if (!s) return new Map<number, never[]>();
+    const sc = getScenario(s.scenarioId);
+    if (!sc || sc.events.length === 0) return new Map<number, never[]>();
+    return mapEventsToBars(
+      getCandles(s.series, s.timeframe),
+      s.startIdx,
+      s.bars,
+      sc.events,
+    );
+  }, [state.session]);
+
   const scenario = useMemo(
     () => (route.name === 'chapter' || route.name === 'debrief' ? getScenario(route.id) : undefined),
     [route],
@@ -274,6 +289,8 @@ export function App() {
           session={state.session}
           onChange={store.setSession}
           onFinish={finishPlay}
+          eventsByBar={eventsByBar}
+          pauseOnEvent={state.settings.pauseOnEvent}
         />
       )}
       {route.name === 'play' && !state.session && <Home
