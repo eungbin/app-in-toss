@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '@/i18n';
 import { PLAY_BARS } from '@/constants';
-import { SCENARIOS, SERIES, chaptersOf, getCandles, getScenario } from '@/data';
+import { SCENARIOS, chaptersOf, ensureSeries, getCandles, getScenario } from '@/data';
 import { useAppStore } from '@/store';
 import { available, consume, grantBonus } from '@/engine/quota';
 import { buildResult, createSession, isSessionValid, reveal, start } from '@/engine/session';
@@ -114,11 +114,11 @@ export function App() {
 
   // 저장된 세션이 현재 시계열과 맞지 않으면 폐기
   useEffect(() => {
-    if (!state.ready || !state.session) return;
+    if (!state.ready || !state.dataReady || !state.session) return;
     if (!isSessionValid(state.session, getCandles(state.session.series, state.session.timeframe))) {
       store.setSession(null);
     }
-  }, [state.ready, state.session, store]);
+  }, [state.ready, state.dataReady, state.session, store]);
 
   const startSession = useCallback(
     (s: PlaySession) => {
@@ -129,7 +129,8 @@ export function App() {
     [store],
   );
 
-  const startDaily = useCallback(() => {
+  const startDaily = useCallback(async () => {
+    await ensureSeries();
     if (available(state.quota, state.entitlements.premium) <= 0) {
       setShowQuotaSheet(true);
       return;
@@ -139,7 +140,7 @@ export function App() {
       setShowQuotaSheet(true);
       return;
     }
-    const candles = SERIES.usdkrw.candles;
+    const candles = getCandles('usdkrw');
     const { startIdx, recentCleared } = pickSegment({
       candles,
       bars: PLAY_BARS,
@@ -164,7 +165,8 @@ export function App() {
   }, [state.quota, state.entitlements.premium, state.recentSegments, store, startSession]);
 
   const startChapter = useCallback(
-    (sc: Scenario) => {
+    async (sc: Scenario) => {
+      await ensureSeries();
       const tf = sc.timeframe ?? 'day';
       const candles = getCandles(sc.series, tf);
       const range = resolveRange(candles, sc);
@@ -248,7 +250,7 @@ export function App() {
   /** 진행 중인 챕터의 사건을 봉 번호에 매핑한다 */
   const eventsByBar = useMemo(() => {
     const s = state.session;
-    if (!s) return new Map<number, never[]>();
+    if (!s || !state.dataReady) return new Map<number, never[]>();
     const sc = getScenario(s.scenarioId);
     if (!sc || sc.events.length === 0) return new Map<number, never[]>();
     return mapEventsToBars(
@@ -257,7 +259,7 @@ export function App() {
       s.bars,
       sc.events,
     );
-  }, [state.session]);
+  }, [state.session, state.dataReady]);
 
   const scenario = useMemo(
     () => (route.name === 'chapter' || route.name === 'debrief' ? getScenario(route.id) : undefined),
@@ -273,12 +275,14 @@ export function App() {
       {route.name === 'home' && (
         <Home
           store={store}
-          onStartDaily={startDaily}
+          onStartDaily={() => void startDaily()}
           onResume={() => {
-            // 복원된 세션은 paused 상태다. 화면 전환과 함께 재생을 재개한다.
-            const s = store.stateRef.current.session;
-            if (s) store.setSession(start(s, new Date().toISOString()));
-            setRoute({ name: 'play' });
+            void ensureSeries().then(() => {
+              // 복원된 세션은 paused 상태다. 화면 전환과 함께 재생을 재개한다.
+              const s = store.stateRef.current.session;
+              if (s) store.setSession(start(s, new Date().toISOString()));
+              setRoute({ name: 'play' });
+            });
           }}
           onQuit={() => store.setSession(null)}
           onScenarios={() => setRoute({ name: 'scenarios' })}
@@ -287,7 +291,7 @@ export function App() {
         />
       )}
 
-      {route.name === 'play' && state.session && (
+      {route.name === 'play' && state.session && state.dataReady && (
         <Play
           session={state.session}
           onChange={store.setSession}
@@ -297,7 +301,7 @@ export function App() {
         />
       )}
       {route.name === 'play' && !state.session && <Home
-        store={store} onStartDaily={startDaily} onResume={() => {}} onQuit={() => {}}
+        store={store} onStartDaily={() => void startDaily()} onResume={() => {}} onQuit={() => {}}
         onScenarios={() => setRoute({ name: 'scenarios' })}
         onScenario={(s) => setRoute({ name: 'chapter', id: s.id })}
         onHistory={() => setRoute({ name: 'history' })} />}
@@ -310,8 +314,8 @@ export function App() {
           onSave={(memo) => saveNote(route.result, memo)}
           onAgain={() => {
             const sc = getScenario(route.session.scenarioId);
-            if (sc) startChapter(sc);
-            else startDaily();
+            if (sc) void startChapter(sc);
+            else void startDaily();
           }}
           onHome={() => setRoute({ name: 'home' })}
           onToast={notify}
@@ -333,7 +337,7 @@ export function App() {
         <Chapter
           scenario={scenario}
           owned={ownsChapter(state.entitlements, scenario)}
-          onPlay={() => startChapter(scenario)}
+          onPlay={() => void startChapter(scenario)}
         />
       )}
 
@@ -343,7 +347,7 @@ export function App() {
           {...(state.history.find((h) => h.scenarioId === scenario.id)
             ? { result: state.history.find((h) => h.scenarioId === scenario.id)! }
             : {})}
-          onReplay={() => startChapter(scenario)}
+          onReplay={() => void startChapter(scenario)}
         />
       )}
 

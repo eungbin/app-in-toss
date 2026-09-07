@@ -13,6 +13,7 @@ import type {
   ReplayNote,
 } from '@/types';
 import { HISTORY_LIMIT, NOTE_LIMIT_FREE, NOTE_LIMIT_HARD, RECENT_SEGMENTS } from '@/constants';
+import { ensureSeries } from '@/data';
 import { KEY, readJson, writeJson } from '@/platform/storage';
 import { loadProfile } from '@/platform/user';
 import { emptyQuota, localDate, rollover } from '@/engine/quota';
@@ -26,6 +27,8 @@ export interface Settings {
 
 export interface AppState {
   ready: boolean;
+  /** 시계열 본문 로드 완료 — 플레이 진입 조건 */
+  dataReady: boolean;
   loadError: boolean;
   profile: Profile | null;
   quota: Quota;
@@ -40,6 +43,7 @@ export interface AppState {
 
 const initial: AppState = {
   ready: false,
+  dataReady: false,
   loadError: false,
   profile: null,
   quota: emptyQuota(localDate()),
@@ -78,6 +82,7 @@ export function useAppStore() {
         if (rolled !== quota) void writeJson(KEY.quota, rolled);
         setState({
           ready: true,
+          dataReady: false,
           loadError: false,
           profile,
           quota: rolled,
@@ -90,6 +95,14 @@ export function useAppStore() {
           // 저장본에 없는 키는 기본값으로 채운다(설정 추가 시 하위 호환)
           settings: { ...initial.settings, ...settings },
         });
+        // 화면을 먼저 띄우고 시계열 본문은 뒤이어 받는다(별도 청크)
+        void ensureSeries()
+          .then(() => {
+            if (alive) setState((s) => ({ ...s, dataReady: true }));
+          })
+          .catch(() => {
+            if (alive) setState((s) => ({ ...s, loadError: true }));
+          });
       } catch {
         if (alive) setState((s) => ({ ...s, ready: true, loadError: true }));
       }

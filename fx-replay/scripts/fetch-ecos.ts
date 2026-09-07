@@ -9,6 +9,7 @@ import type { Candle, SeriesFile } from '../src/types';
 import { CUTOFF_MONTHS } from '../src/constants';
 import { cutoffDate, fetchSeries, isoDate, toMap } from './ecos';
 import { loadEnv } from './env';
+import { writeMeta } from './gen-series-meta';
 
 const OUT = resolve(import.meta.dirname, '../src/data/series');
 
@@ -116,6 +117,9 @@ async function main() {
   const base = await buildBaseRate(key, cutoff);
   writeFileSync(resolve(OUT, 'baserate.json'), JSON.stringify(base));
   console.log(`baserate: ${base.points.length}행`);
+
+  // 화면이 쓰는 메타데이터를 함께 갱신한다(캔들은 지연 로딩이라 메타가 따로 필요하다)
+  writeMeta();
 }
 
 main().catch((e) => {

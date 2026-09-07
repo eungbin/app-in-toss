@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { BASE_RATE, SERIES } from '@/data';
+import { BASE_RATE_META, SERIES } from '@/data';
 import { fmtDate } from '@/engine/scenario';
 
 const STAT_NAMES: Record<string, string> = {
@@ -13,15 +13,15 @@ export function Sources() {
       label: s.name,
       stat: s.source.stat,
       fetchedAt: s.source.fetchedAt,
-      first: s.candles[0]?.d ?? '',
-      last: s.candles[s.candles.length - 1]?.d ?? '',
+      first: s.firstDate,
+      last: s.lastDate,
     })),
     {
       label: '한국은행 기준금리',
-      stat: BASE_RATE.source.stat,
-      fetchedAt: BASE_RATE.source.fetchedAt,
-      first: BASE_RATE.points[0]?.d ?? '',
-      last: BASE_RATE.points[BASE_RATE.points.length - 1]?.d ?? '',
+      stat: BASE_RATE_META.source.stat,
+      fetchedAt: BASE_RATE_META.source.fetchedAt,
+      first: BASE_RATE_META.firstDate,
+      last: BASE_RATE_META.lastDate,
     },
   ];
   const seen = new Set<string>();

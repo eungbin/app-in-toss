@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { t } from '@/i18n';
-import { BASE_RATE, SERIES, getCandles, getScenario } from '@/data';
+import { SERIES, baseRatePointsOf, getCandles, getScenario } from '@/data';
 import { MEMO_MAX } from '@/constants';
 import { CandleChart } from '@/components/CandleChart';
 import { revealedWindow, windowRange } from '@/engine/normalize';
@@ -44,7 +44,7 @@ export function Result({
   );
   const scenario = getScenario(session.scenarioId);
   const events: ScenarioEvent[] = useMemo(
-    () => (scenario ? scenario.events : autoMarkers(window, BASE_RATE.points, session.timeframe)),
+    () => (scenario ? scenario.events : autoMarkers(window, baseRatePointsOf(), session.timeframe)),
     [scenario, window, session.timeframe],
   );
   const dayOf = (d: string) => window.findIndex((c) => candleEnd(c) >= d) + 1;

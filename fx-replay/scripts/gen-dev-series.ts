@@ -9,6 +9,7 @@ import { resolve } from 'node:path';
 import type { Candle, SeriesFile } from '../src/types';
 import { CUTOFF_MONTHS } from '../src/constants';
 import { cutoffDate, isoDate } from './ecos';
+import { writeMeta } from './gen-series-meta';
 
 const OUT = resolve(import.meta.dirname, '../src/data/series');
 
@@ -151,6 +152,7 @@ function main() {
     }),
   );
   console.log(`[DEV] baserate: ${points.length}행`);
+  writeMeta();
   console.log('주의: 합성 데이터입니다. 출시 전 `npm run data:fetch` 로 교체하세요.');
 }
 
