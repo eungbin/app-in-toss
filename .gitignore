@@ -1,0 +1,14 @@
+# 의존성·빌드 산출물
+node_modules/
+dist/
+*.ait
+*.log
+.DS_Store
+
+# 비밀 값 — 커밋 금지
+.env
+.env.local
+.env.*.local
+
+# 로컬 도구 설정
+.claude/
