@@ -1,5 +1,5 @@
 /**
- * 골든 케이스 33건 — docs/FACT_CHECK.md
+ * 골든 케이스 36건 — docs/FACT_CHECK.md
  *
  * 1차 출처는 **소득세법 시행령 별표2 원문**(data-src/tax-table/2024-02-29.hwpx)이다.
  * 기대값을 코드로 계산해 넣으면 자기 자신을 검증하는 셈이 되므로,
@@ -17,6 +17,7 @@ import { extractText } from './hwpx';
 import { lookupIncomeTax } from '../src/engine/tax';
 import { computeNet } from '../src/engine/net';
 import { computeSeverance } from '../src/engine/severance';
+import { computeSeveranceTax } from '../src/engine/severanceTax';
 import { TAX_TABLES } from '../src/data';
 import type { CalcOptions, TaxTableFile } from '../src/types';
 
@@ -423,5 +424,52 @@ describe('골든 H — 고용노동부 퇴직금 계산기 결과 대조', () =>
     const floored = Math.floor((Math.floor(11_175_000 / 92) * 30 * 2009) / 365);
     expect(20_057_096 - floored).toBe(66);
     expect(Math.abs(r.severance - 20_057_096)).toBeLessThanOrEqual(1);
+  });
+});
+
+/* ── I. 퇴직소득세 — 노동OK 계산기 대조 (3건) ───────────────── */
+
+describe('골든 I — 퇴직소득세 (노동OK 퇴직소득세 계산기 대조)', () => {
+  /**
+   * 2026-09-07 조회. https://www.nodong.kr/retire_pay_tax
+   * 홈택스 모의계산은 주민등록번호를 필수로 요구해 쓰지 않았다(FACT_CHECK 3-5).
+   * 산식·구간의 1차 출처는 국세청 「퇴직소득세 계산방법」이고, 이 대조는 단계별 교차 확인이다.
+   */
+  const CASE = { severance: 20_057_096, days: 2009 };
+
+  it('34. 과세표준까지의 각 단계가 모두 일치한다', () => {
+    const r = computeSeveranceTax(CASE.severance, CASE.days);
+    expect(r.years).toBe(6); // 5년 6개월 → 6년
+    expect(r.yearsDeduction).toBe(7_000_000); // 500만 + (6−5)×200만
+    expect(r.converted).toBe(26_114_192); // (퇴직급여 − 공제) × 12 ÷ 6
+    expect(Math.round(r.convertedDeduction)).toBe(18_868_515); // 800만 + (환산급여−800만)×60%
+    expect(Math.round(r.taxBase)).toBe(7_245_677);
+  });
+
+  it('35. 세액과 세후 금액이 일치한다', () => {
+    const r = computeSeveranceTax(CASE.severance, CASE.days);
+    // 환산산출세액 434,740 ÷ 12 × 6
+    expect(r.incomeTax).toBe(217_370);
+    // 원천징수 기준 지방소득세(10원 절사). 노동OK도 원천징수 행에 21,730으로 적는다
+    expect(r.localTax).toBe(21_730);
+    expect(r.totalTax).toBe(239_100);
+    expect(r.netSeverance).toBe(19_817_996);
+  });
+
+  it('36. 퇴직금 계산과 이어 붙였을 때도 같은 값이 나온다', () => {
+    // 골든 32번과 같은 입력 → 퇴직금 → 퇴직소득세
+    const sev = computeSeverance({
+      joinDate: '2021-03-02',
+      lastWorkDate: '2026-08-31',
+      wages3m: 11_175_000,
+      annualBonus: 0,
+      annualLeavePay: 0,
+      ordinaryDaily: null,
+    });
+    const tax = computeSeveranceTax(sev.severance, sev.days);
+    expect(tax.years).toBe(6);
+    expect(tax.yearsDeduction).toBe(7_000_000);
+    // 퇴직금이 1원 차이라 세액도 1원 이내로만 벌어진다
+    expect(Math.abs(tax.incomeTax - 217_370)).toBeLessThanOrEqual(1);
   });
 });

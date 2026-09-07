@@ -2,8 +2,8 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.1 (2026-09-08) |
-| 상위 문서 | [PRD.md](PRD.md) v0.1 — 요구사항 ID(CE-, DT-, UI-, MZ-, US-)는 PRD와 동일 |
+| 문서 버전 | v0.2 (2026-09-08) |
+| 상위 문서 | [PRD.md](PRD.md) v0.2 — 요구사항 ID(CE-, DT-, UI-, MZ-, US-)는 PRD와 동일 |
 | 공용 코드 | [../../docs/SHARED_PACKAGE.md](../../docs/SHARED_PACKAGE.md) `@ait/kit` |
 | 적용 범위 | **v1.0 (광고 전용, 서버 없음)**. P1·P2 항목은 `[P1]` `[P2]` 표시 |
 | 관련 문서 | 화면 흐름·와이어프레임 ([SCREEN_FLOW.md](SCREEN_FLOW.md)), 계산 검증 기록 (FACT_CHECK.md, W1 작성) |
@@ -181,7 +181,7 @@ AC
 9. `itemIncrease`: 항목별 `proposed.x / current.x − 1`(current.x가 0이면 null). 참고 표시용.
 10. `withinOneYear`: `lastChangeDate` 있으면 `today − lastChangeDate < INCREASE_INTERVAL_DAYS`.
 
-**O-1 주의**: 환산보증금 방식은 렌트홈 임대료 인상률 계산기와 같다. 해설집 확인 결과가 다르면 이 절을 수정한다. 상세 화면(S02)에는 환산 인상률과 항목별 인상률을 둘 다 보여 사용자가 어느 기준이든 확인할 수 있게 한다.
+**근거(O-1 해결, 2026-09-08)**: 환산보증금 방식은 렌트홈 임대료 계산기(국토부) 산식과 같고, 국토부·법무부 해설집(2020-08) 전월세 전환 Q1 예시(전세 5억 → 보증금 3억 + 월세 ≤ 67만, 또는 2억 + ≤ 100만, 당시 전환율 4%)와 일치한다. 상세 화면(S02)에는 환산 인상률과 항목별 인상률을 둘 다 보여 준다.
 
 AC (기준금리 3.00%, 전환율 5%)
 - [ ] 현재 1억/0 → 제안 1억 500만/0: 인상률 5.00%, `within`, excess 0.
@@ -191,6 +191,7 @@ AC (기준금리 3.00%, 전환율 5%)
 - [ ] 현재 5,000만/30만 → 제안 5,000만/31만 5천: currentEq 1억 2,200만, proposedEq 1억 2,560만 → 2.95%, `within`. itemIncrease.rent 5.00%.
 - [ ] 제안 보증금이 allowedEq 초과 → maxRentForProposedDeposit `null`.
 - [ ] lastChangeDate = 오늘 − 200일 → `withinOneYear: true`.
+- [ ] **해설집 예시(전환율 4%로 고정)**: 현재 5억/0 → 제안 3억/월 666,666: proposedEq = 3억 + 666,666×12÷0.04 = 499,999,800 → `within`. 제안 3억/월 666,667 → 500,000,100 → 여전히 allowedEq(5.25억) 안 → `within`; 인상 0%가 아닌 5% 허용까지 반영되므로 해설집 "넘을 수 없음" 수치는 `maxRentForProposedDeposit`가 아니라 **인상 0% 기준 전환 상한** `depositToRent(2억, 4%) = 666,666`으로 대조한다. 제안 2억 → `depositToRent(3억, 4%) = 1,000,000`.
 
 ### 3-4. 신규 계약 모드 (CE-5)
 - `mode === 'new'`: `judgeRenewal`을 호출하지 않는다. 결과 카드는 `verdict: null` 상태로 헤드라인 `new.headline`, 본문에 `depositToRent(proposed.deposit)`·`rentToDeposit(proposed.rent)` 환산 참고치 2줄, 링크 "중개보수 상한 보기"·"신고 대상인가요".
@@ -364,3 +365,4 @@ PRD 11장 O-1~O-5와 동일. 추가:
 
 ## 8. 변경 이력
 - 2026-09-08 v0.1 초안. PRD v0.1 기준. 환산보증금 판정 방식(O-1 전제), 신규 모드 분리, 오피스텔 3상태 토글, 비교 화면 제외.
+- 2026-09-08 v0.2 O-1 해결 근거 기록, 해설집 예시 골든 케이스 추가, B5 문구 키 분리(`judge.consentRenewal` / `judge.consentNew`).

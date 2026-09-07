@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react';
 import type { SeveranceInput } from '@/types';
 import { computeSeverance } from '@/engine/severance';
+import { computeSeveranceTax } from '@/engine/severanceTax';
 import { num, won, won2 } from '@/engine/format';
 import { BasisFooter } from '@/components/BasisFooter';
 import { t } from '@/i18n';
@@ -16,6 +17,7 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
   const [annualLeavePay, setAnnualLeavePay] = useState<number | null>(null);
   const [ordinaryDaily, setOrdinaryDaily] = useState<number | null>(null);
   const [showFormula, setShowFormula] = useState(false);
+  const [showTax, setShowTax] = useState(false);
 
   const input: SeveranceInput | null = useMemo(() => {
     if (!joinDate || !lastWorkDate || !wages3m) return null;
@@ -31,6 +33,10 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
   }, [joinDate, lastWorkDate, wages3m, annualBonus, annualLeavePay, ordinaryDaily]);
 
   const r = useMemo(() => (input ? computeSeverance(input) : null), [input]);
+  const tax = useMemo(
+    () => (r && !r.underOneYear && r.severance > 0 ? computeSeveranceTax(r.severance, r.days) : null),
+    [r],
+  );
 
   return (
     <main className="screen">
@@ -70,7 +76,68 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
         </section>
       )}
 
-      <p className="hint">{t('severance.taxNote')}</p>
+      {tax && (
+        <section className="card">
+          <p className="card__sub">{t('severance.tax.title')}</p>
+          {tax.totalTax === 0 ? (
+            <p className="note">{t('severance.tax.zero')}</p>
+          ) : (
+            <>
+              <table className="detail">
+                <tbody>
+                  <tr className="detail__row">
+                    <th scope="row">{t('severance.tax.income')}</th>
+                    <td>{won(tax.incomeTax)}</td>
+                  </tr>
+                  <tr className="detail__row">
+                    <th scope="row">{t('severance.tax.local')}</th>
+                    <td>{won(tax.localTax)}</td>
+                  </tr>
+                  <tr className="detail__row detail__row--strong">
+                    <th scope="row">{t('severance.tax.total')}</th>
+                    <td>{won(tax.totalTax)}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p className="card__sub">{t('severance.tax.net')}</p>
+              <h2 className="card__headline card__headline--num">{won(tax.netSeverance)}</h2>
+            </>
+          )}
+          <button type="button" className="card__link" onClick={() => setShowTax((v) => !v)}>
+            {t('formula.show')} {showTax ? '▲' : '▾'}
+          </button>
+          {showTax && (
+            <table className="detail">
+              <tbody>
+                <tr className="detail__row">
+                  <th scope="row">{t('severance.tax.years')}</th>
+                  <td>{tax.years}년</td>
+                </tr>
+                <tr className="detail__row">
+                  <th scope="row">{t('severance.tax.yearsDeduction')}</th>
+                  <td>−{won(tax.yearsDeduction)}</td>
+                </tr>
+                <tr className="detail__row">
+                  <th scope="row">{t('severance.tax.converted')}</th>
+                  <td>{won(tax.converted)}</td>
+                </tr>
+                <tr className="detail__row">
+                  <th scope="row">{t('severance.tax.convertedDeduction')}</th>
+                  <td>−{won(tax.convertedDeduction)}</td>
+                </tr>
+                <tr className="detail__row detail__row--strong">
+                  <th scope="row">{t('severance.tax.base')}</th>
+                  <td>{won(tax.taxBase)}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+          <p className="card__items">{t('severance.tax.yearsNote')}</p>
+        </section>
+      )}
+
+      <p className="hint">{t('severance.tax.irp')}</p>
+      <p className="hint">{t('severance.tax.basis')}</p>
       <BasisFooter withYearEnd={false} />
     </main>
   );
