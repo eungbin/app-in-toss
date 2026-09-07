@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.2 (2026-09-07) — 구현 완료 상태 반영 |
+| 문서 버전 | v0.3 (2026-09-07) |
 | 결정 | 2026-09-07 사용자 확정: 세 번째 앱을 기다리지 않고 **지금부터** 공용 패키지로 전환 |
 | 적용 앱 | fx-replay (기존), net-pay (신규), 이후 모든 앱인토스 미니앱 |
 | 위치 | `/Users/covy/dev/app-in-toss/packages/ait-kit` |
@@ -32,7 +32,8 @@
 │   │   └─ anon-user.ts    # loadAnonProfile(store, key, schema), AnonProfile
 │   └─ scripts/
 │       ├─ copy-lint.ts    # createCopyLinter(rules, allow).check(...), reportAndExit(findings, hint)
-│       └─ png.ts          # renderSupersampled, encodePng, writeSquarePng, mix — 로고·카드 이미지 공용
+│       ├─ png.ts          # renderSupersampled, encodePng, writeSquarePng, mix — 로고·카드 이미지 공용
+│       └─ env.ts          # loadEnv(path) — 빌드 스크립트용 .env 로더
 │
 │   (보류) react/ 훅, check-ad-ids.ts — net-pay 개발 중 중복이 확인되면 추가.
 │   (보류) scripts/env.ts — .env 로더. fx-replay만 쓰므로 두 번째 소비자가 생기면 추출.
@@ -72,6 +73,7 @@
 
 ## 6. 변경 이력
 - 2026-09-07 v0.1 초안. 사용자 결정(즉시 전환) 반영.
+- 2026-09-07 v0.3 env.ts 추가. anon-user·i18n 2차 추출 반영, check-prod-config 추출 예정으로.
 - 2026-09-07 v0.2 구현 완료 반영. anon-user·react 훅·check-ad-ids는 보류 목록으로.
 
 

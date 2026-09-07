@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5174",
-    "build": "npm run check && npm run check:data && vite build && ait build",
+    "build": "npm run check && npm run check:data && npm run check:config && vite build && ait build",
     "build:web": "vite build",
     "preview": "vite preview",
     "check": "npm run typecheck && npm run lint:copy && npm run test:run",
@@ -15,7 +15,10 @@
     "lint:copy": "tsx scripts/lint-copy.ts",
     "data:build": "tsx scripts/build-tax-table.ts",
     "check:data": "tsx scripts/check-data.ts",
-    "data:fetch": "tsx scripts/fetch-tax-table.ts"
+    "data:fetch": "tsx scripts/fetch-tax-table.ts",
+    "build:release": "npm run check && npm run check:data && npm run check:config:release && vite build && ait build",
+    "check:config": "tsx scripts/check-prod-config.ts",
+    "check:config:release": "tsx scripts/check-prod-config.ts --release"
   },
   "dependencies": {
     "@ait/kit": "*",
