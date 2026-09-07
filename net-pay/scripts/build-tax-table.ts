@@ -1,19 +1,32 @@
 /**
- * 간이세액표 변환 — data-src/tax-table/*.hwpx → src/data/tax-tables.json
+ * 간이세액표 변환 — data-src/tax-table/* → src/data/tax-tables.json
  *   npm run data:build
  *
- * 파일명이 시행일이다(예: 2026-03-01.hwpx). 표·비고·초과 산식을 모두 원본에서 읽으므로
+ * 파일명이 시행일이다(예: 2026-03-01.txt). 표·비고·초과 산식을 모두 원본에서 읽으므로
  * 사람이 숫자를 옮겨 적는 단계가 없다.
+ *
+ * 지원 형식
+ *  - .txt  국가법령정보센터 별표 평문 (1순위, 최신판이 항상 있다)
+ *  - .hwpx 공공데이터포털 국세청 파일
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseTaxTable } from './hwpx';
+import { parseTaxTableText } from './law-byl';
 import type { TaxTableFile } from '../src/types';
 
 const SRC = resolve(import.meta.dirname, '../data-src/tax-table');
 const OUT = resolve(import.meta.dirname, '../src/data/tax-tables.json');
-const URL_ = 'https://www.data.go.kr/data/15050747/fileData.do';
-const LICENSE = '공공데이터포털 이용허락범위 제한 없음 (국세청)';
+const SOURCES = {
+  txt: {
+    url: 'https://www.law.go.kr/법령/소득세법시행령',
+    license: '법령 본문 — 저작권법 제7조 제1호(보호받지 못하는 저작물)',
+  },
+  hwpx: {
+    url: 'https://www.data.go.kr/data/15050747/fileData.do',
+    license: '공공데이터포털 이용허락범위 제한 없음 (국세청)',
+  },
+} as const;
 const COLS = 11;
 
 function validate(t: TaxTableFile): void {
@@ -49,23 +62,28 @@ if (!existsSync(SRC)) {
   console.error(`원본 폴더가 없습니다: ${SRC}\n먼저 npm run data:fetch 를 실행하세요.`);
   process.exit(1);
 }
-const files = readdirSync(SRC).filter((f) => f.endsWith('.hwpx')).sort();
+const files = readdirSync(SRC)
+  .filter((f) => f.endsWith('.txt') || f.endsWith('.hwpx'))
+  .sort();
 if (files.length === 0) {
-  console.error(`원본 HWPX가 없습니다: ${SRC}\n먼저 npm run data:fetch 를 실행하세요.`);
+  console.error(`원본이 없습니다: ${SRC}\n먼저 npm run data:fetch 를 실행하세요.`);
   process.exit(1);
 }
 
 const tables = files.map((name) => {
-  const effectiveFrom = name.replace(/\.hwpx$/, '');
+  const isTxt = name.endsWith('.txt');
+  const effectiveFrom = name.replace(/\.(txt|hwpx)$/, '');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(effectiveFrom))
-    throw new Error(`파일명이 시행일(YYYY-MM-DD.hwpx) 형식이 아닙니다: ${name}`);
+    throw new Error(`파일명이 시행일(YYYY-MM-DD.txt|hwpx) 형식이 아닙니다: ${name}`);
   const path = resolve(SRC, name);
-  const t = parseTaxTable(readFileSync(path), {
+  const meta = {
     effectiveFrom,
     fetchedAt: statSync(path).mtime.toISOString().slice(0, 10),
-    url: URL_,
-    license: LICENSE,
-  });
+    ...(isTxt ? SOURCES.txt : SOURCES.hwpx),
+  };
+  const t = isTxt
+    ? parseTaxTableText(readFileSync(path, 'utf-8'), meta)
+    : parseTaxTable(readFileSync(path), meta);
   validate(t);
   return t;
 });

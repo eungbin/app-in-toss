@@ -1,5 +1,5 @@
 /**
- * 골든 케이스 22건 — docs/FACT_CHECK.md
+ * 골든 케이스 27건 — docs/FACT_CHECK.md
  *
  * 1차 출처는 **소득세법 시행령 별표2 원문**(data-src/tax-table/2024-02-29.hwpx)이다.
  * 기대값을 코드로 계산해 넣으면 자기 자신을 검증하는 셈이 되므로,
@@ -20,6 +20,24 @@ const ROOT = resolve(import.meta.dirname, '..');
 const RAW = extractText(readFileSync(resolve(ROOT, 'data-src/tax-table/2024-02-29.hwpx')));
 
 const TABLE = TAX_TABLES.find((t) => t.meta.effectiveFrom === '2024-02-29') as TaxTableFile;
+
+/** 2026-03-01 시행판 — 국가법령정보센터 별표 평문 (│로 칸을 나눈다) */
+const RAW26 = readFileSync(resolve(ROOT, 'data-src/tax-table/2026-03-01.txt'), 'utf-8');
+const TABLE26 = TAX_TABLES.find((t) => t.meta.effectiveFrom === '2026-03-01') as TaxTableFile;
+
+/** 2026 평문에서 한 행을 직접 읽는다. 파서(scripts/law-byl.ts)와 다른 경로 */
+function rawRow26(loThousand: number, hiThousand: number): number[] {
+  const want = [th(loThousand), th(hiThousand)];
+  const hits: number[][] = [];
+  for (const line of RAW26.split('\n')) {
+    if (!line.includes('│')) continue;
+    const cells = line.trim().replace(/^│|│$/g, '').split('│').map((c) => c.trim());
+    if (cells[0] !== want[0] || cells[1] !== want[1] || cells.length < 13) continue;
+    hits.push(cells.slice(2, 13).map((c) => (c === '-' ? 0 : Number(c.replace(/,/g, '')))));
+  }
+  expect(hits, `2026 원문에서 ${loThousand}~${hiThousand}천원 행을 한 번만 찾아야 한다`).toHaveLength(1);
+  return hits[0] as number[];
+}
 
 const th = (n: number) => n.toLocaleString('en-US');
 
@@ -263,5 +281,59 @@ describe('골든 E — 월 실수령 통합 (원문·고시에서 조립한 기�
     expect(computeNet(122_400_000, opts2026()).netMonthly).toBe(at.net);
     expect(computeNet(122_400_012, opts2026()).netMonthly).toBe(over.net);
     expect(at.net - over.net).toBe(27_499);
+  });
+});
+
+/* ── F. 2026-03-01 시행판 — 국가법령정보센터 원문 대조 (5건) ── */
+
+describe('골든 F — 2026-03-01 시행판 (별표2 개정 2026-02-27)', () => {
+  it('23. 원문 개정일과 시행일이 맞다', () => {
+    expect(RAW26).toContain('소득세법 시행령 [별표 2] <개정 2026. 2. 27.>');
+    expect(TABLE26.meta.amendedOn).toBe('2026-02-27');
+    expect(TABLE26.meta.effectiveFrom).toBe('2026-03-01');
+  });
+
+  it('24. 자녀 차감액이 개정값 20,830 / 45,830 / +33,330원이다', () => {
+    expect(RAW26).toContain('자녀가 1명인 경우 : 20,830원');
+    expect(RAW26).toContain('자녀가 2명인 경우 : 45,830원');
+    expect(RAW26).toContain('2명 초과 자녀 1명당 33,330원');
+    expect(TABLE26.childDeduction).toEqual({ one: 20_830, two: 45_830, extraPerChild: 33_330 });
+  });
+
+  it('25. 본문 646구간 × 11열이 2024-02-29 시행판과 완전히 같다', () => {
+    // 2026-02-27 개정은 비고 3(자녀 차감액)만 바꿨다. 본문 세액은 그대로다.
+    expect(TABLE26.brackets).toHaveLength(TABLE.brackets.length);
+    expect(TABLE26.brackets).toEqual(TABLE.brackets);
+    expect(TABLE26.overCap.baseTax).toEqual(TABLE.overCap.baseTax);
+    expect(TABLE26.overCap.segments).toEqual(TABLE.overCap.segments);
+  });
+
+  it('26. 2026 원문에서 직접 읽은 행이 번들 값과 같다 (파서 교차 확인)', () => {
+    for (const [lo, hi] of [
+      [1_060, 1_065],
+      [3_500, 3_520],
+      [5_000, 5_020],
+      [9_980, 10_000],
+    ] as const) {
+      const raw = rawRow26(lo, hi);
+      const bundled = TABLE26.brackets.find((b) => b.lo === lo * 1000 && b.hi === hi * 1000);
+      expect(bundled?.tax, `${lo}~${hi}천원`).toEqual(raw);
+      // HWPX 경로로 읽은 2024 판과도 같아야 한다
+      expect(raw).toEqual(rawRow(lo, hi));
+    }
+  });
+
+  it('27. 오늘 계산에는 2026-03-01 시행판이 쓰이고 자녀 차감이 커진 만큼 세액이 줄었다', () => {
+    const withKid = computeNet(45_000_000, opts2026({ dependents: 2, children: 1 }));
+    expect(withKid.taxTableEffectiveFrom).toBe('2026-03-01');
+    expect(withKid.taxTableFallback).toBe(false);
+
+    // 같은 입력을 2024 판(자녀 1명 12,500원)으로 계산하면 소득세가 더 크다
+    const old = computeNet(45_000_000, opts2026({ dependents: 2, children: 1, asOf: '2025-12-31' }));
+    expect(old.taxTableEffectiveFrom).toBe('2024-02-29');
+    expect(withKid.incomeTax).toBeLessThan(old.incomeTax);
+    // 차이는 차감액 인상분(20,830 − 12,500 = 8,330원)이다. 10원 절사 오차 한 칸 허용
+    expect(old.incomeTax - withKid.incomeTax).toBeGreaterThanOrEqual(8_320);
+    expect(old.incomeTax - withKid.incomeTax).toBeLessThanOrEqual(8_330);
   });
 });
