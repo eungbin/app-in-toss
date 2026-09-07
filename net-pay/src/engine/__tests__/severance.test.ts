@@ -35,21 +35,23 @@ describe('퇴직금', () => {
     expect(r.days).toBe(diffDays('2021-03-02', '2026-09-01'));
   });
 
-  it('평균임금은 퇴사일 직전 3개월의 실제 일수로 나눈다', () => {
+  it('평균임금은 퇴사일 직전 3개월의 실제 일수로 나누고 소수를 유지한다', () => {
     const r = computeSeverance(base);
     expect(r.period3mDays).toBe(diffDays('2026-06-01', '2026-09-01')); // 92일
-    expect(r.avgDaily).toBe(Math.floor(11_175_000 / 92));
+    // 정수로 내리면 최종 금액이 수십 원 적어진다 (FACT_CHECK 3-4)
+    expect(r.avgDaily).toBeCloseTo(11_175_000 / 92, 6);
+    expect(Number.isInteger(r.avgDaily)).toBe(false);
   });
 
-  it('퇴직금 = 1일 평균임금 × 30 × 재직일수 ÷ 365', () => {
+  it('퇴직금 = 1일 평균임금 × 30 × 재직일수 ÷ 365, 원 단위 반올림', () => {
     const r = computeSeverance(base);
-    expect(r.severance).toBe(Math.floor((r.avgDaily * 30 * r.days) / 365));
+    expect(r.severance).toBe(Math.round((r.avgDaily * 30 * r.days) / 365));
   });
 
   it('상여·연차수당은 3/12 만큼 더한다', () => {
     const r = computeSeverance({ ...base, annualBonus: 6_000_000, annualLeavePay: 1_200_000 });
     const total = 11_175_000 + (6_000_000 * 3) / 12 + (1_200_000 * 3) / 12;
-    expect(r.avgDaily).toBe(Math.floor(total / r.period3mDays));
+    expect(r.avgDaily).toBeCloseTo(total / r.period3mDays, 6);
   });
 
   it('통상임금이 평균임금보다 크면 통상임금을 쓴다', () => {

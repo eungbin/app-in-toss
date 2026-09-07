@@ -185,6 +185,7 @@ export interface SeveranceResult {
   restDays: number;
   /** 평균임금 산정 기간의 일수 */
   period3mDays: number;
+  /** 1일 평균임금. **정수가 아니다** — 소수를 유지해야 고용노동부 계산기와 맞는다 */
   avgDaily: number;
   /** 통상임금이 평균임금을 대체했는가 */
   usedOrdinary: boolean;

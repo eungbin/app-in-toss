@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import type { SeveranceInput } from '@/types';
 import { computeSeverance } from '@/engine/severance';
-import { num, won } from '@/engine/format';
+import { num, won, won2 } from '@/engine/format';
 import { BasisFooter } from '@/components/BasisFooter';
 import { t } from '@/i18n';
 
@@ -56,7 +56,7 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
           <p className="card__sub">
             {t('severance.period', { y: r.years, m: r.months, d: r.restDays, days: num(r.days) })}
           </p>
-          <p className="card__sub">{t('severance.avgDaily', { won: num(r.avgDaily) })}</p>
+          <p className="card__sub">{t('severance.avgDaily', { won: won2(r.avgDaily) })}</p>
           {r.usedOrdinary && <p className="note">{t('severance.usedOrdinary')}</p>}
           {r.underOneYear && <p className="note">{t('severance.underOneYear')}</p>}
           <button type="button" className="card__link" onClick={() => setShowFormula((v) => !v)}>
@@ -64,7 +64,7 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
           </button>
           {showFormula && (
             <p className="detail__formula">
-              (3개월 임금 {num(r.avgDaily * r.period3mDays)}원 ÷ {r.period3mDays}일) × 30 × {num(r.days)}일 ÷ 365
+              (3개월 임금 {num(Math.round(r.avgDaily * r.period3mDays))}원 ÷ {r.period3mDays}일 = {won2(r.avgDaily)}) × 30 × {num(r.days)}일 ÷ 365
             </p>
           )}
         </section>

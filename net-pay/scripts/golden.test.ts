@@ -1,5 +1,5 @@
 /**
- * 골든 케이스 31건 — docs/FACT_CHECK.md
+ * 골든 케이스 33건 — docs/FACT_CHECK.md
  *
  * 1차 출처는 **소득세법 시행령 별표2 원문**(data-src/tax-table/2024-02-29.hwpx)이다.
  * 기대값을 코드로 계산해 넣으면 자기 자신을 검증하는 셈이 되므로,
@@ -7,8 +7,8 @@
  *  - 보험료는 고시 숫자를 테스트 안에 **리터럴 산술**로 다시 적어 대조한다.
  * 두 방식 모두 구현 코드를 거치지 않는다.
  *
- * 여기에 더해 G 그룹은 **국세청 홈택스 간이세액표 조회기**의 실제 결과와 맞춘다.
- * 원문과 무관한 완전히 독립된 출처이므로 파서·조회·절사가 한꺼번에 검증된다.
+ * 여기에 더해 G·H 그룹은 **국세청 홈택스 간이세액표 조회기**와 **고용노동부 퇴직금 계산기**의
+ * 실제 결과와 맞춘다. 원문과 무관한 독립 출처이므로 파서·조회·절사가 한꺼번에 검증된다.
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -16,6 +16,7 @@ import { resolve } from 'node:path';
 import { extractText } from './hwpx';
 import { lookupIncomeTax } from '../src/engine/tax';
 import { computeNet } from '../src/engine/net';
+import { computeSeverance } from '../src/engine/severance';
 import { TAX_TABLES } from '../src/data';
 import type { CalcOptions, TaxTableFile } from '../src/types';
 
@@ -375,5 +376,52 @@ describe('골든 G — 국세청 홈택스 간이세액표 조회 결과 대조'
     // 엔진의 taxRatio 경로도 같은 값을 낸다
     const at80 = computeNet((12_000_000 + 200_000) * 12, opts2026({ taxRatio: 0.8 }));
     expect(at80.incomeTax).toBe(1_774_720);
+  });
+});
+
+/* ── H. 고용노동부 퇴직금 계산기 대조 (2건) ─────────────────── */
+
+describe('골든 H — 고용노동부 퇴직금 계산기 결과 대조', () => {
+  /**
+   * 2026-09-07 조회. 고용노동부 퇴직금 계산 (moel.go.kr/retirementpayCal.do).
+   * 그쪽 "퇴직일자"는 우리의 **퇴사일(마지막 근무일 + 1일)** 과 같다 — 재직일수가 일치해 확인됐다.
+   */
+  const MOEL = [
+    { join: '2021-03-02', last: '2026-08-31', wages3m: 11_175_000, days: 2009, period: 92, severance: 20_057_096 },
+    { join: '2025-09-01', last: '2026-08-31', wages3m: 10_000_000, days: 365, period: 92, severance: 3_260_870 },
+  ];
+
+  it.each(MOEL)(
+    '32~33. 입사 $join · 마지막 근무 $last → 재직일수·산정기간·퇴직금이 고용노동부와 맞는다',
+    ({ join, last, wages3m, days, period, severance }) => {
+      const r = computeSeverance({
+        joinDate: join,
+        lastWorkDate: last,
+        wages3m,
+        annualBonus: 0,
+        annualLeavePay: 0,
+        ordinaryDaily: null,
+      });
+      // 날짜 해석이 같다는 것이 핵심이다
+      expect(r.days).toBe(days);
+      expect(r.period3mDays).toBe(period);
+      // 금액은 1원 이내. 고용노동부는 1일 평균임금을 표시 자리수로 반올림해 쓰는 것으로 보인다
+      expect(Math.abs(r.severance - severance)).toBeLessThanOrEqual(1);
+    },
+  );
+
+  it('1일 평균임금을 정수로 내리면 고용노동부와 크게 벌어진다 (회귀 방지)', () => {
+    const r = computeSeverance({
+      joinDate: '2021-03-02',
+      lastWorkDate: '2026-08-31',
+      wages3m: 11_175_000,
+      annualBonus: 0,
+      annualLeavePay: 0,
+      ordinaryDaily: null,
+    });
+    // 내림 방식으로 계산하면 66원이 빠진다. 그래서 소수를 유지한다
+    const floored = Math.floor((Math.floor(11_175_000 / 92) * 30 * 2009) / 365);
+    expect(20_057_096 - floored).toBe(66);
+    expect(Math.abs(r.severance - 20_057_096)).toBeLessThanOrEqual(1);
   });
 });
