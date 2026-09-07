@@ -1,165 +1,209 @@
 /**
  * 홈 — 역산이 첫 화면이다 (docs/SCREEN_FLOW.md S01, PRD 차별점 A).
- * 정방향은 같은 화면에서 모드만 바꾼다.
+ * 정방향은 같은 화면에서 모드만 바꾼다. 입력창에 자동 포커스하지 않는다
+ * (키패드가 결과 카드와 차별점을 덮기 때문).
  */
-import { useEffect, useMemo, useState } from 'react';
-import type { CalcMode, CalcOptions } from '@/types';
-import { CHILDREN_MAX, DEPENDENTS_MAX, DEPENDENTS_MIN, NONTAX_MEAL_DEFAULT } from '@/constants';
-import { computeGross } from '@/engine/reverse';
-import { computeNet } from '@/engine/net';
-import { manwon, num, pct, todayIso, won } from '@/engine/format';
+import type { Breakdown, CalcOptions, ReverseResult } from '@/types';
 import { isDevData } from '@/data';
-import { t } from '@/i18n';
+import { manwon, num } from '@/engine/format';
+import { computeTimeline, timelineYears } from '@/engine/timeline';
+import { timelineHeadline } from './Timeline';
 import { MoneyInput } from '@/components/MoneyInput';
+import { LockedCard } from '@/components/LockedCard';
+import { BasisFooter } from '@/components/BasisFooter';
+import { BannerAd } from '@/components/BannerAd';
+import { t } from '@/i18n';
 
-const DEBOUNCE_MS = 300;
+export interface Draft {
+  mode: 'reverse' | 'forward';
+  /** 입력값(만 원). 비어 있으면 null */
+  amountManwon: number | null;
+  dependents: number;
+  children: number;
+  meal: boolean;
+}
 
-export function Home() {
-  const [mode, setMode] = useState<CalcMode>('reverse');
-  const [raw, setRaw] = useState<number | null>(null);
-  const [value, setValue] = useState<number | null>(null);
-  const [dependents, setDependents] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [meal, setMeal] = useState(true);
-  const [showDetail, setShowDetail] = useState(false);
+interface Props {
+  draft: Draft;
+  opts: CalcOptions;
+  breakdown: Breakdown | null;
+  reverse: ReverseResult | null;
+  timelineLocked: boolean;
+  savedCount: number;
+  staleYear: string | null;
+  onAmount: (v: number | null) => void;
+  onToggleMode: () => void;
+  onOptions: () => void;
+  onDetail: () => void;
+  onTimeline: () => void;
+  onCard: () => void;
+  onSave: () => void;
+  onSaved: () => void;
+  onSeverance: () => void;
+  onLeave: () => void;
+}
 
-  // 입력 디바운스 — 타이핑 중에는 계산하지 않는다
-  useEffect(() => {
-    const id = setTimeout(() => setValue(raw), DEBOUNCE_MS);
-    return () => clearTimeout(id);
-  }, [raw]);
-
-  // 자녀는 공제대상 가족에 포함된다. 넘치면 가족 수를 올린다
-  const adjusted = children + 1 > dependents;
-  const effectiveDependents = Math.min(Math.max(dependents, children + 1), DEPENDENTS_MAX);
-
-  const opts: CalcOptions = useMemo(
-    () => ({
-      dependents: effectiveDependents,
-      children,
-      nonTaxableMonthly: meal ? NONTAX_MEAL_DEFAULT : 0,
-      taxRatio: 1,
-      asOf: todayIso(),
-    }),
-    [effectiveDependents, children, meal],
-  );
-
-  const result = useMemo(() => {
-    if (value === null || value <= 0) return null;
-    if (mode === 'reverse') {
-      const r = computeGross(value * 10_000, opts);
-      return { breakdown: r.breakdown, reverse: r };
-    }
-    return { breakdown: computeNet(value * 10_000, opts), reverse: null };
-  }, [value, mode, opts]);
-
-  const b = result?.breakdown;
+export function Home(p: Props) {
+  const { draft, opts, breakdown, reverse } = p;
+  const reverseMode = draft.mode === 'reverse';
 
   return (
     <main className="screen">
       {isDevData && <p className="dev-banner">{t('data.dev')}</p>}
+      {p.staleYear && (
+        <p className="dev-banner">
+          {t('data.stale', { y: p.staleYear, y0: opts.asOf.slice(0, 4) })}
+        </p>
+      )}
 
       <MoneyInput
-        prefix={mode === 'reverse' ? t('home.input.prefix') : t('gross.input.prefix')}
-        suffix={mode === 'reverse' ? t('home.input.suffix') : t('gross.input.suffix')}
-        placeholder={mode === 'reverse' ? t('home.input.placeholder') : '4097'}
-        value={raw}
-        onChange={setRaw}
+        prefix={reverseMode ? t('home.input.prefix') : t('gross.input.prefix')}
+        suffix={reverseMode ? t('home.input.suffix') : t('gross.input.suffix')}
+        placeholder={reverseMode ? t('home.input.placeholder') : '4100'}
+        value={draft.amountManwon}
+        onChange={p.onAmount}
       />
 
       <div className="chips">
-        <button type="button" className="chip" onClick={() => setDependents((d) => (d >= DEPENDENTS_MAX ? DEPENDENTS_MIN : d + 1))}>
-          가족 {effectiveDependents}명
+        <button type="button" className="chip" onClick={p.onOptions}>
+          가족 {opts.dependents}명
         </button>
-        <button type="button" className="chip" onClick={() => setChildren((c) => (c >= CHILDREN_MAX ? 0 : c + 1))}>
-          자녀 {children}
+        <button type="button" className="chip" onClick={p.onOptions}>
+          자녀 {opts.children}
         </button>
-        <button type="button" className={`chip ${meal ? 'chip--on' : ''}`} onClick={() => setMeal((m) => !m)}>
-          식대 {meal ? '포함' : '미포함'}
+        <button type="button" className={`chip ${draft.meal ? 'chip--on' : ''}`} onClick={p.onOptions}>
+          식대 {draft.meal ? '포함' : '미포함'}
         </button>
       </div>
-      {adjusted && <p className="note">{t('options.childrenAdjusted', { n: effectiveDependents })}</p>}
 
-      {!b && <p className="hint">{mode === 'reverse' ? t('home.input.hint') : t('gross.input.hint')}</p>}
+      {!breakdown && <p className="hint">{reverseMode ? t('home.input.hint') : t('gross.input.hint')}</p>}
 
-      {b && (
-        <section className="card">
-          <h2 className="card__headline">
-            {mode === 'reverse'
-              ? t('home.result.headline', { gross: manwon(result!.reverse!.annualGrossDisplay) })
-              : t('gross.result.headline', { net: num(b.netMonthly) })}
-          </h2>
-          <p className="card__sub">
-            {mode === 'reverse'
-              ? t('home.result.sub', { net: num(b.netMonthly) })
-              : t('gross.result.sub', { netAnnual: num(b.netAnnual), ded: num(b.deductions) })}
-          </p>
-          <button type="button" className="card__link" onClick={() => setShowDetail((v) => !v)}>
-            {t('home.result.deductions', { ded: num(b.deductions) })} {showDetail ? '▲' : '▾'}
+      {breakdown && (
+        <>
+          <section className="card">
+            <h2 className="card__headline">
+              {reverseMode && reverse
+                ? t('home.result.headline', { gross: manwon(reverse.annualGrossDisplay) })
+                : t('gross.result.headline', { net: num(breakdown.netMonthly) })}
+            </h2>
+            <p className="card__sub">
+              {reverseMode
+                ? t('home.result.sub', { net: num(breakdown.netMonthly) })
+                : t('gross.result.sub', { netAnnual: num(breakdown.netAnnual), ded: num(breakdown.deductions) })}
+            </p>
+            <button type="button" className="card__link" onClick={p.onDetail}>
+              {t('home.result.deductions', { ded: num(breakdown.deductions) })} ›
+            </button>
+            <p className="card__items">{t('home.result.items')}</p>
+          </section>
+
+          <button type="button" className="switch" onClick={p.onToggleMode}>
+            {reverseMode ? t('home.switch.toForward') : t('gross.switch.toReverse')}
           </button>
-          <p className="card__items">{t('home.result.items')}</p>
 
-          {showDetail && (
-            <table className="detail">
-              <tbody>
-                <Row label={t('detail.row.gross')} value={b.grossMonthly} />
-                <Row label={t('detail.row.nonTaxable')} value={-opts.nonTaxableMonthly} />
-                <Row label={t('detail.row.taxable')} value={b.taxableMonthly} />
-                <Row label={t('detail.row.nps')} value={b.nps} note={b.capped.nps} />
-                <Row label={t('detail.row.nhis')} value={b.nhis} note={b.capped.nhis} />
-                <Row label={t('detail.row.ltc')} value={b.ltc} />
-                <Row label={t('detail.row.ei')} value={b.ei} />
-                <Row label={t('detail.row.incomeTax')} value={b.incomeTax} />
-                <Row label={t('detail.row.localTax')} value={b.localTax} />
-                <Row label={t('detail.row.deductions')} value={b.deductions} strong />
-                <Row label={t('detail.row.net')} value={b.netMonthly} strong />
-              </tbody>
-            </table>
-          )}
-        </section>
+          <TimelinePreview
+            annualGross={breakdown.annualGross}
+            opts={opts}
+            locked={p.timelineLocked}
+            onUnlock={p.onTimeline}
+            onOpen={p.onTimeline}
+          />
+
+          <div className="row">
+            <button type="button" className="cta cta--secondary" onClick={p.onCard}>
+              협상 카드 만들기
+            </button>
+            <button type="button" className="cta cta--secondary" onClick={p.onSave}>
+              {t('save.cta')}
+            </button>
+          </div>
+        </>
       )}
 
-      <button
-        type="button"
-        className="switch"
-        onClick={() => {
-          setMode((m) => (m === 'reverse' ? 'forward' : 'reverse'));
-          setRaw(null);
-          setValue(null);
-          setShowDetail(false);
-        }}
-      >
-        {mode === 'reverse' ? t('home.switch.toForward') : t('gross.switch.toReverse')}
+      {!breakdown && (
+        <button type="button" className="switch" onClick={p.onToggleMode}>
+          {reverseMode ? t('home.switch.toForward') : t('gross.switch.toReverse')}
+        </button>
+      )}
+
+      <h3 className="section-title">{t('home.section.other')}</h3>
+      <div className="row">
+        <button type="button" className="tile" onClick={p.onSeverance}>
+          {t('home.link.severance')} ›
+        </button>
+        <button type="button" className="tile" onClick={p.onLeave}>
+          {t('home.link.leave')} ›
+        </button>
+      </div>
+      <button type="button" className="row-link" onClick={p.onSaved}>
+        {t('home.link.saved', { n: p.savedCount })} ›
       </button>
 
-      <footer className="basis">
-        <p>{t('privacy.line')}</p>
-        {b && (
-          <p>
-            {t('basis.line', {
-              effectiveFrom: b.taxTableEffectiveFrom,
-              year: opts.asOf.slice(0, 4),
-            })}
-          </p>
-        )}
-        <p>{t('disclaimer.full')}</p>
-        <p>{t('disclaimer.yearEnd')}</p>
-      </footer>
+      <BasisFooter
+        effectiveFrom={breakdown?.taxTableEffectiveFrom}
+        year={opts.asOf.slice(0, 4)}
+        withPrivacy
+      />
+      <BannerAd />
     </main>
   );
 }
 
-function Row({ label, value, note, strong }: { label: string; value: number; note?: 'min' | 'max' | null; strong?: boolean }) {
+/**
+ * 시간축 미리보기.
+ * 잠긴 동안에는 계산조차 하지 않는다. 자리표시자만 보여준다.
+ */
+function TimelinePreview({
+  annualGross,
+  opts,
+  locked,
+  onUnlock,
+  onOpen,
+}: {
+  annualGross: number;
+  opts: CalcOptions;
+  locked: boolean;
+  onUnlock: () => void;
+  onOpen: () => void;
+}) {
+  const years = timelineYears(opts.asOf);
+  const first = years[0];
+  const last = years.at(-1);
+
+  const placeholder = (
+    <>
+      <p className="card__sub">{first}년부터 지금까지, 같은 연봉의 월 실수령을 나란히 봐요</p>
+      <p className="card__sub card__sub--masked">
+        {first}년 ●,●●●,●●●원 → {last}년 ●,●●●,●●●원
+      </p>
+    </>
+  );
+
   return (
-    <tr className={strong ? 'detail__row detail__row--strong' : 'detail__row'}>
-      <th scope="row">
-        {label}
-        {note === 'max' && <span className="badge">{t('detail.capped')}</span>}
-        {note === 'min' && <span className="badge">{t('detail.floored')}</span>}
-      </th>
-      <td>{won(value)}</td>
-    </tr>
+    <LockedCard
+      title={t('timeline.card.title')}
+      locked={locked}
+      placeholder={placeholder}
+      onUnlock={onUnlock}
+      onOpen={onOpen}
+    >
+      <TimelineNumbers annualGross={annualGross} opts={opts} />
+    </LockedCard>
   );
 }
 
-export { pct };
+function TimelineNumbers({ annualGross, opts }: { annualGross: number; opts: CalcOptions }) {
+  const tl = computeTimeline(annualGross, opts);
+  const first = tl.rows[0];
+  const last = tl.rows.at(-1);
+  return (
+    <>
+      <p className="card__sub">{timelineHeadline(tl.deltaDeductions, tl.baseYear)}</p>
+      {first && last && (
+        <p className="card__sub">
+          {first.year}년 {num(first.netMonthly)}원 → {last.year}년 {num(last.netMonthly)}원
+        </p>
+      )}
+    </>
+  );
+}

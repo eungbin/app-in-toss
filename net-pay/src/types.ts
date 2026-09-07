@@ -223,5 +223,11 @@ export interface Scenario {
 }
 
 export interface Unlock {
+  /** 해제 만료 시각(epoch ms). null이면 잠금 */
   until: number | null;
+}
+
+export interface Settings {
+  /** 협상 카드에서 연봉을 가린다 */
+  cardHideGross: boolean;
 }
