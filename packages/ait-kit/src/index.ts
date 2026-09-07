@@ -16,5 +16,6 @@ export {
 export { onBack, onHome, closeApp } from './nav';
 export { pushBackHandler, runBackHandlers } from './backstack';
 export { canSaveImage, saveCardImage, shareLink } from './share';
+export { useSafeArea, type Insets } from './safe-area';
 export { createT, type CopyVars } from './i18n';
 export { loadAnonProfile, type AnonProfile } from './anon-user';

@@ -10,6 +10,9 @@
   --danger: #f04452;
   --lock: #8b95a1;
   --radius: 16px;
+  /* SDK SafeArea 값이 들어온다(@ait/kit useSafeArea). 토스 앱 밖에서는 0 */
+  --safe-top: 0px;
+  --safe-bottom: 0px;
   color-scheme: light;
 }
 
@@ -29,7 +32,11 @@ html, body {
 button { font: inherit; color: inherit; cursor: pointer; }
 a { color: var(--primary); }
 
-.screen { padding: 20px 20px 40px; max-width: 520px; margin: 0 auto; }
+.screen {
+  padding: 20px 20px calc(40px + var(--safe-bottom));
+  max-width: 520px;
+  margin: 0 auto;
+}
 .screen[aria-busy='true'] { min-height: 60vh; }
 
 .dev-banner {
@@ -123,7 +130,8 @@ a { color: var(--primary); }
 .row-link--warn { color: var(--danger); }
 .settings-link {
   display: block; width: 100%; max-width: 520px; margin: 0 auto;
-  padding: 16px 20px 40px; border: none; background: none;
+  padding: 16px 20px calc(40px + var(--safe-bottom));
+  border: none; background: none;
   color: var(--sub); font-size: 14px; text-align: left;
 }
 
@@ -189,7 +197,8 @@ a { color: var(--primary); }
 }
 .sheet, .dialog {
   width: 100%; max-width: 520px; background: var(--bg);
-  padding: 16px 20px 28px; border-radius: 20px 20px 0 0;
+  padding: 16px 20px calc(28px + var(--safe-bottom));
+  border-radius: 20px 20px 0 0;
 }
 .dialog { margin: auto 16px; border-radius: 16px; padding: 20px; }
 .sheet__head { display: flex; align-items: flex-start; gap: 8px; }
@@ -216,7 +225,8 @@ a { color: var(--primary); }
 .basis { margin: 28px 0 0; color: var(--sub); font-size: 12px; }
 .basis p { margin: 4px 0; }
 .toast {
-  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%); z-index: 30;
+  position: fixed; left: 50%; bottom: calc(32px + var(--safe-bottom));
+  transform: translateX(-50%); z-index: 30;
   max-width: calc(100% - 40px);
   padding: 12px 16px; border-radius: 10px;
   background: rgba(25, 31, 40, 0.92); color: #fff; font-size: 13px;

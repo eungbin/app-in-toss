@@ -3,7 +3,7 @@
  * 화면은 스택으로 쌓고, 뒤로가기로 하나씩 벗는다. 첫 화면에서 뒤로가기 = 미니앱 종료.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { closeApp, configureAds, onBack, preloadRewarded, pushBackHandler, runBackHandlers, type RewardedState } from '@ait/kit';
+import { closeApp, configureAds, onBack, preloadRewarded, pushBackHandler, runBackHandlers, useSafeArea, type RewardedState } from '@ait/kit';
 import type { CalcInput, CalcOptions, Scenario } from '@/types';
 import { DEPENDENTS_MAX, NONTAX_MEAL_DEFAULT, SAVED_CAP } from '@/constants';
 import { RATES } from '@/data';
@@ -70,6 +70,9 @@ function draftFromDeepLink(): Draft | null {
 }
 
 export function App() {
+  // 세이프 에어리어를 CSS 변수로 내보낸다. CSS env() 는 쓰지 않는다(호스트 값과 이중 적용됨)
+  useSafeArea();
+
   const store = useAppStore();
   const { state } = store;
   // 아래 효과의 의존성에 store 객체를 넣지 않는다. 콜백만 꺼내 쓴다

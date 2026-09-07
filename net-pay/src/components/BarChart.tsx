@@ -14,6 +14,13 @@ const W = 320;
 const H = 160;
 const PAD_TOP = 22;
 const PAD_BOTTOM = 24;
+/**
+ * 라벨 하나가 차지하는 대략적인 너비(viewBox 단위).
+ * font-size 9 에 5~6자("2021*", "3,020") 기준이다.
+ * 막대가 많아 칸이 이보다 좁아지면 라벨을 건너뛴다 — fx-replay 가 실기기에서
+ * 차트 x축 라벨이 겹치는 문제를 겪었다. 시간축은 매년 막대가 하나씩 늘어난다.
+ */
+const LABEL_W = 30;
 
 export function BarChart({ bars, format }: { bars: Bar[]; format: (v: number) => string }) {
   if (bars.length === 0) return null;
@@ -25,6 +32,9 @@ export function BarChart({ bars, format }: { bars: Bar[]; format: (v: number) =>
   const span = Math.max(1, max - base);
   const slot = W / bars.length;
   const barW = Math.min(34, slot * 0.55);
+  // 칸이 좁으면 n개마다 하나씩만 그린다. 첫 막대와 마지막 막대는 항상 그린다
+  const step = Math.max(1, Math.ceil(LABEL_W / slot));
+  const showLabel = (i: number) => step === 1 || i === 0 || i === bars.length - 1 || i % step === 0;
 
   return (
     <figure className="chart">
@@ -36,17 +46,22 @@ export function BarChart({ bars, format }: { bars: Bar[]; format: (v: number) =>
           return (
             <g key={b.label}>
               <rect x={x} y={y} width={barW} height={Math.max(2, h)} rx="3" className="chart__bar" />
-              <text x={x + barW / 2} y={y - 6} className="chart__value">
-                {format(b.value)}
-              </text>
-              <text x={x + barW / 2} y={H - 8} className="chart__label">
-                {b.label}
-                {b.note ? '*' : ''}
-              </text>
+              {showLabel(i) && (
+                <>
+                  <text x={x + barW / 2} y={y - 6} className="chart__value">
+                    {format(b.value)}
+                  </text>
+                  <text x={x + barW / 2} y={H - 8} className="chart__label">
+                    {b.label}
+                    {b.note ? '*' : ''}
+                  </text>
+                </>
+              )}
             </g>
           );
         })}
       </svg>
+      {/* 라벨을 건너뛰어도 값은 여기서 전부 읽을 수 있다 */}
       <figcaption className="chart__alt">
         {bars.map((b) => `${b.label} ${format(b.value)}`).join(' · ')}
       </figcaption>
