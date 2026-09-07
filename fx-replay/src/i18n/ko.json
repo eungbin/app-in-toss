@@ -1,5 +1,9 @@
 {
   "app.name": "그때 환전했다면",
+  "tab.home": "홈",
+  "tab.scenarios": "시나리오",
+  "tab.history": "기록",
+  "tab.settings": "설정",
   "home.h1": "과거 차트로 배우는 판단 복기",
   "home.body": "자산과 날짜를 가린 과거 환율을 하루씩 재생하며 선택해 보세요.",
   "home.daily.title": "오늘의 리플레이",

@@ -22,6 +22,7 @@ import { Debrief } from '@/screens/Debrief';
 import { History } from '@/screens/History';
 import { Settings } from '@/screens/Settings';
 import { Sources } from '@/screens/Sources';
+import { TabBar, isTabRoute, type TabName } from '@/components/TabBar';
 import type { PlayResult, PlaySession, Scenario } from '@/types';
 
 type Route =
@@ -280,7 +281,6 @@ export function App() {
           onScenarios={() => setRoute({ name: 'scenarios' })}
           onScenario={(s) => setRoute({ name: 'chapter', id: s.id })}
           onHistory={() => setRoute({ name: 'history' })}
-          onSettings={() => setRoute({ name: 'settings' })}
         />
       )}
 
@@ -297,8 +297,7 @@ export function App() {
         store={store} onStartDaily={startDaily} onResume={() => {}} onQuit={() => {}}
         onScenarios={() => setRoute({ name: 'scenarios' })}
         onScenario={(s) => setRoute({ name: 'chapter', id: s.id })}
-        onHistory={() => setRoute({ name: 'history' })}
-        onSettings={() => setRoute({ name: 'settings' })} />}
+        onHistory={() => setRoute({ name: 'history' })} />}
 
       {route.name === 'result' && (
         <Result
@@ -365,6 +364,23 @@ export function App() {
       )}
 
       {route.name === 'sources' && <Sources />}
+
+      {isTabRoute(route.name) && (
+        <TabBar
+          current={route.name}
+          onSelect={(tab: TabName) => {
+            setRoute(
+              tab === 'home'
+                ? { name: 'home' }
+                : tab === 'scenarios'
+                  ? { name: 'scenarios' }
+                  : tab === 'history'
+                    ? { name: 'history' }
+                    : { name: 'settings' },
+            );
+          }}
+        />
+      )}
 
       {showQuotaSheet && (
         <div className="sheet-bg" onClick={() => setShowQuotaSheet(false)}>

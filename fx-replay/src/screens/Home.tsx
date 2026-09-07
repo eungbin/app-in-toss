@@ -14,7 +14,6 @@ interface Props {
   onScenarios: () => void;
   onScenario: (s: Scenario) => void;
   onHistory: () => void;
-  onSettings: () => void;
 }
 
 export function Home(p: Props) {
@@ -85,10 +84,6 @@ export function Home(p: Props) {
         ) : (
           <div className="card"><p className="sub" style={{ margin: 0 }}>{t('history.empty')}</p></div>
         )}
-
-        <button className="row-link" onClick={p.onSettings}>
-          {t('settings.title')} ›
-        </button>
 
         <BannerAd hidden={state.entitlements.premium} />
       </div>
