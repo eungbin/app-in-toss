@@ -27,13 +27,15 @@
 │   │   ├─ ads.ts          # configureAds({ rewarded, banner }), getAdGroups, TEST_AD_GROUPS, preloadRewarded, showRewarded, initBannerSdk, attachBanner
 │   │   ├─ nav.ts          # onBack, onHome, closeApp
 │   │   ├─ backstack.ts    # pushBackHandler, runBackHandlers
-│   │   └─ share.ts        # canSaveImage, saveCardImage, shareLink(appName, path, text)
+│   │   ├─ share.ts        # canSaveImage, saveCardImage, shareLink(appName, path, text)
+│   │   ├─ i18n.ts         # createT(dict) → t(key, vars). 키 타입은 앱 사전에서 추론
+│   │   └─ anon-user.ts    # loadAnonProfile(store, key, schema), AnonProfile
 │   └─ scripts/
 │       ├─ copy-lint.ts    # createCopyLinter(rules, allow).check(...), reportAndExit(findings, hint)
 │       └─ png.ts          # renderSupersampled, encodePng, writeSquarePng, mix — 로고·카드 이미지 공용
 │
-│   (보류) anon-user.ts — Profile 타입이 앱마다 달라 v1.0은 앱에 둔다. net-pay에서 두 번째 구현이 생기면 추출.
 │   (보류) react/ 훅, check-ad-ids.ts — net-pay 개발 중 중복이 확인되면 추가.
+│   (보류) scripts/env.ts — .env 로더. fx-replay만 쓰므로 두 번째 소비자가 생기면 추출.
 ├─ fx-replay/              # 기존. src/platform/* 삭제 → @ait/kit import
 └─ net-pay/                # 신규. 처음부터 @ait/kit 사용
 ```
@@ -52,6 +54,8 @@
 | 금지어 사전 | 원칙 B·C (예측·권고·경쟁) | 원칙 A·B (금융 상품·권고·평가) | `runCopyLint({ rules })` — 사전은 각 앱 `scripts/copy-rules.ts` |
 | 린트 대상 파일 | `scenarios/*.json`, `i18n/ko.json` | `i18n/ko.json`, 카드 문구 | `runCopyLint({ targets })` |
 | 로고 색·글자 | 파랑·"환" | 앱 확정 후 | `genLogo({ bg, glyph })` |
+| 문구 사전 | `i18n/ko.json` | 동일 | `createT(ko)` — 키 타입이 앱 사전에서 추론된다 |
+| 프로필 저장 키 | `fxr.profile` | `np.profile` | `loadAnonProfile(store, KEY.profile, SCHEMA_VERSION)` |
 
 ## 4. 마이그레이션 결과 (fx-replay, 2026-09-07 완료)
 1. 루트 `package.json`(workspaces: `packages/*`, `fx-replay`)·`packages/ait-kit` 생성.
@@ -69,3 +73,47 @@
 ## 6. 변경 이력
 - 2026-09-07 v0.1 초안. 사용자 결정(즉시 전환) 반영.
 - 2026-09-07 v0.2 구현 완료 반영. anon-user·react 훅·check-ad-ids는 보류 목록으로.
+
+
+## 5. 2차 추출 (2026-09-07)
+
+net-pay에 두 번째 구현이 생겨 설계 문서의 추출 조건이 충족된 항목이다.
+
+### 5-1. `anon-user.ts` — 익명 사용자 식별
+
+두 앱의 `platform/user.ts`가 주석 한 줄 빼고 동일했다. `AnonProfile`(anonKey·schema·createdAt·anonKeyPending)을 kit이 갖고, 앱은 저장소·키·스키마 버전만 넘긴다. 필드를 더 붙여야 하면 인터페이스를 확장한다.
+
+```ts
+// fx-replay/src/types.ts
+export interface Profile extends AnonProfile {
+  userKey?: string;   // v1.1 토스 로그인
+}
+// fx-replay/src/platform/user.ts — 전체
+export const loadProfile = (): Promise<Profile> =>
+  loadAnonProfile(store, KEY.profile, SCHEMA_VERSION);
+```
+
+원래 보류 사유였던 "Profile 타입이 앱마다 다르다"는 확장으로 해결된다. 앱이 추가하는 필드는 전부 선택 필드이므로 `AnonProfile`을 그대로 할당할 수 있다.
+
+### 5-2. `i18n.ts` — 문구 조회
+
+`createT(dict)`가 사전을 받아 `t()`를 만든다. **키 타입은 사전에서 추론**되므로 앱마다 자기 키만 쓸 수 있고 오타는 타입 오류로 잡힌다.
+
+net-pay 쪽 구현이 더 나아서 그쪽을 채택했다. 값이 없는 자리표시자를 `{name}` 그대로 남겨 누락이 화면에서 보인다(기존 fx-replay 구현은 조용히 넘어갔다).
+
+```ts
+// 앱 i18n/index.ts
+export const t = createT(ko);
+export type CopyKey = keyof typeof ko;
+```
+
+앱 고유 헬퍼는 앱에 남긴다(fx-replay `progressLabel` 등).
+
+### 5-3. 추출하지 않은 것
+
+| 후보 | 판단 |
+|---|---|
+| `platform/storage.ts` | 이미 얇다(createStore + 앱 키). 키 이름은 앱 고유 |
+| `scripts/check-data.ts` / `check-prod-data.ts` | 이름만 비슷하고 검사 내용이 완전히 다르다(fx-replay는 합성 데이터 플래그, net-pay는 추정치·유효기간) |
+| `scripts/env.ts` | 소비자가 fx-replay 하나뿐. 두 번째가 생기면 추출 |
+| `components/BannerAd.tsx` | net-pay에 아직 없다. 배너를 넣으면 그때 추출 |

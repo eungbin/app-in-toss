@@ -1,5 +1,7 @@
 /** 데이터 모델 — docs/FUNCTIONAL_SPEC.md §1 */
 
+import type { AnonProfile } from '@ait/kit';
+
 export type SeriesId = 'usdkrw' | 'cnykrw';
 
 /** 봉 하나가 담는 기간 */
@@ -160,14 +162,9 @@ export interface Entitlements {
   source: 'local' | 'server';
 }
 
-export interface Profile {
-  anonKey: string;
-  schema: number;
-  createdAt: string;
+export interface Profile extends AnonProfile {
   /** v1.1 토스 로그인 */
   userKey?: string;
-  /** getAnonymousKey 실패로 임시 uuid를 쓰는 중 */
-  anonKeyPending?: boolean;
 }
 
 /** 블라인드 중 뷰에 전달되는 캔들 — 날짜·원값 없음 */
