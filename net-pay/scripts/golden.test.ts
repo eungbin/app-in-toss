@@ -1,11 +1,14 @@
 /**
- * 골든 케이스 27건 — docs/FACT_CHECK.md
+ * 골든 케이스 31건 — docs/FACT_CHECK.md
  *
  * 1차 출처는 **소득세법 시행령 별표2 원문**(data-src/tax-table/2024-02-29.hwpx)이다.
  * 기대값을 코드로 계산해 넣으면 자기 자신을 검증하는 셈이 되므로,
  *  - 세액은 원문 텍스트에서 **파서와 다른 경로**(구간 경계로 직접 정규식)로 뽑아 쓰고,
  *  - 보험료는 고시 숫자를 테스트 안에 **리터럴 산술**로 다시 적어 대조한다.
  * 두 방식 모두 구현 코드를 거치지 않는다.
+ *
+ * 여기에 더해 G 그룹은 **국세청 홈택스 간이세액표 조회기**의 실제 결과와 맞춘다.
+ * 원문과 무관한 완전히 독립된 출처이므로 파서·조회·절사가 한꺼번에 검증된다.
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -335,5 +338,42 @@ describe('골든 F — 2026-03-01 시행판 (별표2 개정 2026-02-27)', () => 
     // 차이는 차감액 인상분(20,830 − 12,500 = 8,330원)이다. 10원 절사 오차 한 칸 허용
     expect(old.incomeTax - withKid.incomeTax).toBeGreaterThanOrEqual(8_320);
     expect(old.incomeTax - withKid.incomeTax).toBeLessThanOrEqual(8_330);
+  });
+});
+
+/* ── G. 국세청 홈택스 조회기 대조 (4건) ─────────────────────── */
+
+describe('골든 G — 국세청 홈택스 간이세액표 조회 결과 대조', () => {
+  /**
+   * 2026-09-07 조회. 홈택스 > 세금신고 > 원천세 신고 > 근로소득 간이세액표
+   * (2026-03-01 시행판). 입력의 "월 급여액"은 비과세·학자금을 제외한 금액이다.
+   * 표·비고와 무관한 독립 출처라서 파서·열 매핑·초과 산식·절사를 한 번에 확인한다.
+   */
+  const HOMETAX: { salary: number; family: number; children: number; tax: number; local: number }[] = [
+    { salary: 3_500_000, family: 1, children: 0, tax: 127_220, local: 12_720 },
+    { salary: 3_500_000, family: 4, children: 2, tax: 3_510, local: 350 },
+    // 표 상한(1,000만 원)을 넘는 구간 — 초과 산식(98% × 35% + 25,000원) 검증
+    { salary: 12_000_000, family: 1, children: 0, tax: 2_218_400, local: 221_840 },
+  ];
+  const floor10 = (n: number) => Math.floor(n / 10) * 10;
+
+  it.each(HOMETAX)(
+    '28~30. 월급여 $salary · 가족 $family · 자녀 $children → 홈택스와 같은 세액',
+    ({ salary, family, children, tax, local }) => {
+      const mine = floor10(lookupIncomeTax(TABLE26, salary, family, children));
+      expect(mine).toBe(tax);
+      // 지방소득세 = 소득세 × 10%, 10원 미만 절사 (홈택스 결과로 확인된 규칙)
+      expect(floor10(mine * 0.1)).toBe(local);
+    },
+  );
+
+  it('31. 간이세액 선택 비율 80% · 120%도 10원 미만 절사다', () => {
+    // 홈택스 조회(월급여 12,000,000 · 가족 1 · 자녀 0): 80% 1,774,720 / 120% 2,662,080
+    const base = floor10(lookupIncomeTax(TABLE26, 12_000_000, 1, 0));
+    expect(floor10(base * 0.8)).toBe(1_774_720);
+    expect(floor10(base * 1.2)).toBe(2_662_080);
+    // 엔진의 taxRatio 경로도 같은 값을 낸다
+    const at80 = computeNet((12_000_000 + 200_000) * 12, opts2026({ taxRatio: 0.8 }));
+    expect(at80.incomeTax).toBe(1_774_720);
   });
 });

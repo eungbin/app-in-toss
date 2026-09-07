@@ -3,7 +3,7 @@
 받고 싶은 **세후 월급으로 필요한 연봉을 역산**하는 앱인토스 미니앱. 정방향 계산(연봉 → 실수령), 퇴직금, 연차수당도 함께 제공한다.
 
 - 기획·설계: [PRD](docs/PRD.md) → [기능 명세](docs/FUNCTIONAL_SPEC.md) → [화면 흐름](docs/SCREEN_FLOW.md)
-- 계산 검증: [FACT_CHECK.md](docs/FACT_CHECK.md) — 골든 케이스 27건과 수동 확인 항목
+- 계산 검증: [FACT_CHECK.md](docs/FACT_CHECK.md) — 골든 케이스 31건(홈택스 조회기 대조 포함)과 남은 확인 항목
 - 공용 패키지: [`@ait/kit`](../packages/ait-kit) — [설계](../docs/SHARED_PACKAGE.md)
 
 ## 시작하기
