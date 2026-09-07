@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { t } from '@/i18n';
 import { SERIES, isDevData } from '@/data';
 import type { Settings as SettingsType } from '@/store';
+import { Switch } from '@toss/tds-mobile';
 import { PrimaryButton, GhostButton } from '@/components/ui';
 
 interface Props {
@@ -19,10 +20,9 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
         <h1 className="screen-title">{t('settings.title')}</h1>
         <div className="kv">
           <span className="k">{t('settings.speed')}</span>
-          <span className="speed">
+          <span className="segment">
             {([1, 2] as const).map((sp) => (
-              <button key={sp} data-on={settings.speed === sp} onClick={() => onChange({ speed: sp })}
-                style={{ padding: '6px 10px' }}>
+              <button key={sp} data-on={settings.speed === sp} onClick={() => onChange({ speed: sp })}>
                 {sp}x
               </button>
             ))}
@@ -30,9 +30,10 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
         </div>
         <div className="kv">
           <span className="k">{t('settings.revealAnim')}</span>
-          <button onClick={() => onChange({ revealAnim: !settings.revealAnim })}>
-            {settings.revealAnim ? '켬' : '끔'}
-          </button>
+          <Switch
+            checked={settings.revealAnim}
+            onChange={(_, checked) => onChange({ revealAnim: checked })}
+          />
         </div>
         <div className="kv">
           <span className="k">
@@ -40,9 +41,10 @@ export function Settings({ settings, onChange, onSources, onClear }: Props) {
             <br />
             <span className="sub" style={{ fontSize: 12 }}>{t('settings.pauseOnEventHint')}</span>
           </span>
-          <button onClick={() => onChange({ pauseOnEvent: !settings.pauseOnEvent })}>
-            {settings.pauseOnEvent ? '켬' : '끔'}
-          </button>
+          <Switch
+            checked={settings.pauseOnEvent}
+            onChange={(_, checked) => onChange({ pauseOnEvent: checked })}
+          />
         </div>
         <div className="hr" />
         <button className="row-link" onClick={onSources}>

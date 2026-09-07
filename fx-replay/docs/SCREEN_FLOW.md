@@ -372,8 +372,8 @@ flowchart TD
 ┌──────────────────────────────────┐
 │ ‹  설정                           │
 ├──────────────────────────────────┤
-│ 재생 속도 기본값        1x | 2x    │
-│ 리빌 애니메이션         켬 / 끔    │
+│ 재생 속도 기본값       [1x][2x]   │  세그먼트
+│ 리빌 애니메이션            (●━)   │  TDS Switch
 │ ····························     │
 │ 데이터 출처·라이선스            ›  │  S10
 │ 구매 내역·복원 [v1.1]           ›  │  S11
@@ -594,6 +594,8 @@ flowchart TD
 | `PlaybackBar` | S02 | playing / paused / finished |
 | `BannerAdSlot` | S01 S07 | supported / unsupported(미렌더) / premium(미렌더) |
 | `SegmentTabs` | S07 | |
+| `Switch` (TDS) | S09 | 켜짐/꺼짐. 텍스트 "켬/끔" 대신 |
+| `.segment` | S09 | 두 값 중 택일(재생 속도). 선택된 쪽에 흰 배경 + 그림자 |
 | `BadgeGrid` | S07 | earned / locked |
 | `SkeletonCard` | 로딩 | |
 

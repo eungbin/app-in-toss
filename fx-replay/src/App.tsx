@@ -6,6 +6,7 @@ import { useAppStore } from '@/store';
 import { available, consume, grantBonus } from '@/engine/quota';
 import { buildResult, createSession, isSessionValid, reveal, start } from '@/engine/session';
 import { newlyEarned } from '@/engine/badges';
+import { useSafeArea } from '@/hooks/useSafeArea';
 import { mapEventsToBars } from '@/engine/events';
 import { dailyScenarioId, pickSegment } from '@/engine/segment';
 import { resolveRange } from '@/engine/scenario';
@@ -48,6 +49,15 @@ export function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [savedNote, setSavedNote] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  /** 세이프 에어리어를 CSS 변수로 내보낸다. 반환값은 ?debug=safearea 진단에 쓴다 */
+  const insets = useSafeArea();
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const read = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    read();
+    window.addEventListener('resize', read);
+    return () => window.removeEventListener('resize', read);
+  }, []);
   const routeRef = useRef(route);
   routeRef.current = route;
 
@@ -451,6 +461,17 @@ export function App() {
               {t('play.leaveCancel')}
             </GhostButton>
           </div>
+        </div>
+      )}
+
+      {/* 기기에서 레이아웃 값을 확인하기 위한 진단. ?debug=safearea 일 때만 보인다 */}
+      {location.search.includes('debug=safearea') && (
+        <div className="debug-badge">
+          safe t{insets.top} b{insets.bottom} · vp{viewport.w}×{viewport.h} · dpr
+          {window.devicePixelRatio} · env-b
+          {getComputedStyle(document.documentElement).getPropertyValue('--probe-env-bottom') || '?'}
+          {' · tab '}
+          {getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom')}
         </div>
       )}
 
