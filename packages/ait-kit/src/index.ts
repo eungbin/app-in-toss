@@ -3,7 +3,6 @@ export { createStore, type AppStore } from './storage';
 export {
   configureAds,
   getAdGroups,
-  TEST_AD_GROUPS,
   adsSupported,
   preloadRewarded,
   showRewarded,
