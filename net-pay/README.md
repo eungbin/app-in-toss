@@ -43,7 +43,10 @@ npm run data:build   # 파싱·검증 → src/data/tax-tables.json
 | `npm run data:fetch` | 국가법령정보센터에서 현행 별표2 평문 받기 |
 | `npm run data:build` | 원본(평문·HWPX) → 번들 JSON (표·비고·초과 산식 파싱 + 검증) |
 | `npm run check:data` | 최신 시행판 누락·오늘 적용 요율의 미확인 항목·손으로 만든 표 차단 |
-| `npm run build` | check + check:data + vite build + ait build |
+| `npm run check:config` | 자리표시자 이메일·단계에 맞지 않는 광고 ID 차단 |
+| `npm run check:bundle` | 빌드 산출물을 스캔해 테스트 광고 ID·자리표시자 도메인 차단 |
+| `npm run build` | QR 테스트용. check + check:data + check:config + vite build + check:bundle + ait build |
+| `npm run build:release` | 출시용. 실 광고 ID를 요구하고 번들에 테스트 ID가 남아 있으면 막는다 |
 
 ## 데이터
 

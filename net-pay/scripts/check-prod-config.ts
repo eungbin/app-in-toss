@@ -5,7 +5,11 @@
  *                                       앱인토스 정책상 개발 단계에서 실 광고 ID를 쓰면 위반이다.
  *   출시 빌드(`npm run build:release`) — 실 광고 ID를 요구한다.
  *
- * 데이터(합성 표·미확인 요율)는 `npm run check:data` 가 따로 본다.
+ * 데이터(합성 표·미확인 요율)는 `npm run check:data`,
+ * 빌드 산출물에 남은 문자열은 `npm run check:bundle` 이 따로 본다.
+ *
+ * kit 은 광고 그룹 ID의 기본값을 두지 않는다(번들에 테스트 ID 문자열이 남아 심사 반려된 적이 있다).
+ * 그래서 .env 가 비면 광고가 아예 붙지 않는다.
  */
 import { resolve } from 'node:path';
 import { loadEnv } from '@ait/kit/scripts/env';
@@ -52,7 +56,11 @@ for (const [key, label] of AD_KEYS) {
         `  → 콘솔에서 광고 그룹을 만들고 .env 에 넣으세요. 테스트 ID로 출시하면 수익이 집계되지 않습니다.`,
     );
   } else {
-    notes.push(`${label} 광고: 테스트 ID로 빌드됩니다(개발 단계에서 정상).`);
+    notes.push(
+      v
+        ? `${label} 광고: 테스트 ID로 빌드됩니다(개발 단계에서 정상).`
+        : `${label} 광고: ID가 없어 광고가 붙지 않습니다. QR 테스트에서 광고를 보려면 .env 에 테스트 ID를 넣으세요.`,
+    );
   }
 }
 

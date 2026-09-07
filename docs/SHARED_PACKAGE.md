@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.3 (2026-09-07) |
+| 문서 버전 | v0.4 (2026-09-08) |
 | 결정 | 2026-09-07 사용자 확정: 세 번째 앱을 기다리지 않고 **지금부터** 공용 패키지로 전환 |
 | 적용 앱 | fx-replay (기존), net-pay (신규), 이후 모든 앱인토스 미니앱 |
 | 위치 | `/Users/covy/dev/app-in-toss/packages/ait-kit` |
@@ -33,7 +33,8 @@
 │   └─ scripts/
 │       ├─ copy-lint.ts    # createCopyLinter(rules, allow).check(...), reportAndExit(findings, hint)
 │       ├─ png.ts          # renderSupersampled, encodePng, writeSquarePng, mix — 로고·카드 이미지 공용
-│       └─ env.ts          # loadEnv(path) — 빌드 스크립트용 .env 로더
+│       ├─ env.ts          # loadEnv(path) — 빌드 스크립트용 .env 로더
+│       └─ bundle-scan.ts  # scanBundle / reportBundleScan — 빌드 산출물 문자열 검사
 │
 │   (보류) react/ 훅, check-ad-ids.ts — net-pay 개발 중 중복이 확인되면 추가.
 │   (보류) scripts/env.ts — .env 로더. fx-replay만 쓰므로 두 번째 소비자가 생기면 추출.
@@ -66,6 +67,22 @@
 5. 검증: `npm run check` 통과(타입체크·문구 린트·테스트 114개), `vite build` 성공, 재생성한 로고 PNG가 기존과 바이트 단위로 동일, kit 단독 `tsc` 통과.
 6. net-pay는 처음부터 kit를 사용한다(워크스페이스에 추가 예정).
 
+## 4-1. 번들 산출물 검사 — 심사 반려로 얻은 교훈
+
+앱인토스 심사는 런타임 동작이 아니라 **번들에 문자열이 있는지**를 본다.
+fx-replay 는 kit 의 `ads.ts` 가 테스트 광고 ID 상수를 모듈 최상위에서 참조해
+트리셰이킹이 되지 않아 출시 번들에 문자열이 남았고, **그것만으로 반려**됐다.
+`configureAds()` 로 런타임에 실 ID를 덮어써서 동작에는 문제가 없었다.
+
+그래서 두 가지를 바꿨다.
+- kit `ads.ts` 는 광고 그룹 ID의 **기본값을 두지 않는다**. 비면 광고를 붙이지 않는다.
+  테스트용 ID가 필요하면 앱 `.env` 에 넣는다.
+- `scripts/bundle-scan.ts` 로 **빌드된 산출물을 직접 스캔**한다. 설정값만 보는
+  `check-prod-config.ts` 로는 이 건을 잡을 수 없었다.
+
+각 앱은 자기 금지 목록만 정의하고 스캔·보고는 kit 을 쓴다.
+`build` 에서는 알려만 주고, `build:release` 에서는 막는다.
+
 ## 5. 원칙
 - kit에는 **앱인토스 플랫폼 코드와 빌드 도구만** 넣는다. 계산 엔진·화면·데이터는 앱에 둔다.
 - kit 변경은 두 앱의 테스트를 모두 돌린 뒤 반영한다(루트 `npm test --workspaces`).
@@ -73,6 +90,7 @@
 
 ## 6. 변경 이력
 - 2026-09-07 v0.1 초안. 사용자 결정(즉시 전환) 반영.
+- 2026-09-08 v0.4 bundle-scan.ts 추가(심사 반려 대응). 4-1 절 신설.
 - 2026-09-07 v0.3 env.ts 추가. anon-user·i18n 2차 추출 반영, check-prod-config 추출 예정으로.
 - 2026-09-07 v0.2 구현 완료 반영. anon-user·react 훅·check-ad-ids는 보류 목록으로.
 
