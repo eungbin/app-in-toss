@@ -4,18 +4,24 @@
  * 모드 세그먼트를 가장 위에 둔다. 신규 계약에는 법정 상한이 없으므로
  * 판정을 켜기 전에 사용자가 상황을 먼저 고르게 해야 한다(원칙 B4).
  */
-import { useMemo } from 'react';
-import type { Mode, Terms } from '@/types';
+import { useEffect, useMemo } from 'react';
+import type { ConvertResult, JudgeResult, Mode, Terms, TimelineRow } from '@/types';
 import { convertOnly, judgeRenewal } from '@/engine/judge';
 import { legalConversionRate } from '@/engine/rate';
 import { manwon, percent, percentShort, won } from '@/engine/format';
 import { TermsGroup, type TermsDraft } from '@/components/TermsGroup';
+import { DateInput } from '@/components/DateInput';
+import { LockedCard } from '@/components/LockedCard';
+import { BannerAd } from '@/components/BannerAd';
+import { BasisFooter } from '@/components/BasisFooter';
 import { t } from '@/i18n';
 
 export interface Draft {
   mode: Mode;
   current: TermsDraft;
   proposed: TermsDraft;
+  /** "YYYY-MM-DD" 또는 빈 문자열 */
+  lastChangeDate: string;
 }
 
 interface Props {
@@ -23,6 +29,21 @@ interface Props {
   onDraft: (d: Draft) => void;
   baseRate: number;
   asOf: string;
+  /** 기준금리를 사용자가 직접 넣었는지 */
+  overridden: boolean;
+  stale: string | undefined;
+  timelineLocked: boolean;
+  timelineRows: TimelineRow[];
+  onResult: (r: JudgeResult | ConvertResult | null) => void;
+  onOpenRate: () => void;
+  onOpenDetail: () => void;
+  onOpenTimeline: () => void;
+  onUnlock: () => void;
+  onMakeCard: () => void;
+  onSave: () => void;
+  onOpenBroker: () => void;
+  onOpenReport: () => void;
+  onOpenTool: (tool: 'convert' | 'broker' | 'report' | 'saved' | 'settings') => void;
 }
 
 const 만 = 10_000;
@@ -32,7 +53,8 @@ const toTerms = (d: TermsDraft): Terms => ({
 });
 const isEmpty = (d: TermsDraft): boolean => d.deposit === null && d.rent === null;
 
-export function Home({ draft, onDraft, baseRate, asOf }: Props) {
+export function Home(props: Props) {
+  const { draft, onDraft, baseRate, asOf, overridden, stale } = props;
   const { mode, current, proposed } = draft;
 
   const result = useMemo(() => {
@@ -42,10 +64,22 @@ export function Home({ draft, onDraft, baseRate, asOf }: Props) {
 
     const c = toTerms(current);
     if (c.deposit + c.rent === 0) return null;
-    return judgeRenewal({ mode: 'renew', current: c, proposed: p, baseRate });
-  }, [mode, current, proposed, baseRate]);
+    return judgeRenewal({
+      mode: 'renew',
+      current: c,
+      proposed: p,
+      baseRate,
+      ...(draft.lastChangeDate === '' ? {} : { lastChangeDate: draft.lastChangeDate }),
+    });
+  }, [mode, current, proposed, baseRate, draft.lastChangeDate]);
+
+  // 결과를 상위로 올려 상세·카드·저장이 같은 값을 쓰게 한다
+  const onResult = props.onResult;
+  useEffect(() => onResult(result), [result, onResult]);
 
   const rate = legalConversionRate(baseRate);
+  // 시간축은 제안 보증금 기준. 없으면 현재 보증금
+  const timelineDeposit = (proposed.deposit ?? current.deposit ?? 0) * 만;
 
   return (
     <div className="screen">
@@ -79,7 +113,18 @@ export function Home({ draft, onDraft, baseRate, asOf }: Props) {
         rentPlaceholder="25"
       />
 
-      <p className="hint">{t('rate.chip', { br: percentShort(baseRate), rate: percentShort(rate) })}</p>
+      <button type="button" className="chip" onClick={props.onOpenRate}>
+        {t('rate.chip', { br: percentShort(baseRate), rate: percentShort(rate) })}
+        {overridden ? ` ${t('basis.override')}` : ''} ›
+      </button>
+
+      {mode === 'renew' && (
+        <DateInput
+          label={t('input.lastChange')}
+          value={draft.lastChangeDate}
+          onChange={(v) => onDraft({ ...draft, lastChangeDate: v })}
+        />
+      )}
 
       {result === null ? (
         <p className="hint">{t('input.empty')}</p>
@@ -137,15 +182,85 @@ export function Home({ draft, onDraft, baseRate, asOf }: Props) {
               </dd>
             </div>
           </dl>
-          {result.verdict === 'exceeds' && <p className="note">{t('judge.consentRenewal')}</p>}
+          {result.withinOneYear === true && <p className="note">{t('judge.oneYear')}</p>}
+          <button type="button" className="card__link" onClick={props.onOpenDetail}>
+            {t('judge.detail')} ›
+          </button>
         </section>
       )}
 
-      <footer className="basis">
-        <p>{t('basis.judge', { br: percentShort(baseRate), asOf })}</p>
-        <p>{t('disclaimer.full')}</p>
-        <p>{t('privacy.line')}</p>
-      </footer>
+      {result !== null && timelineDeposit > 0 && (
+        <LockedCard
+          title={t('timeline.card.title')}
+          locked={props.timelineLocked}
+          placeholder={<p className="locked-body__row">2021년 ●●●,●●●원 → 최신 ●●●,●●●원</p>}
+          onUnlock={props.onUnlock}
+          onOpen={props.onOpenTimeline}
+        >
+          <p className="lead">
+            {props.timelineRows.length > 0 &&
+              t('timeline.headline', {
+                r0: percentShort(props.timelineRows[0]?.baseRate ?? 0),
+                r1: percentShort(props.timelineRows[props.timelineRows.length - 1]?.baseRate ?? 0),
+                delta: won(
+                  Math.abs(
+                    (props.timelineRows[props.timelineRows.length - 1]?.maxRent ?? 0) -
+                      (props.timelineRows[0]?.maxRent ?? 0),
+                  ),
+                ),
+              })}
+          </p>
+        </LockedCard>
+      )}
+
+      {result !== null && (
+        <>
+          <div className="row">
+            <button type="button" className="cta" onClick={props.onMakeCard}>
+              {t('card.make')}
+            </button>
+            <button type="button" className="cta cta--secondary" onClick={props.onSave}>
+              {t('save.cta')}
+            </button>
+          </div>
+          <div className="row row--links">
+            <button type="button" className="card__link" onClick={props.onOpenBroker}>
+              {t('broker.link')} ›
+            </button>
+            <button type="button" className="card__link" onClick={props.onOpenReport}>
+              {t('report.link')} ›
+            </button>
+          </div>
+        </>
+      )}
+
+      <nav className="tools" aria-label="도구">
+        {(
+          [
+            ['convert', t('convert.title')],
+            ['broker', t('broker.title')],
+            ['report', t('report.title')],
+            ['saved', t('save.title')],
+            ['settings', t('settings.title')],
+          ] as const
+        ).map(([key, label]) => (
+          <button key={key} type="button" onClick={() => props.onOpenTool(key)}>
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      <BasisFooter
+        basis={
+          overridden
+            ? t('basis.judgeManual', { br: percentShort(baseRate) })
+            : t('basis.judge', { br: percentShort(baseRate), asOf })
+        }
+        {...(stale === undefined ? {} : { stale })}
+        privacy
+        disclaimer={t('disclaimer.full')}
+      />
+      <BannerAd />
     </div>
   );
 }

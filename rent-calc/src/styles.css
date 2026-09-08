@@ -288,3 +288,149 @@ a { color: var(--primary); }
 .verdict dt { flex: 0 0 auto; white-space: nowrap; color: var(--sub); margin: 0; }
 .verdict dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 .verdict .note { margin: 10px 0 0; font-size: 13px; color: var(--sub); }
+
+/* 도구 내비 — S01 하단. 화면 전환만 하고 값은 넘기지 않는다 */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.tools button {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--sub);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.row--links { margin-top: 8px; }
+.row--links > button { flex: 1 1 auto; text-align: left; }
+
+/* 산식 표 — 근거를 그대로 보여 검산할 수 있게 한다 */
+.formula {
+  width: 100%;
+  margin: 16px 0 0;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.formula th,
+.formula td {
+  padding: 9px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.formula thead th { color: var(--sub); font-weight: 600; }
+.formula tbody th { text-align: left; color: var(--sub); font-weight: 400; white-space: nowrap; }
+
+.bullets,
+.notes,
+.sources-list {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--sub);
+  line-height: 1.6;
+}
+.bullets { color: var(--text); font-size: 14px; }
+.notes { list-style: none; padding-left: 0; }
+.notes > li { margin-bottom: 6px; }
+
+.lead { margin: 16px 0 0; font-size: 15px; }
+.screen__title { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+
+/* 라디오 묶음 — S06 오피스텔 3상태 */
+.radio-group { margin: 16px 0 0; padding: 0; border: 0; }
+.radio-group legend { padding: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--sub); }
+.radio-group__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+}
+
+.date-input,
+.rate-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.date-input > span,
+.rate-input > span:first-child { color: var(--sub); white-space: nowrap; }
+.date-input input,
+.rate-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 저장 목록 */
+.saved-list { margin: 0; padding: 0; list-style: none; }
+.saved-list > li {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.saved-list__main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  padding: 14px 4px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.saved-list__badge { font-size: 12px; color: var(--primary); font-weight: 600; }
+.saved-list__terms { font-size: 14px; font-variant-numeric: tabular-nums; }
+.saved-list__verdict { font-size: 13px; color: var(--sub); grid-column: 2; }
+.saved-list__date { font-size: 12px; color: var(--sub); grid-column: 2; }
+.saved-list__delete {
+  width: 44px;
+  border: 0;
+  background: none;
+  color: var(--sub);
+}
+
+/* 설정 메뉴 */
+.menu { margin: 8px 0 0; padding: 0; list-style: none; }
+.menu > li { border-bottom: 1px solid var(--line); }
+.menu > li > button,
+.menu > li > a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 2px;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+}
+.menu > li > span:first-child { display: inline-block; padding: 14px 2px; font-size: 15px; }
+.menu__value { color: var(--sub); font-size: 14px; }
+.menu > li > span + span { float: right; padding: 14px 2px; }
+
+.locked-body__row { margin: 0; color: var(--lock); font-variant-numeric: tabular-nums; }
