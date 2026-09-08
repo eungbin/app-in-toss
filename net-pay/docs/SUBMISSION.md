@@ -272,6 +272,10 @@ net-pay 판단
 3. **고객문의 이메일 확정** → `.env` 의 `VITE_SUPPORT_EMAIL` 과 콘솔 등록값을 같게 맞춘다.
 4. **로고 확정** — 현재는 원화 기호 초안이다. 그대로 갈지 결정한다.
 5. **테스트 번들 배포** — `npm run deploy`. 릴리즈 노트를 붙이려면 `npm run deploy -- -m "메모"`(1000자).
+   **배포 API 키는 앱 범위다.** fx-replay 를 배포하는 `default` 키로 net-pay 를 올리면
+   `4031 앱이 없거나 앱 정보에 접근할 수 있는 권한이 없어요` 가 난다(2026-09-08 실제로 겪었다).
+   콘솔에서 net-pay 키를 발급받아 `npx ait token add net-pay` 로 프로필에 넣는다.
+   `deploy` 스크립트가 `--profile net-pay` 로 그 키를 쓴다.
    `ait build` 는 `.ait` 아티팩트를 **로컬에 만들기만** 하고, 업로드는 `ait deploy` 가 한다.
    그래서 `npm run build` 만으로는 기기에서 열 수 없다.
    `ait build` 가 끝에 찍는 `deploymentId` 도 업로드 증거가 아니다 — 빌드가 로컬에서 만들어

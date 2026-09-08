@@ -21,8 +21,8 @@
     "check:config:release": "tsx scripts/check-prod-config.ts --release",
     "check:bundle": "tsx scripts/check-bundle.ts",
     "check:bundle:release": "tsx scripts/check-bundle.ts --release",
-    "deploy": "npm run build && ait deploy",
-    "deploy:release": "npm run build:release && ait deploy"
+    "deploy": "npm run build && ait deploy --profile net-pay",
+    "deploy:release": "npm run build:release && ait deploy --profile net-pay"
   },
   "dependencies": {
     "@ait/kit": "*",
