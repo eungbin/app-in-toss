@@ -14,10 +14,13 @@
 
 ```bash
 npm install          # 루트에서 한 번. 워크스페이스 전체 의존성 + @ait/kit 심링크
+npm run status       # 앱별 진행 상태. 파일에서 파생한다 — 작업 시작 전에 한 번
 npm run check        # 모든 앱의 타입체크·문구 린트·테스트
 ```
 
-각 앱은 자기 폴더에서 독립적으로 빌드·배포한다(`npm run build` → `ait build`). 공용 코드는 npm workspaces로 공유한다.
+각 앱은 자기 폴더에서 독립적으로 빌드한다(`npm run build` → `.ait` 아티팩트). **업로드는 `npm run deploy`**(`ait deploy`)가 따로 한다. 공용 코드는 npm workspaces로 공유한다.
+
+`npm run status`는 상태를 문서에서 읽지 않고 파일에서 파생한다 — 광고 ID가 테스트/실 ID인지, `deploy` 스크립트가 있는지, 번들 스캔·세이프 에어리어가 kit 판인지, 앱별 마지막 커밋. 파생할 수 없는 콘솔·심사·정산 상태만 `<앱>/STATUS.md`에 적는다.
 
 ## 작업 규칙
 
