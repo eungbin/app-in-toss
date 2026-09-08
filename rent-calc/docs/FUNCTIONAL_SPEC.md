@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.3 (2026-09-08) |
+| 문서 버전 | v0.4 (2026-09-08) |
 | 상위 문서 | [PRD.md](PRD.md) v0.2 — 요구사항 ID(CE-, DT-, UI-, MZ-, US-)는 PRD와 동일 |
 | 공용 코드 | [../../docs/SHARED_PACKAGE.md](../../docs/SHARED_PACKAGE.md) `@ait/kit` |
 | 적용 범위 | **v1.0 (광고 전용, 서버 없음)**. P1·P2 항목은 `[P1]` `[P2]` 표시 |
@@ -28,7 +28,7 @@
 | `REPORT_DAYS` | 30 | 동법 |
 | `TIMELINE_YEARS` | 2021 … 현재 연도 (1월 1일) + 최신 | 확정 |
 | `SAVED_FREE` / `SAVED_CAP` | 3 / 20 | 확정 |
-| `BASERATE_STALE_WARN_DAYS` / `_BLOCK_DAYS` | 90 / 180 | O-5 |
+| `BASERATE_STALE_WARN_DAYS` / `_BLOCK_DAYS` | 90 / 180 | 금통위 간격 약 6주 → 90일이면 한 번은 지나쳤다는 뜻 |
 | `DEBOUNCE_MS` | 300 | |
 | `SCHEMA_VERSION` | 1 | Storage |
 
@@ -95,7 +95,8 @@ type Mode = 'renew' | 'new';
 interface Terms { deposit: number; rent: number }               // 원 단위 정수, rent 0 = 전세
 interface JudgeInput { mode: Mode; current: Terms; proposed: Terms; lastChangeDate?: string; baseRate: number; rateOverride?: number }
 interface JudgeResult {
-  mode: Mode; verdict: 'within' | 'exceeds' | null;
+  // mode·verdict를 리터럴로 좁혀 두면 ConvertResult 와의 합집합을 mode 로 구분할 수 있다
+  mode: 'renew'; verdict: 'within' | 'exceeds';
   legalRate: number; baseRate: number; baseRateAsOf: string;
   currentEq: number; proposedEq: number; increase: number;        // increase 소수(0.05 = 5%)
   excessEq: number;                                                // 0 이상. 초과 환산보증금
@@ -174,7 +175,7 @@ AC
 2. `currentEq = equivalentDeposit(current, rate)`, `proposedEq = equivalentDeposit(proposed, rate)`.
 3. `increase = proposedEq / currentEq − 1`.
 4. `allowedEq = currentEq × (1 + INCREASE_CAP)`.
-5. `excessEq = max(0, proposedEq − allowedEq)`. `verdict = excessEq > 0 ? 'exceeds' : 'within'`. 부동소수 오차 방지: `excessEq < 1(원)`이면 0으로.
+5. `excessEq = max(0, proposedEq − allowedEq)`. `verdict = excessEq > 0 ? 'exceeds' : 'within'`. **경계 가드**: 초과분이 `eqToleranceFor(rate) = 12 ÷ rate`(월세 1원에 해당하는 환산보증금, 5%면 240원)보다 작으면 0으로 본다. 공공 계산기가 반올림해 알려 준 최대 월세를 사용자가 그대로 입력하면 환산보증금이 상한을 수백 원 넘는데, 그것을 "초과"라고 표시하면 계산기가 알려 준 금액이 위법으로 보이는 모순이 생긴다. 표시 해상도(1원)보다 작은 차이는 판정하지 않는다.
 6. `excessAsRent = round(excessEq × rate / 12)`, `excessAsDeposit = round(excessEq)`.
 7. `maxRentForProposedDeposit`: `m = (allowedEq − proposed.deposit) × rate / 12`. `m < 0`이면 `null`(보증금만으로 초과), 아니면 `round(m)`.
 8. `maxDepositForProposedRent`: `d = allowedEq − proposed.rent × 12 / rate`. `d < 0`이면 `null`, 아니면 `round(d)`.
@@ -360,10 +361,12 @@ PRD 11장 O-1~O-5와 동일. 추가:
 
 | ID | 내용 | 해결 시점 |
 |---|---|---|
-| O-6 | 환산보증금 소수 처리 — 인상률 표시를 둘째 자리 반올림할 때 정확히 5.00%로 보이지만 내부적으로 초과인 경우(예 5.004%) 헤드라인은 `exceeds`. 표시를 "5.00%(상한 초과)"로 둘지, 셋째 자리를 보일지. | W1 |
-| O-7 | 기준금리 자유 입력 범위(0~20%)와 "0.25% 단위 아님" 허용이 맞는지. | W1 |
+| ~~O-6~~ | **해결(W1).** 경계 처리를 "월세 1원 미만 초과는 판정하지 않는다"로 정했다(`eqToleranceFor`). 공공 계산기의 반올림된 최대 월세(229,167원)를 그대로 넣으면 환산보증금이 80원 초과인데 within 으로 본다. 인상률 표시는 둘째 자리를 유지한다. | 해결 |
+| O-7 | 기준금리 자유 입력 범위(0~20%)와 "0.25% 단위 아님" 허용이 맞는지. | W2 설정 화면 |
+| O-11 | S01에서 신규 계약 모드의 입력 묶음 제목을 "계약 조건"으로 두었다. 사용자가 "제안받은 조건"과 구분되는지 프로토타입에서 확인 | W2 |
 
 ## 8. 변경 이력
 - 2026-09-08 v0.1 초안. PRD v0.1 기준. 환산보증금 판정 방식(O-1 전제), 신규 모드 분리, 오피스텔 3상태 토글, 비교 화면 제외.
 - 2026-09-08 v0.2 O-1 해결 근거 기록, 해설집 예시 골든 케이스 추가, B5 문구 키 분리(`judge.consentRenewal` / `judge.consentNew`).
 - 2026-09-08 v0.3 FACT_CHECK 37건 반영. CE-2·CE-4 절사 → 반올림(공공 계산기와 일치). AC 수치 갱신.
+- 2026-09-08 v0.4 W1 구현 반영: 경계 가드를 `eqToleranceFor`(월세 1원)로 확정(O-6 해결), `JudgeResult.mode`·`verdict` 리터럴로 좁힘, 법령 상수는 `legal.json`에서 읽고 `constants.ts`와 일치를 테스트로 고정.

@@ -4,7 +4,8 @@
   "workspaces": [
     "packages/*",
     "fx-replay",
-    "net-pay"
+    "net-pay",
+    "rent-calc"
   ],
   "scripts": {
     "check": "npm run check --workspaces --if-present",

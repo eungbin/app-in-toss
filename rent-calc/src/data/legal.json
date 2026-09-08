@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "key": "increaseCap",
+      "value": 0.05,
+      "law": "주택임대차보호법 제7조 제2항 (20분의 1)",
+      "url": "https://www.law.go.kr/법령/주택임대차보호법",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "increaseIntervalDays",
+      "value": 365,
+      "law": "주택임대차보호법 제7조 제1항 후단 (증액 후 1년 이내 제한)",
+      "url": "https://www.law.go.kr/법령/주택임대차보호법",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "conversionCeiling",
+      "value": 0.1,
+      "law": "주택임대차보호법 시행령 제9조 제1항 (연 1할)",
+      "url": "https://www.law.go.kr/법령/주택임대차보호법시행령",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "conversionSpread",
+      "value": 0.02,
+      "law": "주택임대차보호법 시행령 제9조 제2항 (기준금리 + 연 2퍼센트)",
+      "url": "https://www.law.go.kr/법령/주택임대차보호법시행령",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "rentMultiplier",
+      "value": 100,
+      "law": "공인중개사법 시행규칙 제20조 제5항 (보증금 + 월세 × 100)",
+      "url": "https://www.law.go.kr/법령/공인중개사법시행규칙",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "rentMultiplierUnder50m",
+      "value": 70,
+      "law": "공인중개사법 시행규칙 제20조 제5항 (5천만원 미만 시 × 70 재계산)",
+      "url": "https://www.law.go.kr/법령/공인중개사법시행규칙",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "rentMultiplierThreshold",
+      "value": 50000000,
+      "law": "공인중개사법 시행규칙 제20조 제5항",
+      "url": "https://www.law.go.kr/법령/공인중개사법시행규칙",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "officetelAreaMax",
+      "value": 85,
+      "law": "공인중개사법 시행규칙 제20조 제4항 (전용면적 85제곱미터 이하)",
+      "url": "https://www.law.go.kr/법령/공인중개사법시행규칙",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "officetelOtherRatio",
+      "value": 0.009,
+      "law": "공인중개사법 시행규칙 제20조 제4항 (그 외 1천분의 9 이내 협의)",
+      "url": "https://www.law.go.kr/법령/공인중개사법시행규칙",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "reportDeposit",
+      "value": 60000000,
+      "law": "부동산 거래신고 등에 관한 법률 시행령 (보증금 6천만원 초과)",
+      "url": "https://www.law.go.kr/법령/부동산거래신고등에관한법률시행령",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "reportRent",
+      "value": 300000,
+      "law": "부동산 거래신고 등에 관한 법률 시행령 (월 차임 30만원 초과)",
+      "url": "https://www.law.go.kr/법령/부동산거래신고등에관한법률시행령",
+      "verifiedAt": "2026-09-08"
+    },
+    {
+      "key": "reportDays",
+      "value": 30,
+      "law": "부동산 거래신고 등에 관한 법률 제6조의2 (계약 체결일부터 30일 이내)",
+      "url": "https://www.law.go.kr/법령/부동산거래신고등에관한법률",
+      "verifiedAt": "2026-09-08"
+    }
+  ]
+}

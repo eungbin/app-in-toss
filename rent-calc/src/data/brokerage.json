@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "source": "공인중개사법 시행규칙 별표 1(주택)·별표 2(주거용 오피스텔)",
+    "lsiSeq": "288753",
+    "bylSeq": {
+      "table1": "18379871",
+      "table2": "18379873"
+    },
+    "amendedOn": "2021-10-19",
+    "fetchedAt": "2026-09-08",
+    "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B3%B5%EC%9D%B8%EC%A4%91%EA%B0%9C%EC%82%AC%EB%B2%95%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99",
+    "license": "법령은 저작권 보호 대상이 아님(저작권법 제7조 제1호)"
+  },
+  "housing": [
+    {
+      "kind": "sale",
+      "lo": 0,
+      "hi": 50000000,
+      "ratio": 0.006,
+      "cap": 250000
+    },
+    {
+      "kind": "sale",
+      "lo": 50000000,
+      "hi": 200000000,
+      "ratio": 0.005,
+      "cap": 800000
+    },
+    {
+      "kind": "sale",
+      "lo": 200000000,
+      "hi": 900000000,
+      "ratio": 0.004,
+      "cap": null
+    },
+    {
+      "kind": "sale",
+      "lo": 900000000,
+      "hi": 1200000000,
+      "ratio": 0.005,
+      "cap": null
+    },
+    {
+      "kind": "sale",
+      "lo": 1200000000,
+      "hi": 1500000000,
+      "ratio": 0.006,
+      "cap": null
+    },
+    {
+      "kind": "sale",
+      "lo": 1500000000,
+      "hi": null,
+      "ratio": 0.007,
+      "cap": null
+    },
+    {
+      "kind": "lease",
+      "lo": 0,
+      "hi": 50000000,
+      "ratio": 0.005,
+      "cap": 200000
+    },
+    {
+      "kind": "lease",
+      "lo": 50000000,
+      "hi": 100000000,
+      "ratio": 0.004,
+      "cap": 300000
+    },
+    {
+      "kind": "lease",
+      "lo": 100000000,
+      "hi": 600000000,
+      "ratio": 0.003,
+      "cap": null
+    },
+    {
+      "kind": "lease",
+      "lo": 600000000,
+      "hi": 1200000000,
+      "ratio": 0.004,
+      "cap": null
+    },
+    {
+      "kind": "lease",
+      "lo": 1200000000,
+      "hi": 1500000000,
+      "ratio": 0.005,
+      "cap": null
+    },
+    {
+      "kind": "lease",
+      "lo": 1500000000,
+      "hi": null,
+      "ratio": 0.006,
+      "cap": null
+    }
+  ],
+  "officetel": {
+    "sale": 0.005,
+    "lease": 0.004
+  }
+}
