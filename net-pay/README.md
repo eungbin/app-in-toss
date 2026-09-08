@@ -47,6 +47,8 @@ npm run data:build   # 파싱·검증 → src/data/tax-tables.json
 | `npm run check:bundle` | 빌드 산출물을 스캔해 테스트 광고 ID·자리표시자 도메인 차단 |
 | `npm run build` | QR 테스트용. check + check:data + check:config + vite build + check:bundle + ait build |
 | `npm run build:release` | 출시용. 실 광고 ID를 요구하고 번들에 테스트 ID가 남아 있으면 막는다 |
+| `npm run deploy` | 테스트 번들을 만들고 앱인토스에 **업로드**. `ait build` 는 로컬 아티팩트만 만든다 |
+| `npm run deploy:release` | 출시 번들을 만들고 업로드 |
 
 ## 데이터
 

@@ -20,7 +20,9 @@
     "check:config": "tsx scripts/check-prod-config.ts",
     "check:config:release": "tsx scripts/check-prod-config.ts --release",
     "check:bundle": "tsx scripts/check-bundle.ts",
-    "check:bundle:release": "tsx scripts/check-bundle.ts --release"
+    "check:bundle:release": "tsx scripts/check-bundle.ts --release",
+    "deploy": "npm run build && ait deploy",
+    "deploy:release": "npm run build:release && ait deploy"
   },
   "dependencies": {
     "@ait/kit": "*",
