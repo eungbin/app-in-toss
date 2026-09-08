@@ -1,6 +1,7 @@
 /** 바텀시트·다이얼로그 공통 껍데기. 진입 즉시 자동으로 열지 않는다(비게임 체크리스트) */
 import { useEffect, type ReactNode } from 'react';
 import { pushBackHandler } from '@ait/kit';
+import { Icon } from './Icon';
 
 interface Props {
   title: string;
@@ -32,7 +33,7 @@ export function Sheet({ title, onClose, children, variant = 'sheet' }: Props) {
         <div className="sheet__head">
           <h2 className="sheet__title">{title}</h2>
           <button type="button" className="sheet__close" aria-label="닫기" onClick={onClose}>
-            ✕
+            <Icon name="close" />
           </button>
         </div>
         {children}

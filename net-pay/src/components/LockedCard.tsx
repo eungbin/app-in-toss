@@ -4,6 +4,7 @@
  * DOM·접근성 트리에 값이 남고, 흐린 숫자를 "가짜 데이터"로 오해할 여지도 있다(오픈 이슈 O-2).
  */
 import type { ReactNode } from 'react';
+import { Icon } from './Icon';
 import { t } from '@/i18n';
 
 interface Props {
@@ -23,13 +24,29 @@ export function LockedCard({ title, locked, placeholder, onUnlock, onOpen, child
       {locked ? <div className="locked-body">{placeholder}</div> : children}
       {locked ? (
         <button type="button" className="card__cta" onClick={onUnlock}>
-          🔒 {t('gate.locked')}
+          <Icon name="lock" />
+          {t('gate.locked')}
         </button>
       ) : (
         <button type="button" className="card__link" onClick={onOpen}>
-          자세히 ›
+          {t('common.more')}
+          <Icon name="chevronRight" />
         </button>
       )}
     </section>
+  );
+}
+
+/**
+ * 잠긴 값 자리표시자. 숫자를 계산하지도, 렌더하지도 않는다.
+ * 점(●,●●●,●●●) 으로 가리면 가짜 숫자나 오류처럼 보여서 뼈대 막대로 둔다.
+ */
+export function SkeletonLines({ widths }: { widths: string[] }) {
+  return (
+    <div className="skeleton" aria-hidden="true">
+      {widths.map((w, i) => (
+        <div key={i} className="skeleton__bar" style={{ width: w }} />
+      ))}
+    </div>
   );
 }

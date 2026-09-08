@@ -5,6 +5,7 @@ import { computeSeverance } from '@/engine/severance';
 import { computeSeveranceTax } from '@/engine/severanceTax';
 import { num, won, won2 } from '@/engine/format';
 import { BasisFooter } from '@/components/BasisFooter';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -56,8 +57,8 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
       )}
 
       {r && (
-        <section className="card">
-          <p className="card__sub">{t('severance.result')}</p>
+        <section className="card card--primary">
+          <p className="card__label">{t('severance.result')}</p>
           <h2 className="card__headline card__headline--num">{won(r.severance)}</h2>
           <p className="card__sub">
             {t('severance.period', { y: r.years, m: r.months, d: r.restDays, days: num(r.days) })}
@@ -66,7 +67,8 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
           {r.usedOrdinary && <p className="note">{t('severance.usedOrdinary')}</p>}
           {r.underOneYear && <p className="note">{t('severance.underOneYear')}</p>}
           <button type="button" className="card__link" onClick={() => setShowFormula((v) => !v)}>
-            {t('formula.show')} {showFormula ? '▲' : '▾'}
+            {t('formula.show')}
+            <Icon name={showFormula ? 'chevronUp' : 'chevronDown'} />
           </button>
           {showFormula && (
             <p className="detail__formula">
@@ -78,7 +80,7 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
 
       {tax && (
         <section className="card">
-          <p className="card__sub">{t('severance.tax.title')}</p>
+          <p className="card__label">{t('severance.tax.title')}</p>
           {tax.totalTax === 0 ? (
             <p className="note">{t('severance.tax.zero')}</p>
           ) : (
@@ -99,12 +101,13 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
                   </tr>
                 </tbody>
               </table>
-              <p className="card__sub">{t('severance.tax.net')}</p>
+              <p className="card__label">{t('severance.tax.net')}</p>
               <h2 className="card__headline card__headline--num">{won(tax.netSeverance)}</h2>
             </>
           )}
           <button type="button" className="card__link" onClick={() => setShowTax((v) => !v)}>
-            {t('formula.show')} {showTax ? '▲' : '▾'}
+            {t('formula.show')}
+            <Icon name={showTax ? 'chevronUp' : 'chevronDown'} />
           </button>
           {showTax && (
             <table className="detail">

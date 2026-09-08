@@ -9,9 +9,11 @@ import { manwon, num } from '@/engine/format';
 import { computeTimeline, timelineYears } from '@/engine/timeline';
 import { timelineHeadline } from './Timeline';
 import { MoneyInput } from '@/components/MoneyInput';
-import { LockedCard } from '@/components/LockedCard';
+import { ModeToggle } from '@/components/ModeToggle';
+import { LockedCard, SkeletonLines } from '@/components/LockedCard';
 import { BasisFooter } from '@/components/BasisFooter';
 import { BannerAd } from '@/components/BannerAd';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 export interface Draft {
@@ -62,9 +64,11 @@ export function Home(p: Props) {
         </p>
       )}
 
+      <ModeToggle mode={draft.mode} onChange={p.onToggleMode} />
+
       <MoneyInput
-        prefix={reverseMode ? t('home.input.prefix') : t('gross.input.prefix')}
-        suffix={reverseMode ? t('home.input.suffix') : t('gross.input.suffix')}
+        question={reverseMode ? t('home.input.question') : t('gross.input.question')}
+        unit={t('home.input.unit')}
         placeholder={reverseMode ? t('home.input.placeholder') : '4100'}
         value={draft.amountManwon}
         onChange={p.onAmount}
@@ -91,7 +95,7 @@ export function Home(p: Props) {
 
       {breakdown && (
         <>
-          <section className="card">
+          <section className="card card--primary">
             <h2 className="card__headline">
               {reverseMode && reverse
                 ? t('home.result.headline', { gross: manwon(reverse.annualGrossDisplay) })
@@ -102,16 +106,13 @@ export function Home(p: Props) {
                 ? t('home.result.sub', { net: num(breakdown.netMonthly) })
                 : t('gross.result.sub', { netAnnual: num(breakdown.netAnnual), ded: num(breakdown.deductions) })}
             </p>
-            <button type="button" className="card__link" onClick={p.onDetail}>
-              {t('home.result.deductions', { ded: num(breakdown.deductions) })} ›
+            <button type="button" className="card__row" onClick={p.onDetail}>
+              {t('home.result.deductions', { ded: num(breakdown.deductions) })}
+              <Icon name="chevronRight" />
             </button>
             <p className="card__items">{t('home.result.items')}</p>
             {p.hasBonus && <p className="note">{t('home.bonusHint')}</p>}
           </section>
-
-          <button type="button" className="switch" onClick={p.onToggleMode}>
-            {reverseMode ? t('home.switch.toForward') : t('gross.switch.toReverse')}
-          </button>
 
           <TimelinePreview
             annualGross={breakdown.annualGross}
@@ -132,24 +133,22 @@ export function Home(p: Props) {
         </>
       )}
 
-      {!breakdown && (
-        <button type="button" className="switch" onClick={p.onToggleMode}>
-          {reverseMode ? t('home.switch.toForward') : t('gross.switch.toReverse')}
-        </button>
-      )}
-
       <h3 className="section-title">{t('home.section.other')}</h3>
-      <div className="row">
-        <button type="button" className="tile" onClick={p.onSeverance}>
-          {t('home.link.severance')} ›
+      <div className="rows">
+        <button type="button" className="rows__item" onClick={p.onSeverance}>
+          {t('home.link.severance')}
+          <Icon name="chevronRight" />
         </button>
-        <button type="button" className="tile" onClick={p.onLeave}>
-          {t('home.link.leave')} ›
+        <button type="button" className="rows__item" onClick={p.onLeave}>
+          {t('home.link.leave')}
+          <Icon name="chevronRight" />
+        </button>
+        <button type="button" className="rows__item" onClick={p.onSaved}>
+          {t('home.link.saved')}
+          <span className="rows__value">{t('home.link.savedCount', { n: p.savedCount })}</span>
+          <Icon name="chevronRight" />
         </button>
       </div>
-      <button type="button" className="row-link" onClick={p.onSaved}>
-        {t('home.link.saved', { n: p.savedCount })} ›
-      </button>
 
       <BasisFooter
         effectiveFrom={breakdown?.taxTableEffectiveFrom}
@@ -180,14 +179,11 @@ function TimelinePreview({
 }) {
   const years = timelineYears(opts.asOf);
   const first = years[0];
-  const last = years.at(-1);
 
   const placeholder = (
     <>
       <p className="card__sub">{first}년부터 지금까지, 같은 연봉의 월 실수령을 나란히 봐요</p>
-      <p className="card__sub card__sub--masked">
-        {first}년 ●,●●●,●●●원 → {last}년 ●,●●●,●●●원
-      </p>
+      <SkeletonLines widths={['82%', '64%']} />
     </>
   );
 

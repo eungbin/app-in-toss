@@ -5,6 +5,7 @@ import { computeLeavePay } from '@/engine/leave';
 import { num, won } from '@/engine/format';
 import { BasisFooter } from '@/components/BasisFooter';
 import { MoneyField } from './Severance';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 export function Leave({ grossMonthly }: { grossMonthly: number }) {
@@ -49,12 +50,13 @@ export function Leave({ grossMonthly }: { grossMonthly: number }) {
       </label>
 
       {r && (
-        <section className="card">
-          <p className="card__sub">{t('leave.result')}</p>
+        <section className="card card--primary">
+          <p className="card__label">{t('leave.result')}</p>
           <h2 className="card__headline card__headline--num">{won(r.pay)}</h2>
           <p className="card__sub">{t('leave.rates', { hourly: num(r.hourly), daily: num(r.daily) })}</p>
           <button type="button" className="card__link" onClick={() => setShowFormula((v) => !v)}>
-            {t('formula.show')} {showFormula ? '▲' : '▾'}
+            {t('formula.show')}
+            <Icon name={showFormula ? 'chevronUp' : 'chevronDown'} />
           </button>
           {showFormula && (
             <p className="detail__formula">

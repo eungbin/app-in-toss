@@ -2,6 +2,7 @@
 import { RATES, TAX_TABLES } from '@/data';
 import { rateFor } from '@/engine/rates';
 import { todayIso } from '@/engine/format';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 const VERSION = '1.0.0';
@@ -30,30 +31,46 @@ export function Settings({ onSources, onClearAll }: Props) {
         <dt>{t('settings.nextUpdate')}</dt>
         <dd>{t('settings.nextUpdate.value')}</dd>
       </dl>
-      <button type="button" className="row-link" onClick={onSources}>
-        {t('settings.sources')} ›
-      </button>
+      <div className="rows">
+        <button type="button" className="rows__item" onClick={onSources}>
+          {t('settings.sources')}
+          <Icon name="chevronRight" />
+        </button>
+      </div>
 
       <h3 className="section-title">{t('settings.section.data')}</h3>
-      <button type="button" className="row-link row-link--warn" onClick={onClearAll}>
-        {t('settings.clearAll')} ›
-      </button>
+      <div className="rows">
+        <button type="button" className="rows__item rows__item--warn" onClick={onClearAll}>
+          {t('settings.clearAll')}
+          <Icon name="chevronRight" />
+        </button>
+      </div>
 
       <h3 className="section-title">{t('settings.section.support')}</h3>
-      {CONTACT ? (
-        <a className="row-link" href={`mailto:${CONTACT}`}>
-          {t('settings.contact')} ›
-        </a>
-      ) : (
-        <p className="row-link">{t('settings.contact')} —</p>
-      )}
+      <div className="rows">
+        {CONTACT ? (
+          <a className="rows__item" href={`mailto:${CONTACT}`}>
+            {t('settings.contact')}
+            <span className="rows__value">{CONTACT}</span>
+            <Icon name="chevronRight" />
+          </a>
+        ) : (
+          <p className="rows__item">
+            {t('settings.contact')}
+            <span className="rows__value">—</span>
+          </p>
+        )}
+      </div>
 
       <h3 className="section-title">{t('settings.section.apps')}</h3>
-      {OTHER_APPS.map((app) => (
-        <a key={app.appName} className="row-link" href={`intoss://${app.appName}`}>
-          {app.name} ›
-        </a>
-      ))}
+      <div className="rows">
+        {OTHER_APPS.map((app) => (
+          <a key={app.appName} className="rows__item" href={`intoss://${app.appName}`}>
+            {app.name}
+            <Icon name="chevronRight" />
+          </a>
+        ))}
+      </div>
 
       <p className="hint">{t('settings.version', { v: VERSION })}</p>
     </main>

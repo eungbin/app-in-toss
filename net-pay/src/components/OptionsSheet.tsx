@@ -2,6 +2,7 @@
 import { CHILDREN_MAX, DEPENDENTS_MAX, DEPENDENTS_MIN, NONTAX_MEAL_DEFAULT } from '@/constants';
 import { num } from '@/engine/format';
 import { Sheet } from './Sheet';
+import { Icon } from './Icon';
 import { t } from '@/i18n';
 
 interface Props {
@@ -100,14 +101,14 @@ function Stepper({
       <span className="stepper__label">{label}</span>
       <span className="stepper__ctrl">
         <button type="button" aria-label={`${label} 줄이기`} disabled={value <= min} onClick={() => onChange(value - 1)}>
-          −
+          <Icon name="minus" />
         </button>
         <output>
           {value}
           {unit}
         </output>
         <button type="button" aria-label={`${label} 늘리기`} disabled={value >= max} onClick={() => onChange(value + 1)}>
-          +
+          <Icon name="plus" />
         </button>
       </span>
     </div>

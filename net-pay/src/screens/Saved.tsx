@@ -5,6 +5,7 @@ import { SAVED_CAP, SAVED_FREE } from '@/constants';
 import { manwon, num } from '@/engine/format';
 import { BasisFooter } from '@/components/BasisFooter';
 import { BannerAd } from '@/components/BannerAd';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 interface Props {
@@ -58,7 +59,7 @@ export function Saved({ scenarios, unlocked, onOpen, onDelete, onCompare }: Prop
                 </span>
               </button>
               <button type="button" className="list__del" aria-label={`${s.name} 삭제`} onClick={() => onDelete(s)}>
-                ✕
+                <Icon name="close" />
               </button>
             </li>
           ))}

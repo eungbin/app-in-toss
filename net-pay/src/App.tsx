@@ -28,6 +28,7 @@ import { OptionsSheet } from '@/components/OptionsSheet';
 import { GateSheet } from '@/components/GateSheet';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Toast } from '@/components/Toast';
+import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 
 type Route =
@@ -348,7 +349,8 @@ export function App() {
 
       {route.name === 'home' && (
         <button type="button" className="settings-link" onClick={() => push({ name: 'settings' })}>
-          {t('settings.title')} ›
+          {t('settings.title')}
+          <Icon name="chevronRight" />
         </button>
       )}
 
