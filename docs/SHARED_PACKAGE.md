@@ -102,7 +102,23 @@ kit `safe-area.ts` 의 `useSafeArea()` 가 `SafeArea.get()` 으로 읽고 `subsc
 - kit 변경은 두 앱의 테스트를 모두 돌린 뒤 반영한다(루트 `npm test --workspaces`).
 - SDK(`@apps-in-toss/web-framework`) 메이저 업그레이드는 kit에서 한 번에 처리한다.
 
-## 6. 변경 이력
+## 6. 앱마다 확인할 것 — kit 이 코드로 강제할 수 없는 것
+
+kit 에 넣을 수 없는 항목이 있다. `package.json` 의 스크립트, 앱별 금지 목록, 화면 CSS 는
+앱 소유라 kit 이 대신 넣어 줄 수 없다. 그래서 **여기에 적어 두는 것이 전달 수단이다.**
+새 앱을 만들거나 기존 앱을 손볼 때 이 표를 훑는다.
+
+| 항목 | 무엇을 | fx-replay | net-pay |
+|---|---|---|---|
+| `deploy` 스크립트 | `ait build` 는 `.ait` 를 **로컬에 만들기만** 한다. 업로드는 `ait deploy`. `deploy` / `deploy:release` 를 `package.json` 에 둔다 | **없음** | 있음 (2026-09-08) |
+| 번들 스캔 | kit `bundle-scan.ts` + 앱 금지 목록. `build` 는 경고, `build:release` 는 차단 (4-1) | 자체 `scripts/check-bundle.ts` — kit 판으로 교체 대기 | 있음 |
+| 세이프 에어리어 | kit `useSafeArea()` + `--safe-top`/`--safe-bottom`. CSS `env()` 금지 (4-2) | 자체 `useSafeArea.ts` — kit 판으로 교체 대기 | 있음 |
+
+**fx-replay 열은 그 앱 세션이 처리한다.** 여기 적는 것으로 전달은 끝이다.
+다른 앱 파일은 담당 세션만 고친다(CLAUDE.md 세션 범위).
+
+## 6-1. 변경 이력
+- 2026-09-08 v0.6 6장 신설 — 앱마다 확인할 것(deploy 스크립트·번들 스캔·세이프 에어리어). 중복된 5장 번호를 7장으로 정리.
 - 2026-09-07 v0.1 초안. 사용자 결정(즉시 전환) 반영.
 - 2026-09-08 v0.5 safe-area.ts 추가(실기기 문제 대응). 4-2 절 신설.
 - 2026-09-08 v0.4 bundle-scan.ts 추가(심사 반려 대응). 4-1 절 신설.
@@ -110,11 +126,11 @@ kit `safe-area.ts` 의 `useSafeArea()` 가 `SafeArea.get()` 으로 읽고 `subsc
 - 2026-09-07 v0.2 구현 완료 반영. anon-user·react 훅·check-ad-ids는 보류 목록으로.
 
 
-## 5. 2차 추출 (2026-09-07)
+## 7. 2차 추출 (2026-09-07)
 
 net-pay에 두 번째 구현이 생겨 설계 문서의 추출 조건이 충족된 항목이다.
 
-### 5-1. `anon-user.ts` — 익명 사용자 식별
+### 7-1. `anon-user.ts` — 익명 사용자 식별
 
 두 앱의 `platform/user.ts`가 주석 한 줄 빼고 동일했다. `AnonProfile`(anonKey·schema·createdAt·anonKeyPending)을 kit이 갖고, 앱은 저장소·키·스키마 버전만 넘긴다. 필드를 더 붙여야 하면 인터페이스를 확장한다.
 
@@ -130,7 +146,7 @@ export const loadProfile = (): Promise<Profile> =>
 
 원래 보류 사유였던 "Profile 타입이 앱마다 다르다"는 확장으로 해결된다. 앱이 추가하는 필드는 전부 선택 필드이므로 `AnonProfile`을 그대로 할당할 수 있다.
 
-### 5-2. `i18n.ts` — 문구 조회
+### 7-2. `i18n.ts` — 문구 조회
 
 `createT(dict)`가 사전을 받아 `t()`를 만든다. **키 타입은 사전에서 추론**되므로 앱마다 자기 키만 쓸 수 있고 오타는 타입 오류로 잡힌다.
 
@@ -144,7 +160,7 @@ export type CopyKey = keyof typeof ko;
 
 앱 고유 헬퍼는 앱에 남긴다(fx-replay `progressLabel` 등).
 
-### 5-3. 추출하지 않은 것
+### 7-3. 추출하지 않은 것
 
 | 후보 | 판단 |
 |---|---|
