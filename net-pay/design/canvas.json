@@ -1,0 +1,42 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "화면 흐름" },
+    { "id": "page-2", "name": "컴포넌트" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "title": "1. 입력 (계산 탭)", "x": 0, "y": 0, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Result.dc.html", "title": "2. 결과", "x": 490, "y": 0, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Detail.dc.html", "title": "3. 공제 상세", "x": 980, "y": 0, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Severance.dc.html", "title": "퇴직금 탭", "x": 0, "y": 1000, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Saved.dc.html", "title": "저장 탭", "x": 490, "y": 1000, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Settings.dc.html", "title": "설정 탭", "x": 980, "y": 1000, "w": 390, "h": 844, "page": "page-1" },
+    { "file": "Components.dc.html", "title": "컴포넌트 시트", "x": 0, "y": 0, "w": 860, "h": 1180, "page": "page-2" }
+  ],
+  "annotations": [
+    {
+      "id": "flow",
+      "x": 0,
+      "y": -190,
+      "w": 880,
+      "text": "계산 탭은 두 화면이다.\n입력 → [연봉 계산하기] → 결과(밀어서 진입, 뒤로가기는 토스 상단 바).\n한 화면에 입력과 결과를 다 얹지 않는다.",
+      "page": "page-1"
+    },
+    {
+      "id": "navbar",
+      "x": 980,
+      "y": -190,
+      "w": 390,
+      "text": "각 화면 위 56px 은 토스가 그리는 네비게이션 바 자리다. 미니앱은 자체 헤더를 두지 않는다.",
+      "page": "page-1"
+    },
+    {
+      "id": "tabs",
+      "x": 0,
+      "y": 1900,
+      "w": 880,
+      "text": "탭 5개: 계산 · 퇴직금 · 연차 · 저장 · 설정.\n예전에는 홈 아래 '다른 계산' 목록과 맨 아래 '설정 ›' 링크였다. 그걸 탭으로 올렸다.\n연차 탭은 퇴직금 탭과 같은 구성이라 시안을 따로 두지 않았다.",
+      "page": "page-1"
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

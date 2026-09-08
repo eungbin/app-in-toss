@@ -17,6 +17,8 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
   const [annualBonus, setAnnualBonus] = useState<number | null>(null);
   const [annualLeavePay, setAnnualLeavePay] = useState<number | null>(null);
   const [ordinaryDaily, setOrdinaryDaily] = useState<number | null>(null);
+  // 빈 입력칸 넷을 늘어놓지 않는다. 선택 항목은 접어 두고 필요할 때 펼친다
+  const [showOptional, setShowOptional] = useState(false);
   const [showFormula, setShowFormula] = useState(false);
   const [showTax, setShowTax] = useState(false);
 
@@ -48,9 +50,23 @@ export function Severance({ grossMonthly }: { grossMonthly: number }) {
         <input type="date" className="field__input" value={lastWorkDate} onChange={(e) => setLastWorkDate(e.target.value)} />
       </Field>
       <MoneyField label={t('severance.wages3m')} value={wages3m} onChange={setWages3m} hint="세전 월급 × 3으로 채워 뒀어요" />
-      <MoneyField label={t('severance.annualBonus')} value={annualBonus} onChange={setAnnualBonus} />
-      <MoneyField label={t('severance.annualLeavePay')} value={annualLeavePay} onChange={setAnnualLeavePay} />
-      <MoneyField label={t('severance.ordinaryDaily')} value={ordinaryDaily} onChange={setOrdinaryDaily} />
+      <button
+        type="button"
+        className="disclose"
+        aria-expanded={showOptional}
+        onClick={() => setShowOptional((v) => !v)}
+      >
+        <span className="disclose__label">{t('severance.optional')}</span>
+        <span className="disclose__hint">{t('severance.optional.hint')}</span>
+        <Icon name={showOptional ? 'chevronUp' : 'chevronDown'} />
+      </button>
+      {showOptional && (
+        <>
+          <MoneyField label={t('severance.annualBonus')} value={annualBonus} onChange={setAnnualBonus} />
+          <MoneyField label={t('severance.annualLeavePay')} value={annualLeavePay} onChange={setAnnualLeavePay} />
+          <MoneyField label={t('severance.ordinaryDaily')} value={ordinaryDaily} onChange={setOrdinaryDaily} />
+        </>
+      )}
 
       {joinDate && lastWorkDate && joinDate > lastWorkDate && (
         <p className="note">입사일이 마지막 근무일보다 뒤예요.</p>

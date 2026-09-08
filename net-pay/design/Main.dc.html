@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+    body { margin: 0; font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; }
+    a { color: #3182f6; } a:hover { color: #1b64da; }
+  </style>
+</helmet>
+
+<div style="position: relative; width: 390px; height: 844px; background: #ffffff; color: #191f28; letter-spacing: -0.02em; overflow: hidden;">
+
+  <!-- 상단 56px 은 토스가 그리는 네비게이션 바 자리 -->
+  <div style="height: 56px;"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 28px; padding: 4px 20px 0;">
+
+    <!-- 계산 방향 -->
+    <div style="display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: #f2f4f6;">
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 40px; border-radius: 999px; background: #ffffff; box-shadow: 0 1px 3px rgba(25,31,40,0.10); font-size: 14px; font-weight: 700; color: #191f28;">세후 → 연봉</div>
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 40px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #8b95a1;">연봉 → 세후</div>
+    </div>
+
+    <!-- 질문 + 큰 숫자 -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="font-size: 26px; font-weight: 800; line-height: 1.35; letter-spacing: -0.03em;">
+        세후로 월 얼마를<br>받고 싶어요?
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 12px; border-bottom: 2px solid #3182f6;">
+          <div style="font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;">300</div>
+          <div style="font-size: 20px; font-weight: 700; color: #4e5968;">만 원</div>
+          <div style="flex-grow: 1;"></div>
+          <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 999px; background: #f2f4f6;">
+            <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+              <path d="M5 5l10 10M15 5L5 15" fill="none" stroke="#8b95a1" stroke-width="1.9" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 빠른 증감 — 키패드를 덜 쓰게 한다 -->
+        <div style="display: flex; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+10만</div>
+          <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+50만</div>
+          <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+100만</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 조건 -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-size: 13px; font-weight: 600; color: #8b95a1;">계산 조건</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 500; color: #4e5968;">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <circle cx="10" cy="7" r="3.1" fill="none" stroke="#6b7684" stroke-width="1.6"/>
+            <path d="M4.2 16.5c0-3.1 2.6-5 5.8-5s5.8 1.9 5.8 5" fill="none" stroke="#6b7684" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          가족 1명
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 500; color: #4e5968;">자녀 0명</div>
+        <div style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; background: #e8f3ff; font-size: 14px; font-weight: 700; color: #3182f6;">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <path d="M4 16.2h12M6.4 16.2V9.4a3.6 3.6 0 0 1 7.2 0v6.8M8.2 6.1V4" fill="none" stroke="#3182f6" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          식대 20만 포함
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 500; color: #8b95a1;">
+          <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+            <path d="M10 4.4v11.2M4.4 10h11.2" fill="none" stroke="#8b95a1" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          상여
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 고정 CTA. 탭바 위에 얹힌다 -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 92px; padding: 12px 20px 16px; background: linear-gradient(to top, #ffffff 62%, rgba(255,255,255,0));">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; border-radius: 14px; background: #3182f6; color: #ffffff; font-size: 17px; font-weight: 700;">
+      연봉 계산하기
+      <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+        <path d="M7.6 4.2 13.4 10l-5.8 5.8" fill="none" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 하단 탭 — fx-replay 와 같은 떠 있는 알약 -->
+  <div style="position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; padding: 6px; border-radius: 999px; background: rgba(255,255,255,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); box-shadow: 0 6px 24px rgba(25,31,40,0.12), 0 1px 3px rgba(25,31,40,0.06);">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; border-radius: 999px; background: rgba(49,130,246,0.10); color: #3182f6;">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M6 3.6h12a1 1 0 0 1 1 1v14.8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M8.4 8h7.2M8.6 12h2.2M8.6 15.8h2.2M14 12v3.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size: 11px; font-weight: 700;">계산</div>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M4 8.4h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M9 8.4V6.2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.2M4 13h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size: 11px; font-weight: 500;">퇴직금</div>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M5 5.4h14a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M8.4 3.8v3.2M15.6 3.8v3.2M4 10.4h16M8.6 14.4h2M13.4 14.4h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size: 11px; font-weight: 500;">연차</div>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M6.5 3.6h11a1 1 0 0 1 1 1v15.8l-6.5-4-6.5 4V4.6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+      <div style="font-size: 11px; font-weight: 500;">저장</div>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M4 7.6h11M19 7.6h1M4 16.4h4M12 16.4h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="17" cy="7.6" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="10" cy="16.4" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+      <div style="font-size: 11px; font-weight: 500;">설정</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

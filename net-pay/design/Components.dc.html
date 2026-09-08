@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+    body { margin: 0; font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; }
+    a { color: #3182f6; } a:hover { color: #1b64da; }
+  </style>
+</helmet>
+
+<div style="width: 860px; padding: 36px 40px 44px; background: #ffffff; color: #191f28; letter-spacing: -0.02em;">
+
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px;">
+    <div style="font-size: 24px; font-weight: 800; letter-spacing: -0.03em;">컴포넌트</div>
+    <div style="font-size: 14px; color: #6b7684;">색·크기·모서리는 <span style="font-weight: 600;">src/styles.css</span> 토큰과 같은 값이다. 새 것은 탭바·도넛·빠른 증감 칩·접히는 선택 항목뿐.</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 40px;">
+
+    <!-- 버튼 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">버튼 · 높이 54 / 모서리 14</div>
+      <div style="display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #3182f6; color: #ffffff; font-size: 17px; font-weight: 700;">기본</div>
+      <div style="display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #1b64da; color: #ffffff; font-size: 17px; font-weight: 700;">누르는 중</div>
+      <div style="display: flex; gap: 8px;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #f2f4f6; color: #333d4b; font-size: 15px; font-weight: 700;">보조</div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #f2f4f6; color: #b0b8c1; font-size: 15px; font-weight: 700;">비활성</div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #f04452; color: #ffffff; font-size: 15px; font-weight: 700;">삭제</div>
+      </div>
+    </div>
+
+    <!-- 칩 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">칩 · 높이 38~40 / 알약</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 500; color: #4e5968;">기본</div>
+        <div style="display: flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px; background: #e8f3ff; font-size: 14px; font-weight: 700; color: #3182f6;">선택됨</div>
+        <div style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 500; color: #8b95a1;">
+          <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M10 4.4v11.2M4.4 10h11.2" fill="none" stroke="#8b95a1" stroke-width="1.7" stroke-linecap="round"/></svg>
+          추가
+        </div>
+        <div style="display: flex; align-items: center; height: 30px; padding: 0 11px; border-radius: 999px; background: #f2f4f6; font-size: 12px; font-weight: 500; color: #6b7684;">읽기용 30</div>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 4px;">
+        <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+10만</div>
+        <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+50만</div>
+        <div style="display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #f2f4f6; font-size: 14px; font-weight: 600; color: #4e5968;">+100만</div>
+      </div>
+    </div>
+
+    <!-- 입력 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">입력 · 높이 52 / 16px 이상</div>
+      <div style="display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 16px; border-radius: 14px; background: #f2f4f6;">
+        <div style="flex-grow: 1; text-align: right; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums;">10,239,999</div>
+        <div style="font-size: 14px; font-weight: 500; color: #6b7684;">원</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 16px; border-radius: 14px; background: #f2f4f6; box-shadow: inset 0 0 0 2px #3182f6;">
+        <div style="flex-grow: 1; text-align: right; font-size: 16px; font-weight: 500; color: #b0b8c1; font-variant-numeric: tabular-nums;">0</div>
+        <div style="font-size: 14px; font-weight: 500; color: #6b7684;">원</div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 12px; border-bottom: 2px solid #3182f6;">
+        <div style="font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;">300</div>
+        <div style="font-size: 20px; font-weight: 700; color: #4e5968;">만 원</div>
+      </div>
+    </div>
+
+    <!-- 층 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">층 셋 · 모서리 20</div>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 20px; background: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(25,31,40,0.14);">
+        <div style="font-size: 12px; color: #8b95a1;">떠 있는 카드 — 그 화면의 답</div>
+        <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;">3,000,526원</div>
+      </div>
+      <div style="padding: 18px; border-radius: 20px; background: #f4f6f8; font-size: 13px; color: #4e5968;">가라앉은 블록 — 보조 정보·목록·잠긴 카드</div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 14px 18px; border-radius: 20px; background: #e8f3ff;">
+        <div style="font-size: 14px; font-weight: 700; color: #1b64da; flex-grow: 1;">강조 줄 — 결론</div>
+        <div style="font-size: 16px; font-weight: 800; color: #1b64da; font-variant-numeric: tabular-nums;">412,807원</div>
+      </div>
+    </div>
+
+    <!-- 잠금·자리표시자 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">잠긴 값 · 실제 수치를 렌더하지 않는다</div>
+      <div style="display: flex; align-items: flex-end; gap: 8px; height: 46px; padding: 16px 18px; border-radius: 20px; background: #f4f6f8;">
+        <div style="flex: 1; height: 44%; border-radius: 5px 5px 2px 2px; background: #e1e5ea;"></div>
+        <div style="flex: 1; height: 58%; border-radius: 5px 5px 2px 2px; background: #e1e5ea;"></div>
+        <div style="flex: 1; height: 52%; border-radius: 5px 5px 2px 2px; background: #e1e5ea;"></div>
+        <div style="flex: 1; height: 74%; border-radius: 5px 5px 2px 2px; background: #e1e5ea;"></div>
+        <div style="flex: 1; height: 66%; border-radius: 5px 5px 2px 2px; background: #e1e5ea;"></div>
+        <div style="flex: 1; height: 100%; border-radius: 5px 5px 2px 2px; background: #d1d6db;"></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 6px; background: #e8f3ff; font-size: 10px; font-weight: 700; color: #3182f6;">간이세액표</div>
+        <div style="display: flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 6px; background: #e8f3ff; font-size: 10px; font-weight: 700; color: #3182f6;">상한 적용</div>
+        <div style="display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 12px; background: rgba(25,31,40,0.94); color: #ffffff; font-size: 13px; font-weight: 500;">저장했어요</div>
+      </div>
+    </div>
+
+    <!-- 도넛 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">공제 구성 · 실수령만 파랑, 공제는 회색 계단</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <svg viewBox="0 0 140 140" width="112" height="112" role="img" aria-label="도넛 예시">
+          <g transform="rotate(-90 70 70)" fill="none" stroke-width="16">
+            <circle cx="70" cy="70" r="54" stroke="#3182f6" stroke-dasharray="298.3 339.3" stroke-dashoffset="0"/>
+            <circle cx="70" cy="70" r="54" stroke="#6b7684" stroke-dasharray="15.2 339.3" stroke-dashoffset="-298.3"/>
+            <circle cx="70" cy="70" r="54" stroke="#8b95a1" stroke-dasharray="13.0 339.3" stroke-dashoffset="-313.5"/>
+            <circle cx="70" cy="70" r="54" stroke="#b0b8c1" stroke-dasharray="10.0 339.3" stroke-dashoffset="-326.5"/>
+            <circle cx="70" cy="70" r="54" stroke="#d1d6db" stroke-dasharray="2.9 339.3" stroke-dashoffset="-336.5"/>
+          </g>
+        </svg>
+        <div style="display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 7px;">
+          <div style="display: flex; align-items: center; gap: 7px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #3182f6;"></div><div style="font-size: 13px; color: #4e5968;">실수령</div></div>
+          <div style="display: flex; align-items: center; gap: 7px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #6b7684;"></div><div style="font-size: 13px; color: #4e5968;">국민연금</div></div>
+          <div style="display: flex; align-items: center; gap: 7px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #8b95a1;"></div><div style="font-size: 13px; color: #4e5968;">건강·장기</div></div>
+          <div style="display: flex; align-items: center; gap: 7px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #b0b8c1;"></div><div style="font-size: 13px; color: #4e5968;">소득세·지방</div></div>
+          <div style="display: flex; align-items: center; gap: 7px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #d1d6db;"></div><div style="font-size: 13px; color: #4e5968;">고용보험</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭바 -->
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 36px;">
+    <div style="font-size: 12px; font-weight: 700; color: #8b95a1;">하단 탭 · fx-replay 와 같은 떠 있는 알약 (blur 20px / saturate 180%)</div>
+    <div style="display: flex; padding: 6px; border-radius: 999px; background: rgba(255,255,255,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); box-shadow: 0 6px 24px rgba(25,31,40,0.12), 0 1px 3px rgba(25,31,40,0.06);">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; border-radius: 999px; background: rgba(49,130,246,0.10); color: #3182f6;">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M6 3.6h12a1 1 0 0 1 1 1v14.8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M8.4 8h7.2M8.6 12h2.2M8.6 15.8h2.2M14 12v3.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div style="font-size: 11px; font-weight: 700;">계산</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M4 8.4h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9 8.4V6.2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.2M4 13h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div style="font-size: 11px; font-weight: 500;">퇴직금</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M5 5.4h14a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M8.4 3.8v3.2M15.6 3.8v3.2M4 10.4h16M8.6 14.4h2M13.4 14.4h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div style="font-size: 11px; font-weight: 500;">연차</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M6.5 3.6h11a1 1 0 0 1 1 1v15.8l-6.5-4-6.5 4V4.6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <div style="font-size: 11px; font-weight: 500;">저장</div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 50px; color: #8b95a1;">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M4 7.6h11M19 7.6h1M4 16.4h4M12 16.4h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="17" cy="7.6" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="10" cy="16.4" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        <div style="font-size: 11px; font-weight: 500;">설정</div>
+      </div>
+    </div>
+    <div style="font-size: 12px; color: #8b95a1; line-height: 1.6;">집중이 필요한 화면(결과 상세·협상 카드·출처)에서는 숨긴다. 하단 위치는 SDK 세이프 에어리어 기준 — CSS <span style="font-weight: 600;">env()</span> 는 쓰지 않는다.</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

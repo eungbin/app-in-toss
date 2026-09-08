@@ -13,6 +13,8 @@ const PATHS = {
   close: 'M4.5 4.5l11 11M15.5 4.5l-11 11',
   minus: 'M4.5 10h11',
   plus: 'M10 4.5v11M4.5 10h11',
+  share: 'M10 13.4V3.6M6.6 6.6 10 3.2l3.4 3.4M4.4 12v3.4a1 1 0 0 0 1 1h9.2a1 1 0 0 0 1-1V12',
+  bookmark: 'M6 3.4h8a1 1 0 0 1 1 1v12.2l-5-3.1-5 3.1V4.4a1 1 0 0 1 1-1z',
 } as const;
 
 export type IconName = keyof typeof PATHS | 'lock';

@@ -14,7 +14,8 @@ import { hasBonus } from '@/engine/bonus';
 import { parseDeepLink } from '@/engine/deeplink';
 import { todayIso } from '@/engine/format';
 import { useAppStore } from '@/store';
-import { Home, type Draft } from '@/screens/Home';
+import { Input, type Draft } from '@/screens/Input';
+import { Result } from '@/screens/Result';
 import { Detail } from '@/screens/Detail';
 import { Timeline } from '@/screens/Timeline';
 import { Card } from '@/screens/Card';
@@ -28,11 +29,12 @@ import { OptionsSheet } from '@/components/OptionsSheet';
 import { GateSheet } from '@/components/GateSheet';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Toast } from '@/components/Toast';
-import { Icon } from '@/components/Icon';
+import { TabBar, isTabRoute, type TabName } from '@/components/TabBar';
 import { t } from '@/i18n';
 
 type Route =
-  | { name: 'home' }
+  | { name: 'calc' }
+  | { name: 'result' }
   | { name: 'detail' }
   | { name: 'timeline' }
   | { name: 'card'; variant: 'net' | 'timeline' }
@@ -43,7 +45,8 @@ type Route =
   | { name: 'settings' }
   | { name: 'sources' };
 
-const DEBOUNCE_MS = 300;
+/** 탭바를 숨기는 화면 — 집중이 필요한 곳 (SCREEN_FLOW 1장) */
+const FULL_SCREEN = ['detail', 'timeline', 'card', 'compare', 'sources'];
 
 const initialDraft: Draft = {
   mode: 'reverse',
@@ -79,7 +82,9 @@ export function App() {
   // 아래 효과의 의존성에 store 객체를 넣지 않는다. 콜백만 꺼내 쓴다
   const { setLastInput } = store;
 
-  const [stack, setStack] = useState<Route[]>([{ name: 'home' }]);
+  const [stack, setStack] = useState<Route[]>(() =>
+    draftFromDeepLink() ? [{ name: 'calc' }, { name: 'result' }] : [{ name: 'calc' }],
+  );
   const route = stack[stack.length - 1] as Route;
   const stackRef = useRef(stack);
   stackRef.current = stack;
@@ -111,6 +116,11 @@ export function App() {
           pop();
           return true;
         }
+        // 다른 탭에서 뒤로가기는 계산 탭으로. 계산 탭에서만 앱을 닫는다
+        if (stackRef.current[0]?.name !== 'calc') {
+          setStack([{ name: 'calc' }]);
+          return true;
+        }
         void closeApp();
         return true;
       }),
@@ -137,12 +147,6 @@ export function App() {
     setDraft(next);
     setCommitted(next.amountManwon);
   }, [state.ready, state.lastInput]);
-
-  /* 입력 디바운스 */
-  useEffect(() => {
-    const id = setTimeout(() => setCommitted(draft.amountManwon), DEBOUNCE_MS);
-    return () => clearTimeout(id);
-  }, [draft.amountManwon]);
 
   /* 자녀는 공제대상 가족에 포함된다 */
   const effectiveDependents = Math.min(Math.max(draft.dependents, draft.children + 1), DEPENDENTS_MAX);
@@ -241,24 +245,31 @@ export function App() {
       bonusAnnual: s.input.bonusAnnual ?? null,
     });
     setCommitted(amount ? Math.round(amount / 10_000) : null);
-    setStack([{ name: 'home' }]);
+    setStack([{ name: 'calc' }, { name: 'result' }]);
   }, []);
+
+  const goTab = useCallback((tab: TabName) => setStack([{ name: tab }]), []);
+
+  /** 결과 화면에 넘길 조건이 갖춰졌는지 */
+  const calc = useCallback(() => {
+    setCommitted(draft.amountManwon);
+    push({ name: 'result' });
+  }, [draft.amountManwon, push]);
 
   if (!state.ready) return <main className="screen" aria-busy="true" />;
 
+  const tab: TabName | null = isTabRoute(stack[0]?.name ?? '') ? (stack[0]!.name as TabName) : null;
+  const showTabs = tab !== null && !FULL_SCREEN.includes(route.name);
+
   return (
-    <>
+    <div className="app" data-tabs={showTabs}>
       {state.loadError && <p className="dev-banner">{t('error.storage')}</p>}
 
-      {route.name === 'home' && (
-        <Home
+      {route.name === 'calc' && (
+        <Input
           draft={draft}
           opts={opts}
-          breakdown={result?.breakdown ?? null}
-          reverse={result?.reverse ?? null}
-          timelineLocked={!unlocked}
           hasBonus={hasBonus(bonusPlan)}
-          savedCount={state.scenarios.length}
           staleYear={staleYear}
           onAmount={(v) => setDraft((d) => ({ ...d, amountManwon: v }))}
           onToggleMode={() => {
@@ -266,13 +277,22 @@ export function App() {
             setCommitted(null);
           }}
           onOptions={() => setShowOptions(true)}
+          onCalc={calc}
+        />
+      )}
+
+      {route.name === 'result' && result && (
+        <Result
+          breakdown={result.breakdown}
+          opts={opts}
+          reverse={result.reverse}
+          mode={draft.mode}
+          timelineLocked={!unlocked}
+          hasBonus={hasBonus(bonusPlan)}
           onDetail={() => push({ name: 'detail' })}
           onTimeline={openTimeline}
           onCard={() => push({ name: 'card', variant: 'net' })}
           onSave={doSave}
-          onSaved={() => push({ name: 'saved' })}
-          onSeverance={() => push({ name: 'severance' })}
-          onLeave={() => push({ name: 'leave' })}
         />
       )}
 
@@ -336,7 +356,7 @@ export function App() {
                   onOk: () => {
                     void store.clearAll();
                     setConfirm(null);
-                    setStack([{ name: 'home' }]);
+                    setStack([{ name: 'calc' }]);
                     setToast('모두 삭제했어요');
                   },
                 }),
@@ -346,13 +366,6 @@ export function App() {
       )}
 
       {route.name === 'sources' && <Sources />}
-
-      {route.name === 'home' && (
-        <button type="button" className="settings-link" onClick={() => push({ name: 'settings' })}>
-          {t('settings.title')}
-          <Icon name="chevronRight" />
-        </button>
-      )}
 
       {showOptions && (
         <OptionsSheet
@@ -381,6 +394,8 @@ export function App() {
       )}
 
       {toast && <Toast message={toast} onDone={() => setToast(null)} />}
-    </>
+
+      {showTabs && tab && <TabBar current={tab} onSelect={goTab} />}
+    </div>
   );
 }

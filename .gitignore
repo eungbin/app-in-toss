@@ -12,3 +12,8 @@ dist/
 
 # 로컬 도구 설정
 .claude/
+
+# claude-design 캔버스 씨딩 결과 — 에디터 페이로드가 2MB다.
+# 작업 파일(*.dc.html, canvas.json)만 커밋하고 캔버스는 거기서 다시 만든다.
+*/design/*.html
+!*/design/*.dc.html

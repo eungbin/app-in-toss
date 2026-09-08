@@ -39,13 +39,26 @@ export function LockedCard({ title, locked, placeholder, onUnlock, onOpen, child
 
 /**
  * 잠긴 값 자리표시자. 숫자를 계산하지도, 렌더하지도 않는다.
- * 점(●,●●●,●●●) 으로 가리면 가짜 숫자나 오류처럼 보여서 뼈대 막대로 둔다.
+ *
+ * 점(●,●●●,●●●) 으로 가리면 가짜 숫자나 오류처럼 보인다. 열면 무엇이 나오는지
+ * (연도별 막대 차트) 알 수 있는 실루엣을 대신 둔다. 높이는 고정 패턴이라
+ * 실제 데이터를 짐작하게 하지 않는다.
  */
-export function SkeletonLines({ widths }: { widths: string[] }) {
+const SILHOUETTE = [44, 58, 52, 74, 66, 100];
+
+export function BarSilhouette({ n }: { n: number }) {
+  const bars = Array.from({ length: Math.max(2, Math.min(n, SILHOUETTE.length)) }, (_, i) => {
+    const h = SILHOUETTE[i] ?? 60;
+    return { h, last: i === Math.min(n, SILHOUETTE.length) - 1 };
+  });
   return (
-    <div className="skeleton" aria-hidden="true">
-      {widths.map((w, i) => (
-        <div key={i} className="skeleton__bar" style={{ width: w }} />
+    <div className="silhouette" aria-hidden="true">
+      {bars.map((b, i) => (
+        <div
+          key={i}
+          className={`silhouette__bar ${b.last ? 'silhouette__bar--last' : ''}`}
+          style={{ height: `${b.h}%` }}
+        />
       ))}
     </div>
   );

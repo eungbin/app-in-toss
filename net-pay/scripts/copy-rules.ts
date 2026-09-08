@@ -28,11 +28,8 @@ export const RULES: Rule[] = [
   { name: '확실', re: /확실/, group: 'B' },
 ];
 
-export const ALLOW: Allow[] = [
-  {
-    file: 'src/i18n/ko.json',
-    key: 'home.result.items',
-    rule: '보험 상품·가입',
-    why: '"국민연금 · 건강보험 · 장기요양 · 고용보험" — 공적 사회보험 항목명',
-  },
-];
+/**
+ * 예외 없음. 공제 항목 이름을 한 줄로 늘어놓던 `home.result.items` 를 결과 화면
+ * 범례(도넛과 같은 색·순서)로 바꾸면서 예외가 필요 없어졌다.
+ */
+export const ALLOW: Allow[] = [];
