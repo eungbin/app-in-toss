@@ -1,0 +1,8 @@
+/* 디자인 토큰은 docs/SCREEN_FLOW.md 6장. 시안 승인 후 채운다. */
+:root {
+  --safe-top: 0px;
+  --safe-bottom: 0px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; word-break: keep-all; }
+.screen { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
