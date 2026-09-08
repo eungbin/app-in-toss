@@ -249,9 +249,15 @@ net-pay 판단
    발급된 ID를 `.env` 의 `VITE_AD_REWARDED_ID`·`VITE_AD_BANNER_ID` 에 넣는다.
    앱이 읽는 키는 이 두 개뿐이고(`src/main.tsx`), 비면 그 광고만 붙지 않는다.
 
-   > **발급된 광고 그룹 ID (기입)**
-   > - 리워드 `VITE_AD_REWARDED_ID` =
-   > - 배너 `VITE_AD_BANNER_ID` =
+   **실 ID를 문서에 적지 않는다.** `.env` 에만 둔다(`.gitignore` 대상).
+   2026-09-08 발급된 두 개는 `.env` 의 주석에 단계 표시와 함께 기록해 뒀다.
+
+   **단계마다 넣는 값이 다르다.** `check:config` 가 양방향으로 막는다.
+
+   | 단계 | 값 | 가드 |
+   |---|---|---|
+   | `npm run deploy` (QR 테스트) | `ait-ad-test-rewarded-id` / `ait-ad-test-banner-id` | 실 ID가 있으면 **빌드 실패** — 개발 단계에 실 광고를 쓰면 정책 위반 |
+   | `npm run deploy:release` (출시) | 콘솔 실 ID (`ait.v2.live.*`) | 테스트 ID거나 비면 **빌드 실패**. 번들 스캔도 `ait-ad-test-` 문자열을 막는다 |
 
    **주의**: kit 은 광고 그룹 ID의 기본값을 두지 않는다(번들에 테스트 ID 문자열이 남아
    심사 반려된 적이 있어서다). `.env` 가 비면 광고가 아예 붙지 않는다.
