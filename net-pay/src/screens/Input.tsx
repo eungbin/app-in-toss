@@ -46,7 +46,7 @@ export function Input(p: Props) {
   const ready = draft.amountManwon !== null && draft.amountManwon > 0;
 
   return (
-    <main className="screen screen--cta">
+    <main className="screen">
       {isDevData && <p className="dev-banner">{t('data.dev')}</p>}
       {p.staleYear && (
         <p className="dev-banner">
@@ -112,13 +112,10 @@ export function Input(p: Props) {
 
       <p className="hint">{reverseMode ? t('home.input.hint') : t('gross.input.hint')}</p>
 
-      {/* 화면 아래 고정. 탭바 위에 얹힌다 */}
-      <div className="cta-dock">
-        <button type="button" className="cta" disabled={!ready} onClick={p.onCalc}>
-          {reverseMode ? t('input.cta.reverse') : t('input.cta.forward')}
-          <Icon name="chevronRight" />
-        </button>
-      </div>
+      <button type="button" className="cta" disabled={!ready} onClick={p.onCalc}>
+        {reverseMode ? t('input.cta.reverse') : t('input.cta.forward')}
+        <Icon name="chevronRight" />
+      </button>
     </main>
   );
 }

@@ -130,10 +130,6 @@ input {
 .app[data-tabs='true'] .screen {
   padding-bottom: calc(110px + var(--safe-bottom));
 }
-/* 아래 고정 버튼이 있는 화면은 그만큼 더 */
-.app[data-tabs='true'] .screen--cta {
-  padding-bottom: calc(180px + var(--safe-bottom));
-}
 
 @keyframes screen-in {
   from {
@@ -999,23 +995,6 @@ input {
 .tab:active:not(:disabled) {
   opacity: 1;
   transform: scale(0.94);
-}
-
-/* ── 아래 고정 버튼 ──────────────────────────────────
-   입력 화면의 [계산하기]. 탭바 위에 얹고 위쪽은 흰색으로 흐린다 */
-.cta-dock {
-  position: fixed;
-  left: 50%;
-  bottom: calc(88px + var(--safe-bottom));
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 520px;
-  padding: 14px 20px 16px;
-  background: linear-gradient(to top, var(--bg) 62%, rgba(255, 255, 255, 0));
-  z-index: 12;
-}
-.cta-dock .cta {
-  margin: 0;
 }
 
 /* ── 접히는 선택 항목 ───────────────────────────────── */
