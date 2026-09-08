@@ -188,5 +188,7 @@
   "detail.split.ded": "공제 {p}",
   "timeline.card.sub": "{y}년부터 지금까지, 같은 연봉의 월 실수령을 나란히 봐요",
   "severance.optional": "선택 항목 3개",
-  "severance.optional.hint": "연간 상여 · 연차수당 · 통상임금"
+  "severance.optional.hint": "연간 상여 · 연차수당 · 통상임금",
+  "card.bar.net": "실수령 {p}",
+  "card.bar.ded": "공제 {p}"
 }

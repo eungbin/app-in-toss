@@ -3,7 +3,7 @@
  * 문구는 cardText.ts(순수 함수)에서 만들고 여기서는 그리기만 한다.
  */
 import { cardLines, type CardArgs, type TimelineCardArgs } from './cardText';
-import { num } from './format';
+import { num, pct } from './format';
 import { t } from '@/i18n';
 
 export const CARD_W = 1080;
@@ -14,6 +14,7 @@ const TEXT = '#191f28';
 const SUB = '#6b7684';
 const PRIMARY = '#3182f6';
 const SURFACE = '#f2f4f6';
+const GRAY_300 = '#d1d6db';
 
 function base(ctx: CanvasRenderingContext2D): void {
   ctx.fillStyle = BG;
@@ -32,18 +33,67 @@ function footer(ctx: CanvasRenderingContext2D): void {
   ctx.fillText(t('card.footer'), 80, CARD_H - 90);
 }
 
-/** 기본 카드(실수령 → 연봉) */
+/**
+ * 기본 카드(실수령 → 연봉).
+ *
+ * 예전에는 헤드라인 뒤 580px 이 비어 있었다(카드 높이의 43%). 실기기 스크린샷에서
+ * 가운데가 텅 빈 게 드러났다. 그 자리에 실수령·공제 비율 막대를 넣었다.
+ *
+ * **연봉 숨김이 켜지면 비율만 그리고 금액은 그리지 않는다.** 세전 월급을 적으면
+ * 12를 곱해 숨긴 연봉이 드러난다.
+ */
 export function drawCard(ctx: CanvasRenderingContext2D, a: CardArgs): void {
   base(ctx);
   const lines = cardLines(a);
   ctx.textAlign = 'left';
   ctx.fillStyle = TEXT;
   ctx.font = '700 88px system-ui, sans-serif';
-  ctx.fillText(lines[0] ?? '', 80, 420);
+  ctx.fillText(lines[0] ?? '', 80, 380);
   ctx.font = '400 52px system-ui, sans-serif';
   ctx.fillStyle = SUB;
-  lines.slice(1).forEach((line, i) => ctx.fillText(line, 80, 540 + i * 76));
+  lines.slice(1).forEach((line, i) => ctx.fillText(line, 80, 500 + i * 76));
+
+  drawRatioBar(ctx, a);
   footer(ctx);
+}
+
+/** 실수령 대 공제 비율 막대 */
+function drawRatioBar(ctx: CanvasRenderingContext2D, a: CardArgs): void {
+  const gross = a.netMonthly + a.deductions;
+  if (gross <= 0) return;
+  const ratio = a.netMonthly / gross;
+
+  const x = 80;
+  const w = CARD_W - 160;
+  const y = 900;
+  const h = 56;
+  const gap = 8;
+  const netW = Math.round((w - gap) * ratio);
+
+  ctx.fillStyle = PRIMARY;
+  ctx.beginPath();
+  ctx.roundRect(x, y, netW, h, [28, 6, 6, 28]);
+  ctx.fill();
+  ctx.fillStyle = GRAY_300;
+  ctx.beginPath();
+  ctx.roundRect(x + netW + gap, y, w - netW - gap, h, [6, 28, 28, 6]);
+  ctx.fill();
+
+  ctx.font = '600 40px system-ui, sans-serif';
+  ctx.fillStyle = TEXT;
+  ctx.textAlign = 'left';
+  ctx.fillText(t('card.bar.net', { p: pct(ratio, 1) }), x, y + h + 68);
+  ctx.fillStyle = SUB;
+  ctx.textAlign = 'right';
+  ctx.fillText(t('card.bar.ded', { p: pct(1 - ratio, 1) }), x + w, y + h + 68);
+  ctx.textAlign = 'left';
+
+  // 연봉을 숨겼으면 금액은 적지 않는다 — 세전에서 연봉이 역산된다
+  if (!a.hideGross) {
+    ctx.font = '400 36px system-ui, sans-serif';
+    ctx.fillStyle = SUB;
+    ctx.fillText(`${t('result.gross.label')} ${num(gross)}원`, x, y - 32);
+  }
 }
 
 /** 시간축 카드 — 연도별 월 실수령 막대 */
