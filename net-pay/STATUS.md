@@ -4,7 +4,7 @@
 루트에서 `npm run status` 로 본다. 이 파일에는 **파일에서 읽어낼 수 없는 것만** 적는다 —
 콘솔 등록·심사·정산처럼 앱인토스 쪽에만 있는 사실이다.
 
-- **단계**: 배포 막힘 — net-pay 배포 API 키 발급 대기
+- **단계**: QR 테스트 대기 — 테스트 번들 업로드 완료
 - 갱신: 2026-09-08
 
 ## 콘솔
@@ -17,9 +17,9 @@
 | 검색 키워드 | 10개 확정 — [docs/SUBMISSION.md](docs/SUBMISSION.md) 1-4. 콘솔 등록은 미완료 |
 | 상세 설명 500자 | **475자** (2026-09-08 확인). 첫 판 513자에서 줄였다 |
 | 스크린샷 | 미촬영. 실기기에 띄워야 찍을 수 있다 |
-| 배포 API 키 | **미발급** — `default` 키는 fx-replay 범위다. net-pay 는 `4031` |
-| 번들 업로드 | **실패** (2026-09-08) 빌드는 통과, 업로드에서 `4031` |
-| QR 테스트 | 미실시 |
+| 배포 API 키 | **완료** (2026-09-08) `net-pay` 프로필. `default`(fx-replay 범위)로는 4031 이었다 |
+| 번들 업로드 | **완료** (2026-09-08 17:37) 테스트 광고 ID 번들. `versionName 20260908-1`, `miniAppId 74087` |
+| QR 테스트 | 미실시. 콘솔 조회상 `isTested: false` — **이걸 1회 해야 검토 요청이 열린다** |
 | 심사 제출 | 미제출 |
 
 ## 정산 (사업자 공통 — 세 앱이 같이 쓴다)
@@ -29,17 +29,14 @@
 
 ## 다음 한 걸음
 
-**콘솔 → 워크스페이스 선택 → 왼쪽 메뉴 `키`** 에서 배포 키를 발급하고(적용 범위에 net-pay
-포함) 프로필로 등록한다.
+**실기기 QR 테스트 + 스크린샷 5장 촬영.** 확인 항목은 [docs/SUBMISSION.md](docs/SUBMISSION.md) 3-2,
+스크린샷 구성안은 1-3.
 
-```bash
-npx ait token add net-pay      # 대화형으로 키를 물어본다. 쉘 히스토리에 남지 않는다
+배포 결과로 받은 비공개 스킴 — 딥링크 식별자가 `net-pay` 임이 이걸로 확인됐다(그동안 미확인 항목).
+
+```
+intoss-private://net-pay?_deploymentId=01a0802a-9d5e-75ad-9fca-6d5f8b1ed396&host=appsInTossHost
 ```
 
-`npm run deploy` 가 `--profile net-pay` 로 그 키를 쓴다. 함께 확인할 것 —
-`apps-in-toss.config.ts` 의 `appName: 'net-pay'` 이 콘솔 앱 식별자와 정확히 같은지.
-업로드 경로가 `bundles/<appName>/upload-start` 라 한 글자만 달라도 4031 이다.
-
-그 뒤 `npm run deploy` → QR 테스트 + 스크린샷 → 2차 스크린샷 등록
-→ `npm run deploy:release` → 그 번들로 테스트 1회 → 심사 요청.
-자세한 순서와 의존 관계는 [docs/SUBMISSION.md](docs/SUBMISSION.md) 3-3.
+그 뒤: 앱 정보에 스크린샷 등록 → `.env` 를 실 광고 ID로 바꿔 `npm run deploy:release`
+→ 그 번들로 테스트 1회 → 심사 요청. 순서와 의존 관계는 SUBMISSION 3-3.
