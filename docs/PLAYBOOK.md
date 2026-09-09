@@ -158,6 +158,7 @@ net-pay PRD의 12장 구조를 그대로 쓴다: 0 확정 사항 / 1 서비스 �
 - [ ] 비게임 출시 체크리스트 자체 점검(net-pay SUBMISSION 3-1의 19항목을 복사해 [x])
 - [ ] 실기기 QR 테스트 10항목(이미지 저장, 딥링크 진입, 광고 노출·복귀, 자정 재잠금, 배너·키패드, 2초 지연 없음, 네비 바, 더보기)
 - [ ] `npm run build`(테스트 ID) → QR → `npm run build:release`(실 ID) → `.ait` 생성
+- [ ] **번들 스캔은 `ait build` 앞에 둔다** — `vite build && npm run check:bundle && ait build`. 뒤에 두면 스캔이 걸려도 `.ait` 가 이미 만들어져 있어 잘못된 아티팩트를 올릴 여지가 생긴다. `build` 에도 넣는다(rent-calc 는 `build` 에 스캔이 없고 `build:release` 는 순서가 뒤였다)
 
 ### 2-14. 콘솔 등록·제출
 - [ ] 광고 그룹 앱마다 2개(리워드·배너) 생성 → ID를 `.env`에. 정산 정보 검토 통과 후에만 메뉴가 열리고, 구글 등록까지 최대 2시간
