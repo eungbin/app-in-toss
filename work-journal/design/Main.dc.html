@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+    body { margin: 0; font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    a { color: #6b5ce7; } a:hover { color: #5646d1; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; background: #f2f4f6; color: #191f28; letter-spacing: -0.02em; overflow: hidden;">
+  <!-- 상단 56px: 토스 네비게이션 바 자리 -->
+  <div style="height: 56px;"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 20px 0;">
+
+    <!-- 월 네비 + 설정 -->
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 40px;">
+      <div style="width: 44px;"></div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px;"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M14.5 6L9 12l5.5 6" fill="none" stroke="#6b7684" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div style="font-size: 20px; font-weight: 700;">2026년 9월</div>
+        <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px;"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9.5 6L15 12l-5.5 6" fill="none" stroke="#6b7684" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; background: #ffffff;">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="#4e5968" stroke-width="1.8"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6L18 18M6 18l1.4-1.4M16.6 7.4L18 6" fill="none" stroke="#4e5968" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <!-- 카드 A: 이번 달 예상 실수령액 -->
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; border-radius: 20px; background: #6b5ce7; color: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(107,92,231,0.45);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.82);">이번 달 예상 실수령액</div>
+        <div style="display: flex; align-items: center; gap: 5px; height: 36px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,0.16);">
+          <svg viewBox="0 0 20 20" width="13" height="13" aria-hidden="true"><path d="M13 3.5l3.5 3.5L13 10.5M16.5 7H8.5a4 4 0 0 0-4 4v2.5" fill="none" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size: 12px; font-weight: 700;">공유</div>
+        </div>
+      </div>
+      <div style="font-size: 42px; font-weight: 800; line-height: 1; letter-spacing: -0.03em;">132,765원</div>
+      <div style="height: 1px; background: rgba(255,255,255,0.22);"></div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.72);">세전 급여</div><div style="font-size: 15px; font-weight: 700;">165,120원</div></div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.22);"><div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.72);">주휴수당</div><div style="font-size: 15px; font-weight: 700;">0원</div></div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.22);"><div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.72);">예상 공제</div><div style="font-size: 15px; font-weight: 700;">-32,355원</div></div>
+      </div>
+    </div>
+
+    <!-- 카드 B: 급여 계산 -->
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 16px; border-radius: 20px; background: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(25,31,40,0.14);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #efecfd;"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="3" y="5" width="14" height="10" rx="2" fill="none" stroke="#6b5ce7" stroke-width="1.7"/><circle cx="10" cy="10" r="2.2" fill="none" stroke="#6b5ce7" stroke-width="1.7"/></svg></div>
+          <div style="font-size: 17px; font-weight: 700;">급여 계산</div>
+        </div>
+        <div style="font-size: 13px; font-weight: 500; color: #8b95a1;">16시간 · 2일</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="color: #6b7684;">근무 급여</div><div style="font-weight: 600;">165,120원</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="display: flex; gap: 6px; align-items: baseline; color: #6b7684;">주휴수당 <span style="font-size: 12px; color: #b0b8c1;">0회</span></div><div style="font-weight: 600;">+0원</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #8b95a1;"><div>이번 주 주휴 예정 · 일요일이 지나면 확정</div><div style="font-weight: 600;">+33,024원</div></div>
+        <div style="height: 1px; background: #e5e8eb;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 15px;"><div style="font-weight: 700;">세전 급여</div><div style="font-weight: 700;">165,120원</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="color: #6b7684;">소득세·지방소득세</div><div style="font-weight: 600;">-0원</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="color: #6b7684;">4대보험 근로자 부담분</div><div style="font-weight: 600;">-32,355원</div></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 14px; background: #efecfd;">
+        <div style="font-size: 15px; font-weight: 700; color: #5646d1;">예상 실수령액</div>
+        <div style="font-size: 24px; font-weight: 800; color: #5646d1; letter-spacing: -0.03em;">132,765원</div>
+      </div>
+      <div style="font-size: 12px; font-weight: 500; color: #8b95a1; line-height: 1.5;">예상액이며 실제 급여명세서와 다를 수 있어요.</div>
+    </div>
+
+    <!-- 카드 C: 근무 달력 — 첫 줄만 보이고 아래로 이어진다. 전체는 HomeScrolled 아트보드 -->
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 8px; border-radius: 20px 20px 0 0; background: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(25,31,40,0.14);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #efecfd;"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2" fill="none" stroke="#6b5ce7" stroke-width="1.7"/><path d="M3 8.5h14M7 3v3M13 3v3" fill="none" stroke="#6b5ce7" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+          <div style="font-size: 17px; font-weight: 700;">근무 달력</div>
+        </div>
+        <div style="display: flex; align-items: center; height: 36px; padding: 0 8px; margin-right: -8px; font-size: 14px; font-weight: 600; color: #6b5ce7;">기록 추가</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; text-align: center; font-size: 12px; font-weight: 500; color: #8b95a1;">
+        <div style="color: #f0506e;">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px 0; text-align: center; font-size: 14px; font-weight: 500;">
+        <div style="height: 46px;"></div><div style="height: 46px;"></div>
+        <div style="height: 46px; padding-top: 6px;">1</div><div style="height: 46px; padding-top: 6px;">2</div><div style="height: 46px; padding-top: 6px;">3</div><div style="height: 46px; padding-top: 6px;">4</div><div style="height: 46px; padding-top: 6px;">5</div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 고정 버튼 (배너는 스크롤 콘텐츠 마지막에 있어 이 프레임에는 보이지 않는다) -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 16px; background: linear-gradient(180deg, rgba(242,244,246,0) 0%, #f2f4f6 40%);">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 16px; background: #6b5ce7; box-shadow: 0 4px 12px rgba(107,92,231,0.28);">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div style="font-size: 17px; font-weight: 700; color: #ffffff;">근무 기록하기</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

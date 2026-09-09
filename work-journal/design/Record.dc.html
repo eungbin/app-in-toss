@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+    body { margin: 0; font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    a { color: #6b5ce7; } a:hover { color: #5646d1; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; background: #8f8ea0; color: #191f28; letter-spacing: -0.02em; overflow: hidden;">
+  <div style="height: 56px; background: #ffffff;"></div>
+  <!-- 뒤에 깔린 홈은 어둡게 -->
+  <div style="position: absolute; left: 0; top: 56px; right: 0; bottom: 0; background: rgba(25,31,40,0.45);"></div>
+
+  <!-- 시트 -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; height: 788px; border-radius: 24px 24px 0 0; background: #ffffff; box-shadow: 0 -8px 32px rgba(25,31,40,0.18);">
+    <div style="display: flex; align-items: center; justify-content: center; height: 18px;"><div style="width: 40px; height: 4px; border-radius: 999px; background: #e5e8eb;"></div></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 20px 12px;">
+      <div style="display: flex; align-items: center; width: 48px; height: 44px; font-size: 15px; font-weight: 500; color: #8b95a1;">닫기</div>
+      <div style="font-size: 18px; font-weight: 700;">근무 기록</div>
+      <div style="width: 48px;"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 0 20px 90px; overflow: hidden;">
+      <div style="display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 12px;">
+        <div style="display: none; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6b7684;">근무지</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6; font-size: 15px; font-weight: 600;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 8px; height: 8px; border-radius: 999px; background: #3182f6;"></div>카페 오후</div><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M6 8l4 4 4-4" fill="none" stroke="#8b95a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6b7684;">날짜</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6; font-size: 15px; font-weight: 600;">2026. 09. 10.<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M6 8l4 4 4-4" fill="none" stroke="#8b95a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6b7684;">출근</div>
+          <div style="display: flex; align-items: center; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6; font-size: 17px; font-weight: 700;">오후 6:00</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #6b7684;">퇴근 <span style="padding: 1px 6px; border-radius: 999px; background: #efecfd; font-size: 11px; font-weight: 700; color: #5646d1;">다음 날</span></div>
+          <div style="display: flex; align-items: center; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6; font-size: 17px; font-weight: 700;">오전 2:00</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6b7684;">휴게시간</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6;"><div style="font-size: 17px; font-weight: 700;">60</div><div style="font-size: 14px; font-weight: 500; color: #8b95a1;">분</div></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6b7684;">추가수당</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6;"><div style="font-size: 17px; font-weight: 700; color: #b0b8c1;">0</div><div style="font-size: 14px; font-weight: 500; color: #8b95a1;">원</div></div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-radius: 14px; background: #f2f4f6;">
+        <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 700;">휴일 근무</div><div style="font-size: 12px; font-weight: 500; color: #8b95a1;">5인 이상 설정에서 휴일 가산 참고액을 계산해요.</div></div>
+        <div style="width: 24px; height: 24px; border-radius: 7px; border: 2px solid #d1d6db; background: #ffffff;"></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 13px; font-weight: 600; color: #6b7684;">메모 <span style="font-weight: 500; color: #b0b8c1;">(선택)</span></div>
+        <div style="display: flex; align-items: center; height: 48px; padding: 0 14px; border-radius: 12px; background: #f2f4f6; font-size: 15px; color: #b0b8c1;">예: 마감 근무</div>
+      </div>
+
+      <!-- 미리보기 -->
+      <div style="display: flex; flex-direction: column; gap: 7px; padding: 14px 16px; border-radius: 16px; background: #efecfd;">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="color: #6b7684;">실근무</div><div style="font-weight: 600;">7시간</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="color: #6b7684;">기본급</div><div style="font-weight: 600;">72,240원</div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px;"><div style="display: flex; gap: 6px; align-items: baseline; color: #6b7684;">야간 <span style="font-size: 12px; color: #8b95a1;">180분</span></div><div style="font-weight: 600;">+15,480원</div></div>
+        <div style="height: 1px; background: rgba(107,92,231,0.18);"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between;"><div style="font-size: 15px; font-weight: 700; color: #5646d1;">예상 급여</div><div style="font-size: 26px; font-weight: 800; color: #5646d1; letter-spacing: -0.03em;">87,720원</div></div>
+      </div>
+      <div style="font-size: 12px; font-weight: 500; color: #8b95a1; line-height: 1.5;">야간은 22:00~06:00 기준이며 휴게시간은 야간 구간에서 먼저 차감해 보수적으로 계산해요.</div>
+    </div>
+
+    <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 20px 16px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 16px; background: #6b5ce7; font-size: 17px; font-weight: 700; color: #ffffff;">근무 기록 저장</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+    body { margin: 0; font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    a { color: #6b5ce7; } a:hover { color: #5646d1; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; background: #f2f4f6; color: #191f28; letter-spacing: -0.02em; overflow: hidden;">
+  <div style="height: 56px;"></div>
+  <!-- 홈을 끝까지 내린 상태. 배너가 스크롤 마지막 요소이고, 그 아래 여백(버튼 높이 + 12)이 있어 고정 버튼 뒤에 숨지 않는다 -->
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 20px 96px;">
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 14px; border-radius: 20px; background: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(25,31,40,0.14);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #efecfd;"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2" fill="none" stroke="#6b5ce7" stroke-width="1.7"/><path d="M3 8.5h14M7 3v3M13 3v3" fill="none" stroke="#6b5ce7" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+          <div style="font-size: 17px; font-weight: 700;">근무 달력</div>
+        </div>
+        <div style="display: flex; align-items: center; height: 36px; padding: 0 8px; margin-right: -8px; font-size: 14px; font-weight: 600; color: #6b5ce7;">기록 추가</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; text-align: center; font-size: 12px; font-weight: 500; color: #8b95a1;">
+        <div style="color: #f0506e;">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px 0; text-align: center; font-size: 14px; font-weight: 500;">
+        <div style="height: 46px;"></div>
+        <div style="height: 46px;"></div>
+        <div style="height: 46px; padding-top: 6px;">1</div>
+        <div style="height: 46px; padding-top: 6px;">2</div>
+        <div style="height: 46px; padding-top: 6px;">3</div>
+        <div style="height: 46px; padding-top: 6px;">4</div>
+        <div style="height: 46px; padding-top: 6px;">5</div>
+        <div style="height: 46px; padding-top: 6px;">6</div>
+        <div style="height: 46px; padding-top: 6px;">7</div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; height: 46px; padding-top: 6px;"><div>8</div><div style="width: 5px; height: 5px; border-radius: 999px; background: #3182f6;"></div><div style="font-size: 10px; font-weight: 600; color: #6b7684; line-height: 1;">83천</div></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; height: 46px; padding-top: 3px;"><div style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 999px; background: #6b5ce7; color: #ffffff; font-weight: 700;">9</div><div style="width: 5px; height: 5px; border-radius: 999px; background: #3182f6;"></div><div style="font-size: 10px; font-weight: 600; color: #6b7684; line-height: 1;">83천</div></div>
+        <div style="height: 46px; padding-top: 6px;">10</div>
+        <div style="height: 46px; padding-top: 6px;">11</div>
+        <div style="height: 46px; padding-top: 6px;">12</div>
+        <div style="height: 46px; padding-top: 6px;">13</div>
+        <div style="height: 46px; padding-top: 6px;">14</div>
+        <div style="height: 46px; padding-top: 6px;">15</div>
+        <div style="height: 46px; padding-top: 6px;">16</div>
+        <div style="height: 46px; padding-top: 6px;">17</div>
+        <div style="height: 46px; padding-top: 6px;">18</div>
+        <div style="height: 46px; padding-top: 6px;">19</div>
+        <div style="height: 46px; padding-top: 6px;">20</div>
+        <div style="height: 46px; padding-top: 6px;">21</div>
+        <div style="height: 46px; padding-top: 6px;">22</div>
+        <div style="height: 46px; padding-top: 6px;">23</div>
+        <div style="height: 46px; padding-top: 6px;">24</div>
+        <div style="height: 46px; padding-top: 6px;">25</div>
+        <div style="height: 46px; padding-top: 6px;">26</div>
+        <div style="height: 46px; padding-top: 6px;">27</div>
+        <div style="height: 46px; padding-top: 6px;">28</div>
+        <div style="height: 46px; padding-top: 6px;">29</div>
+        <div style="height: 46px; padding-top: 6px;">30</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; padding: 18px 18px 8px; border-radius: 20px; background: #ffffff; box-shadow: 0 1px 2px rgba(25,31,40,0.04), 0 8px 24px -8px rgba(25,31,40,0.14);">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #efecfd;"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h8" fill="none" stroke="#6b5ce7" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+          <div style="font-size: 17px; font-weight: 700;">근무 기록</div>
+        </div>
+        <div style="font-size: 13px; font-weight: 500; color: #8b95a1;">2건</div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; height: 60px; border-bottom: 1px solid #f2f4f6;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 8px; height: 8px; border-radius: 999px; background: #3182f6;"></div>
+          <div style="display: flex; flex-direction: column; gap: 3px;"><div style="font-size: 15px; font-weight: 700;">9월 9일 (수)</div><div style="font-size: 13px; font-weight: 500; color: #8b95a1;">카페 오후 · 09:00–18:00 · 8시간</div></div>
+        </div>
+        <div style="font-size: 16px; font-weight: 700;">82,560원</div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; height: 60px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 8px; height: 8px; border-radius: 999px; background: #3182f6;"></div>
+          <div style="display: flex; flex-direction: column; gap: 3px;"><div style="font-size: 15px; font-weight: 700;">9월 8일 (화)</div><div style="font-size: 13px; font-weight: 500; color: #8b95a1;">카페 오후 · 09:00–18:00 · 8시간</div></div>
+        </div>
+        <div style="font-size: 16px; font-weight: 700;">82,560원</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 12px; background: #f9fafb; border: 1px dashed #d1d6db; font-size: 11px; font-weight: 500; color: #b0b8c1;">배너 광고</div>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 16px; background: linear-gradient(180deg, rgba(242,244,246,0) 0%, #f2f4f6 40%);">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 16px; background: #6b5ce7; box-shadow: 0 4px 12px rgba(107,92,231,0.28);">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div style="font-size: 17px; font-weight: 700; color: #ffffff;">근무 기록하기</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
