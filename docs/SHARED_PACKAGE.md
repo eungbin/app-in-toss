@@ -121,7 +121,7 @@ CLAUDE.md 앱 표의 fx-replay 행이 현실보다 뒤에 있었다). 파일에�
 | 항목 | 무엇을 | fx-replay | net-pay | rent-calc |
 |---|---|---|---|---|
 | `deploy` 스크립트 | `ait build` 는 `.ait` 를 **로컬에 만들기만** 한다. 업로드는 `ait deploy`. `deploy` / `deploy:release` 를 `package.json` 에 둔다 | **없음** | 있음 (2026-09-08) | 있음 (2026-09-09) |
-| **배포 API 키는 앱 범위** | **콘솔 → 워크스페이스 → 왼쪽 메뉴 `키`** 에서 발급하고 그때 범위를 전체 앱/특정 앱으로 고른다. `~/.ait/credentials` 의 키는 앱마다 다르다. 다른 앱의 키로 배포하면 `4031 앱이 없거나 앱 정보에 접근할 수 있는 권한이 없어요` 가 난다. 앱 이름으로 프로필을 만들고(`npx ait token add <앱>`) `ait deploy --profile <앱>` 로 고정한다 | `default` 프로필 | `net-pay` 프로필 (2026-09-08) | **미발급** — `deploy` 는 `--profile rent-calc` 를 쓴다 |
+| **배포 API 키는 앱 범위** | **콘솔 → 워크스페이스 → 왼쪽 메뉴 `키`** 에서 발급하고 그때 범위를 전체 앱/특정 앱으로 고른다. `~/.ait/credentials` 의 키는 앱마다 다르다. 다른 앱의 키로 배포하면 `4031 앱이 없거나 앱 정보에 접근할 수 있는 권한이 없어요` 가 난다. 앱 이름으로 프로필을 만들고(`npx ait token add <앱>`) `ait deploy --profile <앱>` 로 고정한다 | `default` 프로필 | `net-pay` 프로필 (2026-09-08) | `rent-calc` 프로필 (2026-09-09) |
 | 번들 스캔 | kit `bundle-scan.ts` + 앱 금지 목록. `build` 는 경고, `build:release` 는 차단 (4-1) | 자체 `scripts/check-bundle.ts` — kit 판으로 교체 대기 | 있음 | 있음 (2026-09-08) |
 | 세이프 에어리어 | kit `useSafeArea()` + `--safe-top`/`--safe-bottom`. CSS `env()` 금지 (4-2) | 자체 `useSafeArea.ts` — kit 판으로 교체 대기 | 있음 | 있음 (2026-09-08) |
 | **화면 시안 먼저** | 화면을 새로 만들거나 흐름을 바꿀 때는 `/design`(claude-design) 캔버스로 시안을 만들어 승인받고 구현한다. 작업 파일은 `<앱>/design/*.dc.html` 에 커밋한다. CSS 부터 고치면 구조 문제가 보이지 않는다(PLAYBOOK 2-10) | 미적용 | 적용 (2026-09-08) | 미적용 |
