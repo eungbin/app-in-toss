@@ -36,5 +36,7 @@ describe('날짜 헬퍼', () => {
     expect(hourText(420)).toBe('7시간');
     expect(hourText(450)).toBe('7시간 30분');
     expect(hourText(45)).toBe('45분');
+    // 빈 상태의 "0분 · 0일" 이 어색해서 0 만 시간으로 적는다
+    expect(hourText(0)).toBe('0시간');
   });
 });

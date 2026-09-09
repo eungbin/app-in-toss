@@ -6,9 +6,9 @@ import { useMemo, useState } from 'react';
 import type { WorkRecord, Workplace } from '@/types';
 import { t } from '@/i18n';
 import { BREAK_MIN_MAX, EXTRA_PAY_MAX, TIME_STEP_MIN } from '@/constants';
-import { splitShift, validateRecord } from '@/engine/shift';
+import { findOverlap, splitShift, validateRecord } from '@/engine/shift';
 import { dayPay } from '@/engine/pay';
-import { hourText, monthKey } from '@/engine/date';
+import { dowLabel, hhmm, hourText, monthKey } from '@/engine/date';
 import { Sheet } from '@/components/Sheet';
 import { DateField, Field, NumberField, SelectField, TextField, TimeField, ToggleCard } from '@/components/Field';
 
@@ -20,17 +20,22 @@ interface Props {
   initial: WorkRecord;
   isEdit: boolean;
   workplaces: Workplace[];
+  /** 겹침 검사 대상 — 근무지를 가리지 않고 전부 넘긴다 */
+  others: WorkRecord[];
   onSave: (rec: WorkRecord, previousMonth?: string) => void;
   onDelete: (rec: WorkRecord) => void;
   onClose: () => void;
 }
 
-export function RecordSheet({ initial, isEdit, workplaces, onSave, onDelete, onClose }: Props) {
+export function RecordSheet({ initial, isEdit, workplaces, others, onSave, onDelete, onClose }: Props) {
   const [rec, setRec] = useState<WorkRecord>(initial);
   const patch = (p: Partial<WorkRecord>) => setRec((r) => ({ ...r, ...p }));
 
   const wp = workplaces.find((w) => w.id === rec.workplaceId) ?? workplaces[0];
   const err = validateRecord(rec);
+  // 시간 자체가 말이 안 되면 겹침을 볼 필요가 없다
+  const clash = useMemo(() => (err === null ? findOverlap(rec, others) : null), [err, rec, others]);
+  const blocked = err !== null || clash !== null;
   const split = useMemo(() => splitShift(rec), [rec]);
   const pay = useMemo(() => (wp ? dayPay(split, rec, wp) : null), [split, rec, wp]);
   const overnight = rec.end < rec.start;
@@ -125,7 +130,7 @@ export function RecordSheet({ initial, isEdit, workplaces, onSave, onDelete, onC
           </Field>
 
           {/* 미리보기 */}
-          {err === null && pay ? (
+          {!blocked && pay ? (
             <div className="preview">
               <div className="row">
                 <span className="row__k">{t('record.preview.work')}</span>
@@ -166,7 +171,21 @@ export function RecordSheet({ initial, isEdit, workplaces, onSave, onDelete, onC
               </div>
             </div>
           ) : (
-            <div className="notice">{err === 'sameTime' ? t('record.err.sameTime') : t('record.err.breakTooLong')}</div>
+            <div className="notice">
+              {clash !== null ? (
+                <span>
+                  {t('record.err.overlap', {
+                    date: `${Number(clash.date.slice(5, 7))}월 ${Number(clash.date.slice(8, 10))}일 (${dowLabel(clash.date)})`,
+                    from: hhmm(clash.start),
+                    to: hhmm(clash.end),
+                  })}
+                  <br />
+                  {t('record.err.overlap.hint')}
+                </span>
+              ) : (
+                t(err === 'sameTime' ? 'record.err.sameTime' : 'record.err.breakTooLong')
+              )}
+            </div>
           )}
 
           <p className="field__note">{t('record.note.night')}</p>
@@ -189,7 +208,7 @@ export function RecordSheet({ initial, isEdit, workplaces, onSave, onDelete, onC
         <button
           type="button"
           className="btn"
-          disabled={err !== null}
+          disabled={blocked}
           onClick={() => onSave(rec, isEdit ? monthKey(initial.date) : undefined)}
         >
           {t('record.save')}

@@ -7,6 +7,7 @@
  */
 import type { LegalFile, ShiftSplit, WorkRecord } from '@/types';
 import { LEGAL } from '@/data';
+import { toUtc } from './date';
 
 const DAY_MIN = 1440;
 
@@ -58,6 +59,37 @@ export function splitShift(rec: WorkRecord, legal: LegalFile = LEGAL): ShiftSpli
     return { span, work, night, overtime: 0, holidayIn8, holidayOver8: work - holidayIn8 };
   }
   return { span, work, night, overtime: Math.max(0, work - std), holidayIn8: 0, holidayOver8: 0 };
+}
+
+const DAY_MS = 86_400_000;
+
+/**
+ * 기록이 실제로 점유하는 **절대 분 구간** [from, to).
+ * 날짜를 분으로 환산해 더하므로 자정을 넘는 기록도 이어진 하나의 구간이 된다.
+ */
+export function absSpan(rec: Pick<WorkRecord, 'date' | 'start' | 'end'>): { from: number; to: number } {
+  const day = Math.round(toUtc(rec.date) / DAY_MS);
+  const { start, end } = spanOf(rec);
+  return { from: day * DAY_MIN + start, to: day * DAY_MIN + end };
+}
+
+/**
+ * 시간이 겹치는 다른 기록을 찾는다. 없으면 null.
+ *
+ * **근무지가 달라도 겹치면 막는다** — 한 사람이 같은 시간에 두 곳에서 일할 수는 없다.
+ * 맞닿은 구간(18:00 퇴근 / 18:00 출근)은 겹친 것이 아니다.
+ */
+export function findOverlap<T extends Pick<WorkRecord, 'id' | 'date' | 'start' | 'end'>>(
+  rec: T,
+  others: readonly T[],
+): T | null {
+  const a = absSpan(rec);
+  for (const o of others) {
+    if (o.id === rec.id) continue;
+    const b = absSpan(o);
+    if (a.from < b.to && b.from < a.to) return o;
+  }
+  return null;
 }
 
 /** 저장 전에 막아야 하는 입력. null 이면 통과 */

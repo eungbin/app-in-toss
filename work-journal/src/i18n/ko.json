@@ -27,7 +27,7 @@
   "home.records.item.sub": "{name} · {from}–{to} · {hours}",
   "home.cta": "근무 기록하기",
   "home.noWorkplace": "근무지를 먼저 등록해 주세요",
-  "home.noWorkplace.cta": "근무지 등록",
+  "home.noWorkplace.cta": "근무지 등록하기",
   "home.locked.month": "지난 기록은 광고를 보면 오늘 하루 볼 수 있어요",
 
   "record.title": "근무 기록",
@@ -59,6 +59,8 @@
   "record.delete": "기록 삭제",
   "record.err.sameTime": "출근과 퇴근이 같아요",
   "record.err.breakTooLong": "휴게시간이 근무시간보다 길어요",
+  "record.err.overlap": "{date} {from}–{to} 기록과 겹쳐요",
+  "record.err.overlap.hint": "같은 시간에 두 곳에서 일할 수는 없어요. 시간을 고치거나 그 기록을 지워 주세요.",
 
   "wp.title.new": "근무지 등록",
   "wp.title.edit": "근무지 수정",

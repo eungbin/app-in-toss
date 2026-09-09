@@ -76,6 +76,15 @@ export function Home(props: Props) {
     [records],
   );
 
+  /**
+   * 근무지가 없으면 기록을 만들 수 없다. 달력·링크·고정 버튼 전부 **할 수 있는 일**로 보낸다 —
+   * 아무 일도 안 하는 버튼을 남기면 사용자는 앱이 고장 난 줄 안다.
+   */
+  const addOrRegister = (date?: string) => {
+    if (workplaces.length === 0) props.onAddWorkplace();
+    else props.onAddRecord(date);
+  };
+
   const lead = firstDayOfWeek(month);
   const total = daysInMonth(month);
   const nextMonth = addMonths(month, 1);
@@ -95,7 +104,7 @@ export function Home(props: Props) {
               <Icon name="chevronRight" size={22} width={2} />
             </button>
           </div>
-          <button type="button" className="iconbtn iconbtn--filled" aria-label={t('settings.title')} onClick={props.onSettings}>
+          <button type="button" className="iconbtn" aria-label={t('settings.title')} onClick={props.onSettings}>
             <Icon name="gear" size={20} width={1.8} />
           </button>
         </div>
@@ -227,7 +236,7 @@ export function Home(props: Props) {
                     </span>
                     {t('home.calendar.title')}
                   </div>
-                  <button type="button" className="card__link" onClick={() => props.onAddRecord()}>
+                  <button type="button" className="card__link" onClick={() => addOrRegister()}>
                     {t('home.calendar.add')}
                   </button>
                 </div>
@@ -252,7 +261,7 @@ export function Home(props: Props) {
                         key={iso}
                         type="button"
                         className={`cal__cell${isToday ? ' cal__cell--today' : ''}`}
-                        onClick={() => props.onAddRecord(iso)}
+                        onClick={() => addOrRegister(iso)}
                         aria-label={`${day}일${hit ? ` ${won(hit.total)}` : ''}`}
                       >
                         {isToday ? (
@@ -331,27 +340,24 @@ export function Home(props: Props) {
             </>
           )}
 
-          {workplaces.length === 0 ? (
-            <button type="button" className="btn btn--ghost" onClick={props.onAddWorkplace}>
-              {t('home.noWorkplace.cta')}
-            </button>
-          ) : null}
-
           <BannerAd />
         </div>
       </div>
 
       <div className="cta">
         <div className="cta__inner">
-          {/* 잠긴 달에서 기록을 만들면 저장한 것이 잠금 뒤로 사라져 보인다. 게이트를 먼저 연다 */}
+          {/*
+            근무지가 없으면 기록을 만들 수 없다. 버튼을 비활성으로 두면 왜 안 되는지 알 수 없으니
+            **할 수 있는 일**로 바꿔 준다 — 근무지 등록.
+            잠긴 달에서 기록을 만들면 저장한 것이 잠금 뒤로 사라져 보이므로 게이트를 먼저 연다.
+          */}
           <button
             type="button"
             className="btn"
-            onClick={locked ? props.onUnlock : () => props.onAddRecord()}
-            disabled={workplaces.length === 0}
+            onClick={locked && workplaces.length > 0 ? props.onUnlock : () => addOrRegister()}
           >
-            <Icon name="plus" size={20} width={2.2} />
-            {t('home.cta')}
+            <Icon name={workplaces.length === 0 ? 'wallet' : 'plus'} size={20} width={2.2} />
+            {workplaces.length === 0 ? t('home.noWorkplace.cta') : t('home.cta')}
           </button>
         </div>
       </div>

@@ -82,8 +82,12 @@ export function hhmm(minutes: number): string {
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 }
 
-/** 분 → "n시간 m분". 0분이면 "n시간" */
+/**
+ * 분 → "n시간 m분". 시간이 딱 맞으면 "n시간", 1시간 미만이면 "n분".
+ * 0 은 "0분" 이 아니라 **"0시간"** 이다 — 빈 상태의 "0분 · 0일" 이 어색하다.
+ */
 export function hourText(minutes: number): string {
+  if (minutes === 0) return '0시간';
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (h === 0) return `${m}분`;

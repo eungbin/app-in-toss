@@ -231,6 +231,7 @@ export function App() {
           initial={sheet.rec}
           isEdit={sheet.isEdit}
           workplaces={state.workplaces.filter((w) => activeWorkplaceIds.includes(w.id))}
+          others={Object.values(state.records).flat()}
           onSave={(rec, prevMonth) => {
             store.saveRecord(rec, prevMonth);
             setMonth(monthKey(rec.date));
