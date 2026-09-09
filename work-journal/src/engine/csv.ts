@@ -74,3 +74,15 @@ export function buildCsv(records: WorkRecord[], workplaces: Workplace[]): string
 export function csvFileName(today: string): string {
   return `근무수첩_${today.replace(/-/g, '')}.csv`;
 }
+
+/**
+ * UTF-8 문자열을 base64 로 바꾼다.
+ * `btoa` 는 Latin-1 만 받으므로 한글이 있으면 그대로 넣을 수 없다.
+ * SDK File.saveBase64 는 헤더 없는 순수 base64 를 받는다.
+ */
+export function utf8ToBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 1) bin += String.fromCharCode(bytes[i] as number);
+  return btoa(bin);
+}

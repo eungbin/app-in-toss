@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CSV_BOM, buildCsv, csvFileName } from '../csv';
+import { CSV_BOM, buildCsv, csvFileName, utf8ToBase64 } from '../csv';
 import { h, makeRecord, makeWorkplace } from './fixtures';
 
 /** 테스트용 최소 CSV 파서 — 구현과 다른 경로로 되읽어 검증한다 */
@@ -83,6 +83,14 @@ describe('CSV 내보내기 (US-4)', () => {
     );
     expect(rows[1]?.[0]).toBe('2026-09-08');
     expect(rows[2]?.[0]).toBe('2026-09-09');
+  });
+
+  it('base64 로 바꿔도 바이트가 그대로다 — SDK 에 넘기는 값이 곧 파일이다', () => {
+    const csv = buildCsv([makeRecord({ memo: '마감, "야간"' })], [wp]);
+    const bytes = Uint8Array.from(atob(utf8ToBase64(csv)), (c) => c.charCodeAt(0));
+    // UTF-8 BOM 은 EF BB BF. 기본 TextDecoder 는 이것을 떼어 내므로 ignoreBOM 으로 비교한다
+    expect([...bytes.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+    expect(new TextDecoder('utf-8', { ignoreBOM: true }).decode(bytes)).toBe(csv);
   });
 
   it('파일 이름에 날짜가 들어간다', () => {

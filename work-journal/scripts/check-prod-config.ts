@@ -1,10 +1,10 @@
 /**
- * 빌드 가드 — net-pay·fx-replay·rent-calc 와 같은 2단계 구조.
+ * 빌드 가드 — 다른 네 앱과 같은 2단계 구조.
  *
  *   테스트 빌드(`npm run build`)      — QR 테스트용. 테스트 광고 ID가 정상이다.
  *   출시 빌드(`npm run build:release`) — 실 광고 ID를 요구한다.
  *
- * 규격 출처 신선도는 `npm run check:data`, 번들에 남은 문자열은 `npm run check:bundle`.
+ * 법정 상수·출처 신선도는 `npm run check:data`, 번들에 남은 문자열은 `npm run check:bundle`.
  */
 import { resolve } from 'node:path';
 import { loadEnv } from '@ait/kit/scripts/env';
@@ -20,7 +20,7 @@ const email = process.env.VITE_SUPPORT_EMAIL;
 if (!email) {
   problems.push(
     '고객문의 이메일(VITE_SUPPORT_EMAIL)이 없습니다.\n' +
-      '  → 콘솔 등록값은 programmer97@naver.com 입니다(2026-09-08 확인). 같은 값을 .env 에 넣으세요.',
+      '  → 콘솔 등록값은 programmer97@naver.com 입니다(2026-09-09 확인). 같은 값을 .env 에 넣으세요.',
   );
 } else if (/example\.(com|org|net)$/i.test(email) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
   problems.push(`고객문의 이메일이 유효하지 않습니다: ${email}`);
@@ -46,7 +46,7 @@ for (const [key, label] of AD_KEYS) {
     problems.push(
       `${label} 광고 ID(${key})가 ${v ? '테스트 ID' : '비어 있음'} 입니다.\n` +
         '  → 출시 빌드에는 콘솔에서 발급받은 실 ID가 필요합니다.\n' +
-        '     이 앱은 구판이 광고를 등록조차 하지 않아 수익이 0이었습니다. 반드시 발급하세요.',
+        '     이 앱은 콘솔에 광고 그룹이 하나도 없습니다(2026-09-09 확인). 출시 전에 리워드·배너 2개를 발급하세요.',
     );
   }
   if (!release && isTest) notes.push(`${label} 광고 ID: ${v ? v : '(없음 — 광고를 붙이지 않습니다)'}`);
@@ -61,7 +61,7 @@ if (diag) {
         '  → 진단 카드는 실기기에서 원인을 좁히려고 만든 것입니다. 출시 빌드에서는 비우세요.',
     );
   } else {
-    notes.push('진단 빌드(VITE_DIAG) — 사진 입력 실패 시 원인을 화면에 띄웁니다');
+    notes.push('진단 빌드(VITE_DIAG) — 실기기에서만 터지는 문제의 원인을 화면에 띄웁니다');
   }
 }
 
