@@ -60,7 +60,7 @@
   /* 움직임 */
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
 
-  /* SDK SafeArea 값이 들어온다(@ait/kit useSafeArea). 토스 앱 밖에서는 0 */
+  /* SDK SafeArea 값이 들어온다(kit 의 세이프 에어리어 훅). 토스 앱 밖에서는 0 */
   --safe-top: 0px;
   --safe-bottom: 0px;
   color-scheme: light;
