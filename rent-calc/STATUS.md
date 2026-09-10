@@ -48,7 +48,7 @@
 | 검색 키워드 | 10개 준비됨 ([SUBMISSION 1-4](docs/SUBMISSION.md)). 실제 등록값 확인 필요 |
 | 고객문의 이메일 | `.env` `VITE_SUPPORT_EMAIL` 설정 완료(2026-09-09, 다른 앱과 같은 계정). 콘솔 등록값과 같은지 확인 필요 |
 | 로고 | 초안 `assets/logo-600.png` (체크 + 계약서 밑줄). 등록 여부 확인 필요 |
-| 스크린샷 | **0장** (세로 636×1048 최소 3장). 구성안은 [SUBMISSION 1-5](docs/SUBMISSION.md) |
+| 스크린샷 | **5장 준비됨** — `~/Downloads/rent-calc-upload/` (2026-09-10 `npm run shots`). 콘솔 등록은 아직 |
 | 광고 그룹 | **없음**. 리워드·배너 2개 필요 — 그래서 아래 테스트 번들에는 광고가 붙지 않는다 |
 | 최신 번들 | **`20260909-1`**, SDK **3.3.0**, 2026-09-09 20:24 배포. `reviewStatus: CREATED`, `isTested: false`, `deployed: false`. 광고 ID 없음(테스트 번들) |
 | 최신 배포 ID | `01a085e9-25fa-7a79-9bea-68f25601af33` |
@@ -72,5 +72,5 @@
    특히 확인할 것: 판정 카드 이미지 저장, 딥링크(`intoss://rent-calc/j?…`) 진입,
    날짜 피커, 숫자 키패드와 배너 자리, 백버튼(시트 닫기 → 화면 → 미니앱 종료)
 5. 광고 그룹 2개 발급 → `.env` 실 ID
-6. 스크린샷 5장 ([SUBMISSION 1-5](docs/SUBMISSION.md))
+6. ~~스크린샷 5장~~ → 촬영 완료(2026-09-10). `~/Downloads/rent-calc-upload/` 에 5장. 콘솔에 올리는 것만 남았다
 7. `npm run deploy:release` → **그 번들로 QR 1회**(`isTested` 가 서야 검토 요청이 열린다) → 검토 요청

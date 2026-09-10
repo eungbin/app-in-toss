@@ -25,6 +25,10 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', Pretendard, system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.5;
+  /* 한글은 단어 중간에서 끊지 않는다. "(부가세 별도)" 가 "별 / 도" 로 쪼개졌다.
+     다른 세 앱(net-pay·photo-standard·work-journal)도 같은 값을 쓴다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   -webkit-text-size-adjust: 100%;
   touch-action: pan-y;
 }

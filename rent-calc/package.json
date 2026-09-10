@@ -22,7 +22,8 @@
     "check:bundle": "tsx scripts/check-bundle.ts",
     "check:bundle:release": "tsx scripts/check-bundle.ts --release",
     "deploy": "npm run build && ait deploy --profile rent-calc",
-    "deploy:release": "npm run build:release && ait deploy --profile rent-calc"
+    "deploy:release": "npm run build:release && ait deploy --profile rent-calc",
+    "shots": "node scripts/shoot.mjs"
   },
   "dependencies": {
     "@ait/kit": "*",
