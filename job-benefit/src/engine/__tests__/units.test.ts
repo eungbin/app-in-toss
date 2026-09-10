@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   averageDaily, baseDaily, benefitDaily, benefitDays, calculate, curve, defaultPaidHolidayHours,
-  earlyBonus, eligibility, insuredBand, minBaseDaily, periodDays, stdDayHours, tenureDays,
+  earlyBonus, eligibility, insuredBand, minBaseDaily, periodDays, stdDayHours, tenureDays, tenureYearsMonths,
 } from '..';
 import type { Input } from '../../types';
 
@@ -240,4 +240,15 @@ describe('총액 — 관공서 계산의 실체를 따른다', () => {
       expect(r.total).toBe(r.benefitDaily * r.benefitDays);
     }
   });
+});
+
+describe('재직 기간 표시 — 달력으로 센다', () => {
+  it('2023-03-01 ~ 2026-09-30 은 3년 6개월 (30일 나눗셈이면 7개월로 어긋난다)', () => {
+    expect(tenureYearsMonths('2023-03-01', '2026-09-30')).toEqual({ years: 3, months: 6 });
+  });
+  it('하루 모자라면 그 달을 세지 않는다', () => {
+    expect(tenureYearsMonths('2023-03-15', '2026-09-14')).toEqual({ years: 3, months: 5 });
+    expect(tenureYearsMonths('2023-03-15', '2026-09-15')).toEqual({ years: 3, months: 6 });
+  });
+  it('같은 날이면 0', () => expect(tenureYearsMonths('2026-09-30', '2026-09-30')).toEqual({ years: 0, months: 0 }));
 });

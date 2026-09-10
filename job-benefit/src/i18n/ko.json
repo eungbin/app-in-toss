@@ -41,6 +41,7 @@
   "s02.detail.stdHours": "1일 소정근로",
   "s02.detail.minDaily": "하루 하한",
   "s02.detail.insured": "가입기간",
+  "s02.detail.total": "모두 받으면",
   "s02.waiting.title": "첫 7일은",
   "s02.waiting.body": "신청 후 첫 7일은 지급되지 않아요. 받는 날수는 그대로 {days}일이에요.",
   "s02.reason.insuredShort": "고용보험 가입 기간이 짧아 요건에 미치지 않는 것으로 보여요.",

@@ -800,6 +800,14 @@ input {
   padding: 8px 20px calc(24px + var(--safe-bottom));
   border-radius: 24px 24px 0 0;
   animation: sheet-up 280ms var(--ease);
+  /* 아래로 끌어 닫는다. 본문은 아래에서 pan-y 로 되돌려 스크롤을 살린다 */
+  touch-action: none;
+  transition: transform 240ms var(--ease);
+}
+/* 끄는 동안에는 손가락을 그대로 따라가야 한다 */
+.sheet[data-dragging='true'] {
+  transition: none;
+  animation: none;
 }
 .dialog {
   margin: auto 20px;
@@ -848,6 +856,8 @@ input {
   font-size: 14px;
 }
 .sheet__body {
+  /* 본문에서 시작한 제스처는 스크롤 몫이다 */
+  touch-action: pan-y;
   margin: 10px 0 0;
   color: var(--text-2);
   font-size: var(--fs-body);
@@ -1262,4 +1272,65 @@ input {
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
+}
+
+/* ── 시트 안 스크롤 영역 (별표 2 목록처럼 긴 시트) ──── */
+.sheet__scroll {
+  max-height: 62vh;
+  margin: 12px -20px 0;
+  padding: 0 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* ── 하단 고정 버튼 ─────────────────────────────────── */
+.bottom-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 20px calc(16px + var(--safe-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--fs-headline);
+  font-weight: 700;
+}
+.btn-primary--ghost {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* ── 판정 배지 3상태 ────────────────────────────────
+   요건 미달에 --danger 를 쓰지 않는다. 사용자가 뭘 잘못한 것이 아니다 */
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+.verdict[data-kind='likely'] {
+  background: var(--primary-weak);
+  color: var(--primary);
+}
+.verdict[data-kind='check'] {
+  background: var(--warn-weak);
+  color: var(--warn);
+}
+.verdict[data-kind='unlikely'] {
+  background: var(--gray-100);
+  color: var(--gray-700);
 }

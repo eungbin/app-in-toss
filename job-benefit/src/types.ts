@@ -38,6 +38,22 @@ export interface Input {
   ordinaryDaily?: number;
 }
 
+/** 홈 화면이 들고 있는 입력 초안. 비어 있을 수 있어 Input 과 따로 둔다 */
+export interface Draft {
+  reason: QuitReason;
+  justifiedItem?: string;
+  hiredDate: string;
+  quitDate: string;
+  ageAtQuit: number | null;
+  disabled: boolean;
+  /** 주 소정근로시간 */
+  weekHours: number | null;
+  /** 주휴시간. 비우면 주 소정근로시간에서 채운다 */
+  holidayHours: number | null;
+  /** 최근 3개월의 월 세전 급여 */
+  monthlyWage: number | null;
+}
+
 export type Verdict = 'likely' | 'check' | 'unlikely';
 
 /** 기초일액에 걸린 조정 — 화면 설명 문구를 고르는 근거 */

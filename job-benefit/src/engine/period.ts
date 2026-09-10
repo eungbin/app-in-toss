@@ -42,6 +42,16 @@ export function tenureDays(hiredDate: string, quitDate: string): number {
   return n;
 }
 
+/** 재직 기간을 "n년 m개월" 로. 30일 나눗셈으로 근사하면 달력과 어긋난다 */
+export function tenureYearsMonths(hiredDate: string, quitDate: string): { years: number; months: number } {
+  const a = new Date(parse(hiredDate));
+  const b = new Date(parse(quitDate));
+  let months = (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth());
+  if (b.getUTCDate() < a.getUTCDate()) months -= 1;
+  if (months < 0) months = 0;
+  return { years: Math.floor(months / 12), months: months % 12 };
+}
+
 /** 별표 1 의 피보험기간 5구간. 달력 기준으로 만 n년을 채웠는지로 가른다 */
 export function insuredBand(hiredDate: string, quitDate: string): InsuredBand {
   const reached = (years: number): boolean => parse(quitDate) >= parse(addMonths(hiredDate, years * 12));
