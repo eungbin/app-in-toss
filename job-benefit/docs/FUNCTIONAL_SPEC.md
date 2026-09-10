@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | v0.1 (2026-09-11) |
+| 문서 버전 | v0.2 (2026-09-11) |
 | 선행 문서 | [PRD.md](PRD.md), [DATA_VERIFICATION.md](DATA_VERIFICATION.md) |
 | 구조 | net-pay `FUNCTIONAL_SPEC.md` 7장 구조 ([PLAYBOOK 2-5](../../docs/PLAYBOOK.md)) |
 | AC 숫자의 출처 | **원문 숫자 리터럴 산술로 손계산했다.** 구현 코드를 거치지 않았다. 9단계에서 고용보험 모의계산 결과와 다시 대조한다 |
@@ -72,11 +72,12 @@ export interface Input {
   reason: QuitReason;
   /** 별표 2에서 고른 항목 번호. reason === 'voluntaryJustified' 일 때만 */
   justifiedItem?: number;
-  /** 이직일 현재 만 50세 이상 (장애인은 true 로 본다 — 별표 1 비고) */
-  age50plus: boolean;
-  insuredBand: InsuredBand;
-  /** 피보험 단위기간(일). 180 미만이면 판정이 unlikely */
-  insuredDays: number;
+  /** 이직일 현재 만 나이. 50세 경계만 쓴다 */
+  ageAtQuit: number;
+  /** 장애인고용촉진법 제2조1호 장애인 — 별표 1 비고로 50세 이상으로 본다 */
+  disabled: boolean;
+  /** 입사일 (ISO). 재직 기간에서 피보험기간·단위기간을 추정한다 */
+  hiredDate: string;
   stdHours: StdHoursBasis;
   /** 이직일 (ISO). 3개월 총일수와 최저임금 연도를 여기서 뽑는다 */
   quitDate: string;
@@ -90,6 +91,10 @@ export type Verdict = 'likely' | 'check' | 'unlikely';
 
 export interface Breakdown {
   verdict: Verdict;
+  /** 재직 기간에서 파생 — 사용자가 직접 넣지 않는다 */
+  insuredBand: InsuredBand;
+  insuredDaysEstimated: number;
+  treatedAs50plus: boolean;   // ageAtQuit >= 50 || disabled
   /** 판정 근거 키. i18n 키로 쓴다 */
   reasons: string[];
   periodDays: number;        // 3개월 총일수 (89~92)
@@ -202,8 +207,8 @@ export interface CurvePoint {
 
 | AC | 입력 | 기대 |
 |---|---|---|
-| AC-1 | 비자발 + 피보험 단위기간 180 | **`likely`** |
-| AC-2 | 피보험 단위기간 179 | **`unlikely`**, `reasons: ['insuredDaysShort']` (사유와 무관하게 우선) |
+| AC-1 | 비자발 + 추정 단위기간 180 | **`likely`** |
+| AC-2 | 추정 단위기간 179 | **`check`**, `reasons: ['insuredDaysNearThreshold']` — **추정값이므로 단정하지 않는다**(O-4). 150일 미만이면 `unlikely` |
 | AC-3 | 자발 + 정당한 사유 선택 없음 | **`unlikely`**, `reasons: ['voluntaryNotJustified']` |
 | AC-4 | 자발 + 별표 2 항목 선택 | **항상 `check`**, `reasons: ['justifiedNeedsProof']` — 단정하지 않는다 ([PRD 2-2](PRD.md)) |
 | AC-5 | 비자발 + 180 이상이지만 이직일이 오늘 이후 | `check`, `reasons: ['futureQuitDate']` |
@@ -235,7 +240,7 @@ export interface CurvePoint {
 | AC-1 | 점의 개수 = `benefitDays + 1` (0일째 ~ 마지막 날) |
 | AC-2 | `paid` 는 단조증가, `total` 은 **1/2 경계에서 단조가 아니다** — 그 계단이 이 화면의 핵심이다 |
 | AC-3 | 일액 66,048 · 소정 180 일 때 90일째 `total` = 90×66,048 + 2,972,160 = **8,916,480**, 91일째 = 91×66,048 + 0 = **6,010,368** → **감소한다** |
-| AC-4 | 잠금 상태에서 `curve()` 를 호출하지 않는다. 자리표시자 `●●●` 만 DOM 에 넣는다 |
+| AC-4 | 잠금 상태에서 `curve()` 를 호출하지 않는다. **뼈대 막대(skeleton)** 만 렌더한다 — 점(`●●●`)은 가짜 숫자나 오류처럼 보인다([net-pay SCREEN_FLOW 6-3](../../net-pay/docs/SCREEN_FLOW.md)) |
 
 ### 3-10. 화면 동작 AC (발췌)
 
@@ -265,7 +270,7 @@ export interface CurvePoint {
 ## 5. 비기능
 
 - **성능** — 초기 렌더 2초 이내. 데이터 JSON 합계 100KB 미만. 곡선은 최대 271점이므로 캔버스 1회 렌더로 충분하다.
-- **접근성** — 잠금 수치는 DOM 에 넣지 않는다(흐림만으로는 접근성 트리에 남는다). 배지는 색만으로 구분하지 않고 문구를 함께 둔다.
+- **접근성** — 잠금 수치는 DOM 에 넣지 않는다(흐림만으로는 접근성 트리에 남는다). 잠금 표시는 뼈대 막대. 배지는 색만으로 구분하지 않고 문구를 함께 둔다.
 - **문구 린트** — 금지어 3그룹([PRD 2-2](PRD.md)). 화이트리스트에 "고용보험법"·"고용보험 가입기간"(법령·제도 명칭)을 넣어 오탐을 막는다.
 - **오프라인** — 광고 SDK 외 런타임 외부 호출 0. 네트워크가 없어도 계산은 전부 동작한다.
 - **i18n** — `ko.json` 하나. 카피는 화면 흐름 문서의 카피 일람이 원본이다.
@@ -286,5 +291,5 @@ export interface CurvePoint {
 - **O-1. 원 단위 절사 규칙** — 일액을 원 단위로 맞추는 규칙이 **원문에 없다.** 이 명세는 최종 일액에서만 1원 미만 버림(floor)으로 두었다. 평균임금·기초일액은 소수를 유지한다(고용노동부가 1일 평균임금 소수를 유지한 net-pay 사례와 같은 방향). **9단계에서 모의계산 결과와 대조해 확정한다.** 66,048 같은 하한값은 절사와 무관해 영향이 적다.
 - **O-2. 3개월 산정 기간의 경계** — "이직일 이전 3개월"의 시작·끝(이직일 포함 여부, 근로기준법 시행령 제2조의 제외 기간)을 원문으로 확정해야 한다. 총일수가 89~92일로 흔들리면 평균임금이 최대 3% 움직인다.
 - **O-3. 기준기간 예외** — 질병 등으로 30일 이상 보수를 못 받은 경우의 가산(법 제40조②1)과 초단시간 24개월(같은 항 2호)은 v1.0 계산에 넣지 않는다. 판정에서 `check` 로 보낼지, 각주로만 둘지 화면 흐름에서 결정.
-- **O-4. 피보험 단위기간 입력** — 사용자가 "180일"을 정확히 알기 어렵다. 재직 기간에서 추정하게 할지(무급휴일 제외 문제), 구간 선택으로 둘지 화면 흐름에서 결정.
+- **O-4. 피보험 단위기간 추정의 오차** — 2026-09-11 확정: **입사일·퇴사일을 받아 달력 일수로 추정한다.** 단위기간은 보수 지급의 기초가 된 날만 세므로 무급휴직·결근이 있으면 실제보다 크게 나온다. 그래서 **추정값이 180일 근처(150~210일)면 판정을 `check` 로 낸다**(3-6 AC-2). 경계 폭 150~210 은 임의값이므로 화면 흐름 검토에서 조정할 수 있다.
 - **O-5. 모의계산 페이지 경로** — 9단계에서 브라우저로 확인해 기입([DATA_VERIFICATION 6장](DATA_VERIFICATION.md)).
