@@ -12,7 +12,7 @@ export function curve(benefitDaily: number, benefitDays: number): CurvePoint[] {
   for (let day = 0; day <= benefitDays; day++) {
     const remaining = benefitDays - day;
     const bonus = earlyBonus(benefitDaily, benefitDays, remaining, day + 8);
-    const paid = benefitDaily * day;
+    const paid = Math.floor(benefitDaily * day);
     points.push({ day, paid, bonus: bonus.amount, total: paid + bonus.amount });
   }
   return points;

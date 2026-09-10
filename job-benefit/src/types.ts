@@ -55,7 +55,10 @@ export interface Breakdown {
   minBaseDaily: number;
   baseDaily: number;
   applied: Applied[];
+  /** 화면에 쓰는 일액 — 원 단위로 버린 값 */
   benefitDaily: number;
+  /** 버리기 전 일액. total 은 이 값으로 곱한다 */
+  benefitDailyExact: number;
   benefitDays: number;
   total: number;
 }
@@ -103,6 +106,8 @@ export interface LegalFile {
   stdHours: { weekDiv: number; monthDiv: number; fourWeekDiv: number; dayHours: number };
   sources: Source[];
   needsVerification?: string[];
+  /** 절사 규칙의 근거 — 원문에 없어 공공 계산기 대조로 정했다 */
+  roundingNote?: string;
 }
 
 /** src/data/min-wage.json */

@@ -1,7 +1,7 @@
 /** 단위 테스트 — docs/FUNCTIONAL_SPEC.md §3 의 AC 를 그대로 옮겼다 */
 import { describe, expect, it } from 'vitest';
 import {
-  averageDaily, baseDaily, benefitDaily, benefitDays, curve, defaultPaidHolidayHours,
+  averageDaily, baseDaily, benefitDaily, benefitDays, calculate, curve, defaultPaidHolidayHours,
   earlyBonus, eligibility, insuredBand, minBaseDaily, periodDays, stdDayHours, tenureDays,
 } from '..';
 import type { Input } from '../../types';
@@ -43,10 +43,17 @@ describe('§3-2 averageDaily · 산정 기간', () => {
 
 describe('§3-3 baseDaily — 법 제45조 순서대로', () => {
   const minBase8 = minBaseDaily(8, MW26); // 82,560
-  it('AC-1 조정 없음', () => {
+  it('AC-1 조정 없음 — 평균임금을 원 단위로 버린다', () => {
     const r = baseDaily(97_826.0869565, minBase8);
-    expect(r.baseDaily).toBeCloseTo(97_826.0869565, 6);
+    expect(r.baseDaily).toBe(97_826);
     expect(r.applied).toEqual([]);
+  });
+  it('AC-1b 절사는 버림이고 평균에 먼저 적용된다 (관공서 대조)', () => {
+    // 평균 110,873.37 → 기초일액 110,873 → ×0.6 = 66,523.8 → 66,523
+    // 소수를 유지하면 66,524.02 → 66,524 로 1원 어긋난다
+    const r = baseDaily(10_200_350 / 92, minBase8);
+    expect(r.baseDaily).toBe(110_873);
+    expect(benefitDaily(r.baseDaily, minBase8, r.applied).benefitDaily).toBe(66_523);
   });
   it('AC-2 상한', () => {
     const r = baseDaily(130_434.78, minBase8);
@@ -94,7 +101,7 @@ describe('§3-4 benefitDaily — 법 제46조', () => {
     const minBase3 = minBaseDaily(3, MW26); // 30,960
     expect(of(minBase3, minBase3, ['minBase']).benefitDaily).toBe(24_768);
   });
-  it('AC-8 불변식 — min(max(60%, 하한 80%), 상한 60%)', () => {
+  it('AC-8 불변식 — min(max(60%, 하한 80%), 상한 60%). 기초일액은 이미 원 단위다', () => {
     for (let base = 20_000; base <= 113_500; base += 137) {
       for (const hours of [3, 4, 8]) {
         const mb = minBaseDaily(hours, MW26);
@@ -199,5 +206,38 @@ describe('§3-9 curve — 계단이 이 화면의 핵심', () => {
   it('수급 시작 직후 7일은 신고 후 14일이 지나지 않아 수당이 없다', () => {
     expect(pts[6]!.bonus).toBe(0);
     expect(pts[7]!.bonus).toBeGreaterThan(0);
+  });
+});
+
+describe('총액 — 관공서 계산의 실체를 따른다', () => {
+  it('버리기 전 일액으로 곱한다. 표시 일액 × 일수와 어긋나는 것이 정상이다', () => {
+    const r = calculate(
+      {
+        reason: 'involuntary', ageAtQuit: 45, disabled: false,
+        hiredDate: '2023-03-01', quitDate: '2026-09-30',
+        stdHours: { kind: 'week', hours: 40, paidHolidayHours: 8 },
+        wageTotal3m: 10_200_316,
+      },
+      '2026-10-01',
+    );
+    expect(r.benefitDaily).toBe(66_523);        // 화면 표시
+    expect(r.benefitDailyExact).toBeCloseTo(66_523.8, 6);
+    expect(r.total).toBe(11_974_284);           // 관공서 화면값
+    expect(r.total).not.toBe(r.benefitDaily * r.benefitDays); // 11,974,140
+  });
+
+  it('하한·상한이 걸린 케이스는 두 값이 같다 — 소수가 없다', () => {
+    for (const wage of [9_000_000, 12_000_000]) {
+      const r = calculate(
+        {
+          reason: 'involuntary', ageAtQuit: 45, disabled: false,
+          hiredDate: '2023-03-01', quitDate: '2026-09-30',
+          stdHours: { kind: 'week', hours: 40, paidHolidayHours: 8 },
+          wageTotal3m: wage,
+        },
+        '2026-10-01',
+      );
+      expect(r.total).toBe(r.benefitDaily * r.benefitDays);
+    }
   });
 });

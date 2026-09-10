@@ -42,7 +42,9 @@ export function calculate(input: Input, today: string): Breakdown {
     baseDaily: base.baseDaily,
     applied: daily.applied,
     benefitDaily: daily.benefitDaily,
+    benefitDailyExact: daily.exact,
     benefitDays: payDays,
-    total: daily.benefitDaily * payDays,
+    // 총액은 버리기 전 일액으로 곱한다 — 관공서 계산과 같게 (wage.ts 주석)
+    total: Math.floor(daily.exact * payDays),
   };
 }

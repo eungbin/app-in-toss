@@ -20,8 +20,12 @@ function addMonths(iso: string, months: number): string {
 }
 
 /**
- * 평균임금 산정 기간의 일수 — 이직일 직전 3개월(이직일은 제외).
- * 경계의 정확한 정의는 미확정이다(docs/FUNCTIONAL_SPEC.md O-2).
+ * 평균임금 산정 기간의 일수.
+ *
+ * 고용보험 모의계산은 **이직일을 포함해** 역산한다 — 이직일 2026-09-15 는
+ * 2026-06-16 ~ 2026-09-15 (92일), 2026-09-30 은 2026-07-01 ~ 2026-09-30 (92일).
+ * 구간의 시작·끝은 하루 밀리지만 **일수는 `이직일 − (이직일 − 3개월)` 로 같다.**
+ * 그래서 아래 계산으로 관공서와 일수가 일치한다 (2026-09-11 대조, docs/FACT_CHECK.md 3장).
  */
 export function periodDays(quitDate: string): number {
   const start = addMonths(quitDate, -3);

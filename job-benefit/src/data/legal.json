@@ -5,8 +5,18 @@
   "rateNormal": 0.6,
   "rateMin": 0.8,
   "baseDailyCap": 113500,
-  "early": { "afterDays": 14, "remainRatio": 0.5, "employMonths": 12, "rate": 0.5 },
-  "stdHours": { "weekDiv": 48, "monthDiv": 209, "fourWeekDiv": 28, "dayHours": 8 },
+  "early": {
+    "afterDays": 14,
+    "remainRatio": 0.5,
+    "employMonths": 12,
+    "rate": 0.5
+  },
+  "stdHours": {
+    "weekDiv": 48,
+    "monthDiv": 209,
+    "fourWeekDiv": 28,
+    "dayHours": 8
+  },
   "sources": [
     {
       "label": "고용보험법 제40조(구직급여의 수급 요건) — 기준기간 18개월, 피보험 단위기간 180일",
@@ -55,7 +65,7 @@
     }
   ],
   "needsVerification": [
-    "원 단위 절사 규칙이 원문에 없다. 최종 일액에서만 1원 미만 버림으로 두었다 — 고용보험 모의계산 결과와 대조해 확정한다 (docs/FUNCTIONAL_SPEC.md O-1)",
-    "이직일 이전 3개월 산정 기간의 경계(이직일 포함 여부, 근로기준법 시행령 제2조 제외 기간) — 미확정 (O-2)"
-  ]
+    "조기재취업수당 제외 기준 중 시행령 제84조①1라목의 \"고용노동부장관이 고시하는 임금액\" 을 확보하지 못했다 — v1.0 범위 제외, 화면 각주로 처리 (docs/PRD.md 9장)"
+  ],
+  "roundingNote": "평균임금을 원 단위로 버린 뒤 60%를 적용하고 결과도 버린다. 원문에 절사 규정은 없고 고용보험 모의계산 결과와 대조해 정했다 (2026-09-11, docs/FACT_CHECK.md 3장)."
 }
