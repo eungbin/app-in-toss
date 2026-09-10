@@ -299,8 +299,13 @@ export function Home(props: Props) {
 
                 {records.length === 0 ? (
                   <div className="empty">
-                    <div className="empty__t">{t('home.records.empty.title')}</div>
-                    <div className="empty__b">{t('home.records.empty.body')}</div>
+                    {/* 근무지가 없으면 기록이 없는 게 당연하다. 다음에 할 일을 가리킨다 */}
+                    <div className="empty__t">
+                      {workplaces.length === 0 ? t('home.noWorkplace') : t('home.records.empty.title')}
+                    </div>
+                    <div className="empty__b">
+                      {workplaces.length === 0 ? t('home.noWorkplace.body') : t('home.records.empty.body')}
+                    </div>
                   </div>
                 ) : (
                   <div className="reclist">

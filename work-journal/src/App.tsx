@@ -110,13 +110,13 @@ export function App() {
     if (state.ready) void store.loadMonths(month);
   }, [state.ready, month, store]);
 
-  /* 첫 진입에 근무지가 없으면 근무지 시트를 연다. 유일한 자동 오픈이다 */
-  useEffect(() => {
-    if (state.ready && state.workplaces.length === 0 && sheet === null) {
-      setSheet({ kind: 'workplace', wp: newWorkplace(today, []), isEdit: false });
-    }
-    // eslint 규칙 없이도 의도는 분명하다: 준비된 직후 한 번만 본다
-  }, [state.ready]); // eslint-disable-line react-hooks/exhaustive-deps
+  /*
+   * **진입 시 시트를 자동으로 열지 않는다.** 근무지가 없을 때 근무지 시트를 띄우고 있었는데
+   * 2026-09-10 심사에서 반려됐다 — "미니앱 접속 직후 바텀시트가 바로 노출돼요.
+   * 미니앱 진입 시 즉시 바텀시트가 나타나지 않도록 수정해 주세요."
+   * PRD 2-4 D3 에 이미 적어 둔 규칙인데 근무지 시트만 예외로 뒀던 것이 잘못이었다.
+   * 빈 홈이 스스로 안내한다 — 하단 버튼이 [근무지 등록하기] 이고 달력·링크도 같은 곳으로 간다.
+   */
 
   useEffect(() => {
     if (state.loadFailed) setToast(t('toast.loadFailed'));

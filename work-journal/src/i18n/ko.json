@@ -27,6 +27,7 @@
   "home.records.item.sub": "{name} · {from}–{to} · {hours}",
   "home.cta": "근무 기록하기",
   "home.noWorkplace": "근무지를 먼저 등록해 주세요",
+  "home.noWorkplace.body": "시급과 사업장 규모를 등록하면 달력에 근무를 기록할 수 있어요.",
   "home.noWorkplace.cta": "근무지 등록하기",
   "home.locked.month": "지난 기록은 광고를 보면 오늘 하루 볼 수 있어요",
 
