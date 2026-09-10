@@ -1,0 +1,42 @@
+{
+  "name": "job-benefit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5178",
+    "build": "npm run check && npm run check:data && npm run check:config && vite build && npm run check:bundle && ait build",
+    "build:web": "vite build",
+    "preview": "vite preview",
+    "check": "npm run typecheck && npm run lint:copy && npm run test:run",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint:copy": "tsx scripts/lint-copy.ts",
+    "data:fetch": "tsx scripts/fetch-law.ts",
+    "data:build": "tsx scripts/build-data.ts",
+    "check:data": "tsx scripts/check-data.ts",
+    "check:config": "tsx scripts/check-prod-config.ts",
+    "check:config:release": "tsx scripts/check-prod-config.ts --release",
+    "check:bundle": "tsx scripts/check-bundle.ts",
+    "check:bundle:release": "tsx scripts/check-bundle.ts --release",
+    "build:release": "npm run check && npm run check:data && npm run check:config:release && vite build && npm run check:bundle:release && ait build",
+    "deploy": "npm run build && ait deploy --profile job-benefit",
+    "deploy:release": "npm run build:release && ait deploy --profile job-benefit"
+  },
+  "dependencies": {
+    "@ait/kit": "*",
+    "@apps-in-toss/web-framework": "^3.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
+}

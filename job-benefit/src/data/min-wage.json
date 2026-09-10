@@ -1,0 +1,22 @@
+{
+  "minWage": [
+    {
+      "year": 2025,
+      "hourly": 10030,
+      "source": {
+        "label": "고용노동부 고시 제2024-33호 2025년 적용 최저임금",
+        "url": "https://www.minimumwage.go.kr/minWage/policy/decisionMain.do",
+        "checkedAt": "2026-09-09"
+      }
+    },
+    {
+      "year": 2026,
+      "hourly": 10320,
+      "source": {
+        "label": "고용노동부 고시 제2025-47호 2026년 적용 최저임금 (시간급 10,320원, 월 환산 2,156,880원)",
+        "url": "https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18144",
+        "checkedAt": "2026-09-09"
+      }
+    }
+  ]
+}

@@ -101,7 +101,7 @@ net-pay PRD의 12장 구조를 그대로 쓴다: 0 확정 사항 / 1 서비스 �
 
 ### 2-7. 워크스페이스 생성
 - [ ] 루트 `package.json` `workspaces`에 폴더 추가, `npm install`은 루트에서
-- [ ] `dev` 포트 배정(fx-replay 5173, net-pay 5174, rent-calc 5175, 다음은 5176)
+- [ ] `dev` 포트 배정 — 5173 fx-replay · 5174 net-pay · 5175 rent-calc · 5176~5177 photo-standard·work-journal · 5178 job-benefit · **다음은 5179**. 값은 각 앱 `package.json` 의 `dev` 스크립트에서 확인한다(`grep -h '"dev"' */package.json`)
 - [ ] net-pay `package.json` scripts 복사: `check`(typecheck·lint:copy·test:run), `data:fetch`, `data:build`, `check:data`, `check:config`, `build`, `build:release`
 - [ ] `apps-in-toss.config.ts`, `@apps-in-toss/web-framework` 3.3.x, Vite + React + TS, vitest
 - [ ] `@ait/kit` import. 앱별 주입값: Storage 접두어, 광고 그룹 ID(`.env`), 금지어 사전, 앱 이름

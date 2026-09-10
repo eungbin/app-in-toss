@@ -1,0 +1,61 @@
+{
+  "basePeriodMonths": 18,
+  "insuredDaysMin": 180,
+  "waitingDays": 7,
+  "rateNormal": 0.6,
+  "rateMin": 0.8,
+  "baseDailyCap": 113500,
+  "early": { "afterDays": 14, "remainRatio": 0.5, "employMonths": 12, "rate": 0.5 },
+  "stdHours": { "weekDiv": 48, "monthDiv": 209, "fourWeekDiv": 28, "dayHours": 8 },
+  "sources": [
+    {
+      "label": "고용보험법 제40조(구직급여의 수급 요건) — 기준기간 18개월, 피보험 단위기간 180일",
+      "url": "https://www.law.go.kr/법령/고용보험법",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 제45조(급여의 기초가 되는 임금일액) — 평균임금, 통상임금 보정, 최저기초일액",
+      "url": "https://www.law.go.kr/법령/고용보험법",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 제46조(구직급여일액) — 100분의 60, 최저구직급여일액 100분의 80",
+      "url": "https://www.law.go.kr/법령/고용보험법",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 제49조(대기기간) — 7일",
+      "url": "https://www.law.go.kr/법령/고용보험법",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 시행령 제68조(급여기초 임금일액의 상한액) — 11만3500원 <개정 2025. 12. 23.>",
+      "url": "https://www.law.go.kr/법령/고용보험법시행령",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 시행령 제84조(조기재취업 수당의 지급기준) — 14일 경과, 소정급여일수 2분의 1 이상 잔여, 12개월 이상 계속 고용",
+      "url": "https://www.law.go.kr/법령/고용보험법시행령",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 시행령 제85조(조기재취업 수당의 금액) — 구직급여일액 × 미지급일수 × 2분의 1",
+      "url": "https://www.law.go.kr/법령/고용보험법시행령",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "고용보험법 시행규칙 제91조의2(이직 전 1일 소정근로시간의 산정) — 48·209·28 및 8시간",
+      "url": "https://www.law.go.kr/법령/고용보험법시행규칙",
+      "checkedAt": "2026-09-10"
+    },
+    {
+      "label": "근로기준법 제2조 제1항 제6호 — 평균임금 정의(3개월 임금 총액 ÷ 총일수)",
+      "url": "https://www.law.go.kr/법령/근로기준법",
+      "checkedAt": "2026-09-10"
+    }
+  ],
+  "needsVerification": [
+    "원 단위 절사 규칙이 원문에 없다. 최종 일액에서만 1원 미만 버림으로 두었다 — 고용보험 모의계산 결과와 대조해 확정한다 (docs/FUNCTIONAL_SPEC.md O-1)",
+    "이직일 이전 3개월 산정 기간의 경계(이직일 포함 여부, 근로기준법 시행령 제2조 제외 기간) — 미확정 (O-2)"
+  ]
+}
