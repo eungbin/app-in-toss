@@ -17,6 +17,8 @@ dist/
 # 작업 파일(*.dc.html, canvas.json)만 커밋하고 캔버스는 거기서 다시 만든다.
 */design/*.html
 !*/design/*.dc.html
+# 시안 본문 소스 — build.mjs 가 styles.css 를 주입해 *.dc.html 을 만든다
+!*/design/*.body.html
 
 # 법령 원문 수집 결과 — data:fetch 로 언제든 다시 받는다(파일이 크고 개정되면 갱신된다)
 */data-src/

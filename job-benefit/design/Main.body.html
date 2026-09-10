@@ -1,0 +1,92 @@
+<div class="frame">
+  <p class="spec">S01 판정 입력 · 홈 — 진입 즉시 시트 없음, 자동 포커스 없음</p>
+  <div class="frame__flow">
+    <div class="screen">
+      <h1 style="margin: 12px 0 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">실업급여 되나요?</h1>
+      <p class="hint" style="margin-top: 6px;">조건을 넣으면 받을 수 있는지, 얼마를 며칠 받는지 알려드려요.</p>
+
+      <p class="section-title">왜 그만두셨어요?</p>
+      <div class="card" style="margin-top: 8px; padding: 6px 16px;">
+        <ul class="list list--plain" style="margin: 0;">
+          <li class="list__item" style="gap: 10px;">
+            <span class="list__pick"><input type="radio" checked></span>
+            <span class="list__body"><span class="list__name">회사 사정으로 그만뒀어요</span></span>
+          </li>
+          <li class="list__item" style="gap: 10px;">
+            <span class="list__pick"><input type="radio"></span>
+            <span class="list__body"><span class="list__name">제가 그만뒀어요</span></span>
+          </li>
+          <li class="list__item" style="gap: 10px; border-bottom: none;">
+            <span class="list__pick"><input type="radio"></span>
+            <span class="list__body">
+              <span class="list__name">제가 그만뒀지만 사정이 있었어요</span>
+              <span class="list__sub" style="color: var(--primary); font-weight: 600; font-size: var(--fs-label);">어떤 사정인지 보기</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="section-title">언제부터 언제까지 다녔어요?</p>
+      <div class="card" style="margin-top: 8px;">
+        <label class="field" style="margin-top: 0;">
+          <span class="field__label">입사</span>
+          <span class="field__row"><span class="field__input">2023-03-01</span></span>
+        </label>
+        <label class="field">
+          <span class="field__label">퇴사</span>
+          <span class="field__row"><span class="field__input">2026-09-30</span></span>
+        </label>
+        <p class="hint" style="margin-top: 10px;">3년 6개월 · 고용보험 가입 기간으로 봐요</p>
+      </div>
+
+      <p class="section-title">만 나이</p>
+      <div class="card" style="margin-top: 8px; display: flex; align-items: center; gap: 16px; padding: 14px 16px;">
+        <span class="field" style="margin-top: 0; flex: none;">
+          <span class="field__row">
+            <span class="field__input field__input--num" style="flex: none; width: 76px;">45</span>
+            <span class="field__suffix">세</span>
+          </span>
+        </span>
+        <label style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+          <span class="list__pick"><input type="checkbox"></span>
+          <span style="font-size: var(--fs-body); font-weight: 500;">장애인이에요</span>
+        </label>
+      </div>
+
+      <p class="section-title">일주일에 몇 시간 일했어요?</p>
+      <div class="card" style="margin-top: 8px;">
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <label class="field" style="margin-top: 0;">
+            <span class="field__label">주 소정근로</span>
+            <span class="field__row">
+              <span class="field__input field__input--num">40</span>
+              <span class="field__suffix">시간</span>
+            </span>
+          </label>
+          <label class="field" style="margin-top: 0;">
+            <span class="field__label">주휴</span>
+            <span class="field__row">
+              <span class="field__input field__input--num">8</span>
+              <span class="field__suffix">시간</span>
+            </span>
+          </label>
+        </div>
+        <p class="hint" style="margin-top: 10px;">주휴시간을 모르면 비워도 괜찮아요. 주 40시간이면 8시간으로 봐요.</p>
+      </div>
+
+      <p class="section-title">최근 3개월 월급</p>
+      <div class="card" style="margin-top: 8px;">
+        <span class="field" style="margin-top: 0;">
+          <span class="field__row">
+            <span class="field__input field__input--num">3,000,000</span>
+            <span class="field__suffix">원</span>
+          </span>
+        </span>
+        <p class="hint" style="margin-top: 10px;">세전 월급이에요. 3개월 총액으로 계산해요.</p>
+      </div>
+
+      <div class="banner-slot"><div class="ad">배너 — 스크롤 마지막 요소</div></div>
+    </div>
+  </div>
+  <div class="frame__bottom"><button class="btn-primary" type="button">결과 보기</button></div>
+</div>

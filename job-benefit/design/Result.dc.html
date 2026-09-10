@@ -1,0 +1,1337 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+/* job-benefit/src/styles.css 를 그대로 넣었다 — 시안과 구현이 같은 값을 쓴다 */
+/**
+ * 디자인 토큰과 컴포넌트 — docs/SCREEN_FLOW.md 6장. 라이트 모드 고정.
+ *
+ * 세 가지 원칙으로 정리했다.
+ *  1. 층은 셋뿐이다 — 배경(흰색) / 떠 있는 카드(흰색+그림자) / 가라앉은 블록(회색).
+ *     회색 카드를 흰 배경에 얹으면 비활성 영역처럼 읽혀서 결과가 눈에 안 들어온다.
+ *  2. 숫자가 가장 크다. 화면마다 제일 큰 글자는 사용자가 알고 싶은 그 숫자여야 한다.
+ *  3. 크기·간격·굵기는 토큰에서만 가져온다. 임의값을 쓰지 않는다.
+ */
+
+:root {
+  /* 회색 계단 — 토스 앱과 같은 계열 */
+  --gray-50: #f9fafb;
+  --gray-100: #f2f4f6;
+  --gray-200: #e5e8eb;
+  --gray-300: #d1d6db;
+  --gray-400: #b0b8c1;
+  --gray-500: #8b95a1;
+  --gray-600: #6b7684;
+  --gray-700: #4e5968;
+  --gray-800: #333d4b;
+  --gray-900: #191f28;
+
+  /* 의미 색 */
+  --bg: #ffffff;
+  --card: #ffffff;
+  --surface: var(--gray-100);
+  --surface-weak: #f4f6f8;
+  --line: var(--gray-200);
+  --text: var(--gray-900);
+  --text-2: var(--gray-700);
+  --text-3: var(--gray-500);
+  --primary: #3182f6;
+  --primary-press: #1b64da;
+  --primary-weak: #e8f3ff;
+  --danger: #f04452;
+  --danger-weak: #fdeced;
+  --warn: #9a5b00;
+  --warn-weak: #fff4e6;
+
+  /* 글자 크기 */
+  --fs-hero: 42px;
+  --fs-display: 26px;
+  --fs-title: 20px;
+  --fs-headline: 17px;
+  --fs-body: 15px;
+  --fs-label: 13px;
+  --fs-micro: 11px;
+
+  /* 모서리 */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-full: 999px;
+
+  /* 그림자 — 카드를 배경에서 띄우는 최소한 */
+  --shadow-card: 0 1px 2px rgba(25, 31, 40, 0.04), 0 8px 24px -8px rgba(25, 31, 40, 0.14);
+  --shadow-float: 0 4px 12px rgba(25, 31, 40, 0.12), 0 16px 32px -8px rgba(25, 31, 40, 0.18);
+
+  /* 움직임 */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* SDK SafeArea 값이 들어온다(kit 의 세이프 에어리어 훅). 토스 앱 밖에서는 0 */
+  --safe-top: 0px;
+  --safe-bottom: 0px;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', Pretendard, system-ui, sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  touch-action: pan-y;
+  overscroll-behavior-y: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  letter-spacing: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 누르는 감이 없으면 웹처럼 보인다. 눌린 동안 살짝 가라앉힌다 */
+button:active:not(:disabled) {
+  opacity: 0.72;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: -0.12em;
+  flex: none;
+}
+
+.app {
+  min-height: 100%;
+}
+
+.screen {
+  padding: 8px 20px calc(48px + var(--safe-bottom));
+  max-width: 520px;
+  margin: 0 auto;
+  /* 화면이 바뀔 때 살짝 올라오며 나타난다. 정적인 웹 페이지처럼 보이지 않게 */
+  animation: screen-in 240ms var(--ease);
+}
+/* 떠 있는 탭바가 콘텐츠를 가리지 않도록 */
+.app[data-tabs='true'] .screen {
+  padding-bottom: calc(110px + var(--safe-bottom));
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.screen[aria-busy='true'] {
+  min-height: 60vh;
+}
+
+/* ── 알림 배너 ──────────────────────────────────────── */
+.dev-banner {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  background: var(--warn-weak);
+  color: var(--warn);
+  font-size: var(--fs-label);
+  line-height: 1.45;
+}
+
+/* ── 텍스트 ─────────────────────────────────────────── */
+.summary {
+  margin: 12px 0 0;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+}
+.section-title {
+  margin: 32px 0 4px;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0;
+}
+.hint {
+  margin: 12px 0 0;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  line-height: 1.55;
+}
+.note {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--warn-weak);
+  color: var(--warn);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+
+/* ── 모드 전환 (역산 ↔ 정방향) ───────────────────────
+   차별점이 역산이라 두 방향을 링크로 숨기지 않고 세그먼트로 늘 보여 준다 */
+.modes {
+  display: flex;
+  gap: 2px;
+  margin: 12px 0 0;
+  padding: 2px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+}
+.modes__btn {
+  flex: 1;
+  min-height: 40px;
+  padding: 0 8px;
+  border: none;
+  border-radius: var(--r-full);
+  background: none;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  transition: background 160ms var(--ease), color 160ms var(--ease);
+}
+.modes__btn--on {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(25, 31, 40, 0.1);
+}
+.modes__btn:active:not(:disabled) {
+  opacity: 1;
+}
+
+/* ── 히어로 입력 ─────────────────────────────────────
+   묻는 말을 위에 작게, 숫자를 아래에 크게. 한 줄 문장 안에 입력칸을 끼우면
+   기기 폭에 따라 줄바꿈이 어긋나고 입력칸이 문장에 묻힌다 */
+.hero {
+  display: block;
+  margin: 24px 0 0;
+}
+.hero__q {
+  display: block;
+  color: var(--text-2);
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.hero__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--line);
+  transition: border-color 160ms var(--ease);
+}
+.hero:focus-within .hero__row {
+  border-bottom-color: var(--primary);
+}
+.hero__field {
+  /* size 속성이 정한 폭을 쓴다. flex 로 늘리면 단위가 오른쪽 끝으로 떨어진다 */
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  padding: 0;
+  outline: none;
+}
+.hero__field::placeholder {
+  color: var(--gray-300);
+}
+.hero__unit {
+  flex: none;
+  color: var(--text-2);
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+
+/* ── 칩 ─────────────────────────────────────────────
+   테두리 칩은 입력 필드처럼 보인다. 채운 칩이 선택 상태를 더 분명히 보여 준다 */
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 16px 0 0;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+.chip--on {
+  background: var(--primary-weak);
+  color: var(--primary);
+  font-weight: 600;
+}
+/* 누를 수 없는 읽기용 칩 */
+.chips--read {
+  gap: 6px;
+  margin: 4px 0 0;
+}
+.chip--sm {
+  min-height: 30px;
+  padding: 0 11px;
+  font-size: var(--fs-micro);
+  color: var(--text-2);
+}
+
+/* ── 카드 ───────────────────────────────────────────
+   .card 는 가라앉은 블록, .card--primary 는 떠 있는 결과 카드 */
+.card {
+  margin: 20px 0 0;
+  padding: 20px;
+  border-radius: var(--r-lg);
+  background: var(--surface-weak);
+}
+.card--primary {
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+.card__label {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+.card__headline {
+  margin: 0;
+  font-size: var(--fs-title);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.card--primary .card__headline {
+  font-size: var(--fs-display);
+  letter-spacing: -0.025em;
+}
+.card__headline--num {
+  margin: 2px 0 0;
+  font-size: var(--fs-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+.card__sub {
+  margin: 6px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+}
+.card__sub--tight {
+  margin-top: 2px;
+}
+.card__items {
+  margin: 10px 0 0;
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+}
+
+/* 카드 안에서 다음 화면으로 넘어가는 줄 */
+.card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin: 14px 0 0;
+  padding: 0;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+.card__row .icon {
+  margin-left: auto;
+  color: var(--gray-400);
+}
+
+/* 카드 안의 보조 링크(펼치기 등) */
+.card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 14px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-height: 32px;
+}
+
+/* 잠금 해제 버튼 */
+.card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 48px;
+  margin: 16px 0 0;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+/* ── 버튼 ───────────────────────────────────────────── */
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 52px;
+  margin: 20px 0 0;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.cta:active:not(:disabled) {
+  background: var(--primary-press);
+  opacity: 1;
+}
+.cta:disabled {
+  background: var(--surface);
+  color: var(--gray-400);
+}
+.cta--secondary {
+  background: var(--surface);
+  color: var(--text-2);
+}
+.cta--secondary:active:not(:disabled) {
+  background: var(--gray-200);
+}
+.cta--danger {
+  background: var(--danger);
+}
+.cta--danger:active:not(:disabled) {
+  background: #d8323f;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+.row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 줄 목록 (다른 계산·설정) ───────────────────────── */
+.rows {
+  margin: 8px 0 0;
+  border-radius: var(--r-lg);
+  background: var(--surface-weak);
+  overflow: hidden;
+}
+.rows__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 18px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+}
+.rows__item + .rows__item {
+  box-shadow: inset 0 1px 0 var(--line);
+}
+.rows__item:active {
+  background: var(--gray-100);
+  opacity: 1;
+}
+.rows__value {
+  margin-left: auto;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+}
+.rows__item > .icon:last-child {
+  margin-left: auto;
+  color: var(--gray-400);
+}
+.rows__value + .icon {
+  margin-left: 0;
+  color: var(--gray-400);
+}
+.rows__item--warn {
+  color: var(--danger);
+}
+
+/* 화면 맨 아래 설정 진입 */
+.settings-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 8px 20px calc(40px + var(--safe-bottom));
+  border: none;
+  background: none;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  text-align: left;
+}
+
+/* ── 표 ─────────────────────────────────────────────── */
+.detail {
+  width: 100%;
+  margin: 16px 0 0;
+  border-collapse: collapse;
+  font-size: var(--fs-body);
+}
+.detail thead th {
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  text-align: right;
+  padding: 0 0 8px;
+}
+.detail thead th:first-child {
+  text-align: left;
+}
+.detail__row th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--text-2);
+  padding: 9px 0;
+}
+.detail__row td {
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  padding: 9px 0;
+  white-space: nowrap;
+}
+.detail__row--strong th,
+.detail__row--strong td {
+  color: var(--text);
+  font-weight: 700;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.detail__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  color: inherit;
+}
+.detail__label:disabled {
+  cursor: default;
+}
+.detail__label:not(:disabled) {
+  color: var(--text);
+}
+.detail__basis {
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+}
+.detail__formula {
+  display: block;
+  margin: 2px 0 6px;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-weak);
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  white-space: normal;
+}
+/* 마지막 합계 행이 이 화면의 답이다. 색으로 눈이 가게 한다 */
+.detail tbody .detail__row--strong:last-child td {
+  color: var(--primary);
+  font-size: var(--fs-headline);
+}
+.detail--compare td {
+  font-size: var(--fs-label);
+}
+.badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--primary-weak);
+  color: var(--primary);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+  font-size: var(--fs-body);
+}
+.kv dt {
+  color: var(--text-3);
+}
+.kv dd {
+  margin: 0;
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 차트 ───────────────────────────────────────────── */
+.chart {
+  margin: 20px 0 0;
+}
+.chart__svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.chart__bar {
+  fill: var(--primary);
+}
+.chart__value {
+  fill: var(--text-2);
+  font-size: 9px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.chart__label {
+  fill: var(--text-3);
+  font-size: 9px;
+  text-anchor: middle;
+}
+.chart__alt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── 입력 필드 ──────────────────────────────────────── */
+.field {
+  display: block;
+  margin: 18px 0 0;
+}
+.field__label {
+  display: block;
+  color: var(--text-2);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.field__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.field__input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  /* 16px 미만이면 iOS 가 입력 시 화면을 확대한다 */
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 14px 16px;
+  min-height: 52px;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 160ms var(--ease);
+}
+.field__input:focus {
+  outline-color: var(--primary);
+}
+.field__input--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.field__suffix {
+  flex: none;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.field__hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+}
+
+/* ── 목록 (저장한 계산) ─────────────────────────────── */
+.list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.list__item--stack {
+  display: block;
+}
+.list--plain .list__item {
+  border-bottom: 1px solid var(--line);
+}
+.list__pick {
+  display: flex;
+  align-items: center;
+}
+.list__pick input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+}
+.list__body {
+  flex: 1;
+  display: block;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+}
+.list__name {
+  display: block;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.list__sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+}
+.list__link {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-micro);
+  word-break: break-all;
+}
+.list__del {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 15px;
+}
+
+/* ── 시트·다이얼로그 ────────────────────────────────── */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(25, 31, 40, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fade-in 200ms var(--ease);
+}
+.sheet,
+.dialog {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg);
+  padding: 8px 20px calc(24px + var(--safe-bottom));
+  border-radius: 24px 24px 0 0;
+  animation: sheet-up 280ms var(--ease);
+}
+.dialog {
+  margin: auto 20px;
+  border-radius: var(--r-lg);
+  padding: 24px 20px;
+  animation: dialog-in 200ms var(--ease);
+}
+
+/* 손잡이 — 아래로 내려 닫는 시트라는 걸 알려 준다 */
+.sheet::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 4px auto 12px;
+  border-radius: var(--r-full);
+  background: var(--gray-300);
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sheet__title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--fs-headline);
+  font-weight: 700;
+}
+.dialog .sheet__title {
+  font-size: var(--fs-title);
+  line-height: 1.4;
+}
+.sheet__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 14px;
+}
+.sheet__body {
+  margin: 10px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+.sheet__later {
+  display: block;
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 14px;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* ── 스테퍼·토글 ────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 0;
+}
+.stepper__label {
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.stepper__ctrl {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+}
+.stepper__ctrl button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(25, 31, 40, 0.08);
+}
+.stepper__ctrl button:disabled {
+  background: none;
+  color: var(--gray-300);
+  box-shadow: none;
+}
+.stepper__ctrl output {
+  min-width: 52px;
+  text-align: center;
+  color: var(--text);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  min-height: 44px;
+}
+.toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+}
+
+/* ── 하단 탭 ─────────────────────────────────────────
+   fx-replay 와 같은 떠 있는 알약. 토스가 그리는 상단 바와 짝을 이룬다.
+   하단 위치는 SDK 세이프 에어리어 기준 — CSS env() 는 쓰지 않는다 */
+.tabbar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + var(--safe-bottom));
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 460px;
+  display: flex;
+  padding: 6px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 6px 24px rgba(25, 31, 40, 0.12), 0 1px 3px rgba(25, 31, 40, 0.06);
+  z-index: 15;
+  animation: tabbar-in 280ms var(--ease);
+}
+@keyframes tabbar-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 50px;
+  border: none;
+  border-radius: var(--r-full);
+  background: none;
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  transition: color 180ms var(--ease), background 180ms var(--ease), transform 120ms var(--ease);
+}
+.tab[data-on='true'] {
+  background: rgba(49, 130, 246, 0.1);
+  color: var(--primary);
+  font-weight: 700;
+}
+.tab:active:not(:disabled) {
+  opacity: 1;
+  transform: scale(0.94);
+}
+
+/* ── 접히는 선택 항목 ───────────────────────────────── */
+.disclose {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  margin: 18px 0 0;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--surface-weak);
+  color: var(--text);
+  text-align: left;
+}
+.disclose__label {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.disclose__hint {
+  flex-grow: 1;
+  text-align: right;
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+}
+.disclose .icon {
+  color: var(--gray-400);
+}
+
+/* ── 빠른 증감 ──────────────────────────────────────── */
+.quick {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.quick__btn {
+  flex: 1;
+  min-height: 38px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.quick__btn:active:not(:disabled) {
+  background: var(--gray-200);
+  opacity: 1;
+}
+
+/* ── 결과 머리 ──────────────────────────────────────── */
+.recap {
+  margin: 4px 0 0;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.headline {
+  margin: 6px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.32;
+  letter-spacing: -0.035em;
+}
+
+/* ── 도넛 ───────────────────────────────────────────── */
+.split {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.split__side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-grow: 1;
+  min-width: 0;
+}
+.donut {
+  flex: none;
+  width: 128px;
+  height: 128px;
+}
+.donut__label {
+  fill: var(--text-3);
+  font-size: 13px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+.donut__value {
+  fill: var(--text);
+  font-size: 21px;
+  font-weight: 800;
+  text-anchor: middle;
+  letter-spacing: -0.6px;
+}
+
+.stat__label {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+.stat__value {
+  margin: 2px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stat__value--sm {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0;
+}
+
+/* ── 범례 — 도넛과 같은 순서·같은 색 ────────────────── */
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.legend__item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.legend__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+}
+.legend__name {
+  flex-grow: 1;
+  color: var(--text-2);
+  font-size: var(--fs-label);
+  white-space: nowrap;
+}
+.legend__value {
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 가로 스택 바 (공제 상세 머리) ──────────────────── */
+.split-bar {
+  margin: 20px 0 0;
+}
+.split-bar__head,
+.split-bar__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--text-3);
+}
+.split-bar__label {
+  font-weight: 500;
+}
+.split-bar__value {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.split-bar__foot {
+  margin-top: 10px;
+  font-size: var(--fs-micro);
+}
+.split-bar__spacer {
+  flex-grow: 1;
+}
+.stack {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  margin: 10px 0 0;
+}
+.stack__seg:first-child {
+  border-radius: var(--r-full) 3px 3px var(--r-full);
+}
+.stack__seg:last-child {
+  border-radius: 3px var(--r-full) var(--r-full) 3px;
+}
+
+/* ── 잠긴 값 실루엣 ─────────────────────────────────── */
+.silhouette {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 58px;
+  margin: 16px 0 0;
+}
+.silhouette__bar {
+  flex: 1;
+  border-radius: 5px 5px 2px 2px;
+  background: #e1e5ea;
+}
+.silhouette__bar--last {
+  background: var(--gray-300);
+}
+
+/* ── 기타 ───────────────────────────────────────────── */
+.card-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-card);
+}
+.banner-slot {
+  margin: 28px 0 0;
+  min-height: 0;
+}
+.basis {
+  margin: 32px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  line-height: 1.6;
+}
+.basis p {
+  margin: 3px 0;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(32px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
+  max-width: calc(100% - 40px);
+  padding: 14px 18px;
+  border-radius: var(--r-md);
+  background: rgba(25, 31, 40, 0.94);
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  box-shadow: var(--shadow-float);
+  animation: toast-in 240ms var(--ease);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+/* 시안 전용: 아트보드는 앱 화면 폭에 맞춘 프레임이다 */
+.frame { width: 100%; min-height: 100%; background: var(--bg); display: flex; flex-direction: column; }
+.frame__flow { flex: 1; }
+.frame__bottom { padding: 12px 20px calc(16px + var(--safe-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
+.btn-primary { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; border: none; border-radius: var(--r-md); background: var(--primary); color: #fff; font-size: var(--fs-headline); font-weight: 700; }
+.spec { margin: 0; padding: 6px 20px 10px; background: var(--gray-900); color: var(--gray-300); font-size: 11px; letter-spacing: 0; line-height: 1.5; }
+.ad { display: flex; align-items: center; justify-content: center; height: 56px; border-radius: var(--r-sm); background: var(--surface); color: var(--gray-400); font-size: var(--fs-micro); }
+  </style>
+</helmet>
+<div class="frame">
+  <p class="spec">S02 결과 — 가장 큰 글자는 일수다. 금액은 대부분 같은 값이라 답이 아니다</p>
+  <div class="frame__flow">
+    <div class="screen">
+      <div class="card card--primary" style="margin-top: 12px;">
+        <span class="badge">요건을 충족하는 것으로 보여요</span>
+        <p style="margin: 16px 0 0; font-size: 42px; font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;">180<span style="font-size: 26px; font-weight: 600; margin-left: 4px;">일</span></p>
+        <p style="margin: 8px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums;">하루 66,048원</p>
+        <p class="card__sub">모두 받으면 11,888,640원</p>
+      </div>
+
+      <div class="card">
+        <p class="card__label">왜 이 금액인가요</p>
+        <p style="margin: 6px 0 0; font-size: var(--fs-body); color: var(--text-2); line-height: 1.55;">월급이 달라도 금액이 같을 수 있어요. 하루 금액에 법으로 정한 하한이 있어서 그 값이 적용됐어요.</p>
+      </div>
+
+      <p class="section-title">계산 내역</p>
+      <table class="detail" style="margin-top: 8px;">
+        <tbody>
+          <tr class="detail__row"><th>3개월 총액</th><td>9,000,000원</td></tr>
+          <tr class="detail__row"><th>평균임금</th><td>97,826원 / 일</td></tr>
+          <tr class="detail__row"><th>1일 소정근로</th><td>8시간</td></tr>
+          <tr class="detail__row"><th>하루 하한</th><td>66,048원 적용</td></tr>
+          <tr class="detail__row"><th>가입기간</th><td>3년 6개월</td></tr>
+          <tr class="detail__row detail__row--strong"><th>모두 받으면</th><td>11,888,640원</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">신청 후 첫 7일은 지급되지 않아요. 받는 날수는 그대로 180일이에요.</div>
+
+      <button class="card__cta" type="button">
+        <svg class="icon" width="1em" height="1em" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.25 8.5V6.75a3.75 3.75 0 0 1 7.5 0V8.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path><rect x="4" y="8.5" width="12" height="8.5" rx="2.5" fill="currentColor"></rect></svg>
+        재취업하면 얼마 남을까
+      </button>
+      <button class="card__cta" type="button" style="background: var(--surface); color: var(--text); margin-top: 8px;">
+        <svg class="icon" width="1em" height="1em" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 13.4V3.6M6.6 6.6 10 3.2l3.4 3.4M4.4 12v3.4a1 1 0 0 0 1 1h9.2a1 1 0 0 0 1-1V12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        결과 공유하기
+      </button>
+
+      <div class="basis">
+        <p>고용보험법 [시행 2026. 8. 20.] · 2026년 최저임금 기준</p>
+        <p>실제 수급 자격과 금액은 고용센터 판단에 따라 달라질 수 있어요.</p>
+      </div>
+
+      <div class="banner-slot"><div class="ad">배너</div></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
