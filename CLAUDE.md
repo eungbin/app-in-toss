@@ -3,7 +3,8 @@
 토스 앱인토스(Apps in Toss) 미니앱 모노레포. 1인 개발(React/TypeScript), 한국어 소통.
 
 ## 새 앱을 시작하거나 진행할 때
-**[docs/PLAYBOOK.md](docs/PLAYBOOK.md)의 단계를 따른다.** 문서(PROJECT_CONTEXT → PRD → FUNCTIONAL_SPEC → SCREEN_FLOW)가 끝난 뒤 코드를 쓴다. 확정된 결정은 재논의하지 않는다. 확인 결과가 전제를 바꾸면 근거와 함께 "전제가 바뀌었다"로 제시한다.
+**[docs/PLAYBOOK.md](docs/PLAYBOOK.md)의 단계를 따른다.**
+**콘솔에 출시돼 있는데 소스가 없는 앱(복구건)은 [docs/RECOVERY.md](docs/RECOVERY.md)를 먼저 읽는다.** 문서(PROJECT_CONTEXT → PRD → FUNCTIONAL_SPEC → SCREEN_FLOW)가 끝난 뒤 코드를 쓴다. 확정된 결정은 재논의하지 않는다. 확인 결과가 전제를 바꾸면 근거와 함께 "전제가 바뀌었다"로 제시한다.
 
 ## 세션 범위 (가장 중요한 규칙)
 여러 Claude 세션이 같은 저장소에서 서로 다른 앱을 동시에 작업한다.
@@ -29,7 +30,8 @@
 | `fx-replay/` | "그때 환전했다면" (라이프·콘텐츠) |
 | `net-pay/` | "세후로 말해줘" (유틸리티) |
 | `rent-calc/` | "월세 이거 맞아?" (유틸리티) |
-| `photo-standard/` | "사진규격" (유틸리티) — **소스 유실 복구건**. 콘솔에 이미 출시된 앱이다 |
+| `photo-standard/` | "사진규격" (유틸리티) — 소스 유실 복구 완료, 2026-09-09 출시 |
+| `work-journal/` | "근무수첩" (유틸리티) — 소스 유실 복구 완료, 2026-09-10 출시 |
 | `packages/ait-kit/` | 공용 `@ait/kit` |
 
 **상태는 이 표에 적지 않는다.** 손으로 적은 상태는 썩는다(이 표의 fx-replay 행이 실제 진행보다 뒤에 있었다).

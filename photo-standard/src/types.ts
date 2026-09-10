@@ -50,6 +50,8 @@ export interface OutputImage {
   width: number;
   height: number;
   bytes: number;
+  /** 실제로 인코딩된 형식. 프리셋의 format('any' 등)이 아니라 결과물의 것이다 */
+  mime: string;
   /** JPEG 압축을 거쳤으면 최종 품질, 아니면 null */
   quality: number | null;
   /** maxBytes 를 못 맞췄으면 true — 숨기지 않고 알린다 */

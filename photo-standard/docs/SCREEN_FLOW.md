@@ -242,7 +242,8 @@
 │    6개월 이내에 찍은 사진        │
 │    이어야 해요.                │
 │                             │
-│  [다시 자르기] [다른 사진]       │
+│  [다시 자르기] [다른 사진 고르기] │
+│  [규격 출처 →]                │
 │  ─────── 배너 광고 ────────   │
 └─────────────────────────────┘
 ```
@@ -324,11 +325,11 @@
 │  처리되고 어디에도 올라가지       │
 │  않아요.                     │
 │                             │
-│  [ 설정 열기 ]  [ 닫기 ]       │
+│  [ 닫기 ]  [ 설정 열기 ]       │
 └─────────────────────────────┘
 ```
 
-- [설정 열기] → `openPermissionDialog`.
+- [설정 열기] → `openPermissionDialog`. primary 를 오른쪽에 둔다.
 - 카메라 권한도 같은 형식, 문구만 교체.
 
 ---
@@ -373,12 +374,14 @@ S01 [앨범에서 고르기] → 권한 오류 → M03 → [설정 열기] 또�
 | `check.ok` | 기준에 맞아요 |
 | `check.over` | 기준을 넘었어요 |
 | `check.needCrop` | 자르기가 필요해요 |
+| `check.mismatch` | 기준과 달라요 |
 | `check.needBytes` | {limit} 이하가 필요해요 |
 | `check.fix` | 규격에 맞추기 |
 | `check.saveAsIs` | 이대로 저장하기 |
 | `check.pickAnother` | 다른 사진 고르기 |
 | `check.blocked.title` | 이 사진은 기준보다 작아요 |
 | `check.blocked.body` | {need} 가 필요한데 {have} 예요. 크게 늘리면 흐려져서 그대로 두었어요. |
+| `check.blocked.hint` | 더 큰 원본으로 다시 골라 주세요. |
 | `crop.title` | 사진 자르기 |
 | `crop.hint` | 비율은 규격에 맞춰 고정돼 있어요. 움직이거나 크기만 바꿀 수 있어요. |
 | `crop.apply` | 이대로 맞추기 |
@@ -387,10 +390,11 @@ S01 [앨범에서 고르기] → 권한 오류 → M03 → [설정 열기] 또�
 | `result.savedToast` | 앨범에 저장했어요 |
 | `result.quota` | 오늘 {used}/{total}장 |
 | `result.compressFail` | 용량을 맞추지 못했어요 · {actual} ({limit} 이하 필요) |
-| `result.disclaimer` | 기관의 최종 심사 결과는 이 앱이 보장하지 않아요. |
+| `result.disclaimer` | 기관의 최종 심사 결과는 이 앱이 보장하지 않아요. 규격 기준은 아래 출처를 확인해 주세요. |
 | `result.recrop` | 다시 자르기 |
 | `sources.title` | 규격 출처 |
 | `sources.checkedAt` | 확인일 {date} |
+| `sources.range` | 허용 {range} |
 | `sources.openOriginal` | 원문 보기 |
 | `sources.noLegalBasis` | 일반적으로 쓰이는 크기예요. 정해진 법령 기준은 없어요. |
 | `gate.title` | 오늘 {n}장을 저장했어요 |
@@ -458,3 +462,4 @@ net-pay가 실기기 지적 후 정리한 토큰 체계를 그대로 쓴다 ([ne
 | 버전 | 날짜 | 내용 |
 |---|---|---|
 | v0.1 | 2026-09-08 | 최초 작성. 화면 5개·시트 3개, 카피 일람 확정 |
+| v0.2 | 2026-09-08 | 시안 점검 반영. `result.disclaimer` 를 PRD 2-2 B3 대로 두 문장으로 되돌리고 S04 에 출처 링크 추가(“아래 출처”가 가리킬 대상이 없었다). `check.mismatch`·`check.blocked.hint` 신설. M03 버튼 순서를 primary 오른쪽으로 |

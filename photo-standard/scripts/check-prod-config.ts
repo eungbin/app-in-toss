@@ -52,6 +52,19 @@ for (const [key, label] of AD_KEYS) {
   if (!release && isTest) notes.push(`${label} 광고 ID: ${v ? v : '(없음 — 광고를 붙이지 않습니다)'}`);
 }
 
+/* 3) 진단 빌드 플래그 — 출시 빌드에 남으면 사용자에게 내부 오류 문자열이 노출된다 */
+const diag = process.env.VITE_DIAG;
+if (diag) {
+  if (release) {
+    problems.push(
+      'VITE_DIAG 가 켜져 있습니다.\n' +
+        '  → 진단 카드는 실기기에서 원인을 좁히려고 만든 것입니다. 출시 빌드에서는 비우세요.',
+    );
+  } else {
+    notes.push('진단 빌드(VITE_DIAG) — 사진 입력 실패 시 원인을 화면에 띄웁니다');
+  }
+}
+
 for (const n of notes) console.log(`  ${n}`);
 if (problems.length > 0) {
   console.error(`\ncheck:config${release ? ':release' : ''} 실패 — ${problems.length}건\n`);

@@ -74,3 +74,30 @@ describe('프리셋 전체', () => {
     expect(new Set(PRESETS.map((p) => p.id)).size).toBe(PRESETS.length);
   });
 });
+
+/**
+ * 결과물 형식 — 실기기 스크린샷에서 발견한 버그의 회귀 테스트.
+ *
+ * `format: 'any'` 인 프리셋은 JPEG 로 인코딩되고 파일명도 .jpg 인데, 화면에는 프리셋의
+ * format 을 보고 "PNG" 라고 찍고 있었다. 결과물의 mime 이 무엇이어야 하는지 못 박는다.
+ */
+describe('프리셋 format 과 실제 출력', () => {
+  it("'any' 프리셋은 JPEG 로 나간다 — PNG 가 아니다", () => {
+    for (const id of ['passport-print', 'driver-online', 'id-3x4']) {
+      const p = findPreset(id);
+      expect(p.format, `${id} 는 any 여야 한다`).toBe('any');
+      // encodeForPreset 은 format === 'png' 일 때만 PNG 를 낸다
+      expect(p.format === 'png').toBe(false);
+    }
+  });
+
+  it("'jpeg' 를 요구하는 프리셋은 용량 상한도 가진다", () => {
+    for (const p of PRESETS.filter((x) => x.format === 'jpeg')) {
+      expect(p.maxBytes, `${p.id} 에 용량 상한이 없다`).toBeDefined();
+    }
+  });
+
+  it('PNG 를 요구하는 프리셋은 없다 — 있다면 화면 표기를 다시 확인해야 한다', () => {
+    expect(PRESETS.filter((x) => x.format === 'png')).toHaveLength(0);
+  });
+});
