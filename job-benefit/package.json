@@ -15,6 +15,7 @@
     "lint:copy": "tsx scripts/lint-copy.ts",
     "data:fetch": "tsx scripts/fetch-law.ts",
     "data:build": "tsx scripts/build-data.ts",
+    "shots": "node scripts/shoot.mjs",
     "check:data": "tsx scripts/check-data.ts",
     "check:config": "tsx scripts/check-prod-config.ts",
     "check:config:release": "tsx scripts/check-prod-config.ts --release",
