@@ -3,6 +3,8 @@ import { percentShort } from '@/engine/format';
 import { t } from '@/i18n';
 
 interface Props {
+  savedCount: number;
+  onOpenSaved: () => void;
   baseRate: number;
   bundledRate: number;
   asOf: string;
@@ -15,6 +17,8 @@ interface Props {
 const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? '';
 
 export function Settings({
+  savedCount,
+  onOpenSaved,
   baseRate,
   bundledRate,
   asOf,
@@ -26,6 +30,12 @@ export function Settings({
   return (
     <div className="screen">
       <ul className="menu">
+        <li>
+          <button type="button" onClick={onOpenSaved}>
+            <span>{t('save.title')}</span>
+            <span className="menu__value">{savedCount}개 ›</span>
+          </button>
+        </li>
         <li>
           <button type="button" onClick={onOpenRate}>
             <span>{t('settings.baseRate')}</span>

@@ -158,8 +158,16 @@ for (const shot of SHOTS) {
   await sleep(1400);
   await cdp.evalJs(HELPERS);
   await cdp.evalJs(`(async () => { ${shot.after} })()`);
-  // 마지막으로 넣을 요소의 밑에서 끊는다. 반쯤 걸린 요소가 남으면 렌더링 오류처럼 보인다
-  const height = await cdp.evalJs(
+  // 하단 탭이 있는 화면은 뷰포트 전체를 찍는다. 탭바는 fixed 라 요소 기준으로 자르면
+  // 알약이 반쯤 걸린다. 탭이 없는 화면(상세·시간축)만 요소 밑에서 끊는다.
+  // 탭바가 있으면 **알약 바로 밑**에서 끊는다(net-pay 규칙). 뷰포트 끝까지 찍으면
+  // 알약 아래로 다음 카드가 한 줄 비쳐 렌더링 오류처럼 보인다.
+  const hasTabs = await cdp.evalJs('!!document.querySelector(".tabbar")');
+  const height = hasTabs
+    ? await cdp.evalJs(
+        '(() => { const b = document.querySelector(".tabbar").getBoundingClientRect(); return Math.ceil(b.bottom + 6); })()',
+      )
+    : await cdp.evalJs(
     `(() => { const els=[...document.querySelectorAll(${JSON.stringify(shot.cut)})];
        const el = els[els.length-1];
        if (!el) throw new Error('컷 기준 요소 없음: ${shot.cut}');
@@ -171,7 +179,7 @@ for (const shot of SHOTS) {
     clip: { x: 0, y: 0, width: W, height, scale: 1 },
   });
   writeFileSync(`${OUT}/${shot.file}`, Buffer.from(data, 'base64'));
-  console.log(`${shot.file} 촬영 — ${W}x${height} CSS px`);
+  console.log(`${shot.file} 촬영 — ${W}x${height} CSS px${hasTabs ? ' (탭바 포함)' : ''}`);
 }
 
 ws.close();

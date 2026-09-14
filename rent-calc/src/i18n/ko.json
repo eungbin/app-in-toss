@@ -1,5 +1,10 @@
 {
   "app.title": "월세 이거 맞아?",
+  "tab.home": "판정",
+  "tab.convert": "환산",
+  "tab.broker": "중개보수",
+  "tab.report": "신고",
+  "tab.settings": "설정",
   "mode.renew": "갱신·기간 중 변경",
   "mode.new": "신규 계약",
   "input.current": "지금 조건",

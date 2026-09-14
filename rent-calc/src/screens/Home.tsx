@@ -43,7 +43,6 @@ interface Props {
   onSave: () => void;
   onOpenBroker: () => void;
   onOpenReport: () => void;
-  onOpenTool: (tool: 'convert' | 'broker' | 'report' | 'saved' | 'settings') => void;
 }
 
 const 만 = 10_000;
@@ -233,22 +232,6 @@ export function Home(props: Props) {
           </div>
         </>
       )}
-
-      <nav className="tools" aria-label="도구">
-        {(
-          [
-            ['convert', t('convert.title')],
-            ['broker', t('broker.title')],
-            ['report', t('report.title')],
-            ['saved', t('save.title')],
-            ['settings', t('settings.title')],
-          ] as const
-        ).map(([key, label]) => (
-          <button key={key} type="button" onClick={() => props.onOpenTool(key)}>
-            {label}
-          </button>
-        ))}
-      </nav>
 
       <BasisFooter
         basis={

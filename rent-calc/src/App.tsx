@@ -33,6 +33,7 @@ import { Saved } from '@/screens/Saved';
 import { Settings } from '@/screens/Settings';
 import { Sources } from '@/screens/Sources';
 import { GateSheet } from '@/components/GateSheet';
+import { TabBar, isTabRoute, type TabName } from '@/components/TabBar';
 import { RateSheet } from '@/components/RateSheet';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Toast } from '@/components/Toast';
@@ -181,6 +182,25 @@ export function App() {
     setToast(t('save.done', { n: state.scenarios.length + 1, cap: savedCap() }));
   }, [result, draft, currentTerms, proposedTerms, baseRate, saveScenario, openGate, savedCap, state.scenarios.length]);
 
+  /** 탭 이동 — 스택을 쌓지 않고 갈아 끼운다 */
+  const goTab = useCallback(
+    (tab: TabName) => {
+      // 판별 합집합이라 name 을 유니온으로 넘길 수 없다
+      if (tab === 'broker') {
+        setRoute({ name: 'broker', deposit: proposedTerms.deposit, rent: proposedTerms.rent });
+        return;
+      }
+      if (tab === 'report') {
+        setRoute({ name: 'report', deposit: proposedTerms.deposit, rent: proposedTerms.rent });
+        return;
+      }
+      if (tab === 'home') setRoute({ name: 'home' });
+      else if (tab === 'convert') setRoute({ name: 'convert' });
+      else setRoute({ name: 'settings' });
+    },
+    [proposedTerms.deposit, proposedTerms.rent],
+  );
+
   const openTool = useCallback(
     (tool: 'convert' | 'broker' | 'report' | 'saved' | 'settings') => {
       if (tool === 'broker') {
@@ -208,8 +228,11 @@ export function App() {
     );
   }
 
+  // 집중이 필요한 화면에서는 탭을 숨긴다 — 판정 상세·시간축·카드·저장 목록·출처
+  const showTabs = isTabRoute(route.name);
+
   return (
-    <>
+    <div className="app" data-tabs={showTabs}>
       {route.name === 'home' && (
         <Home
           draft={draft}
@@ -229,7 +252,6 @@ export function App() {
           onSave={onSave}
           onOpenBroker={() => openTool('broker')}
           onOpenReport={() => openTool('report')}
-          onOpenTool={openTool}
         />
       )}
 
@@ -312,6 +334,8 @@ export function App() {
 
       {route.name === 'settings' && (
         <Settings
+          savedCount={state.scenarios.length}
+          onOpenSaved={() => setRoute({ name: 'saved' })}
           baseRate={baseRate}
           bundledRate={bundled.rate}
           asOf={bundled.asOf}
@@ -373,7 +397,9 @@ export function App() {
       )}
 
       {toast !== null && <Toast message={toast} onDone={() => setToast(null)} />}
-    </>
+
+      {showTabs && <TabBar current={route.name as TabName} onSelect={goTab} />}
+    </div>
   );
 }
 
