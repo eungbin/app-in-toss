@@ -1,10 +1,13 @@
 /**
- * 하단 탭 — docs/SCREEN_FLOW.md 1장
+ * 하단 탭 — docs/SCREEN_FLOW.md 1장, 아이콘 규칙은 docs/SHARED_PACKAGE.md 8-6
  *
  * 상단 네비게이션 바는 토스가 그린다. **하단 상시 이동은 미니앱이 직접 만든다.**
- * 본문 아래에 칩을 늘어놓지 않는다 — 스크롤해야 보이고, 화면마다 자리가 달라진다.
- * 떠 있는 알약 형태를 fx-replay → net-pay 에서 가져왔다(원본은 고치지 않았다).
+ * 본문 아래에 칩을 늘어놓지 않는다 — 스크롤해야 보이고 화면마다 자리가 달라진다.
  * 집중이 필요한 화면(판정 상세·시간축·판정 카드·저장 목록·출처)에서는 숨긴다.
+ *
+ * 아이콘: **비활성은 라인, 활성은 면으로 채운다.** 색만 바뀌는 것보다 지금 어느 화면인지가
+ * 분명하고, 일반 서비스 앱에서 가장 흔한 방식이다(2026-09-15 사용자 확정, B안).
+ * 라인은 굵기 1.7(활성 1.9)·둥근 끝으로 통일한다. 다섯 개가 한 세트로 보여야 한다.
  */
 import type { JSX } from 'react';
 import { t } from '@/i18n';
@@ -15,49 +18,114 @@ export const TABS: TabName[] = ['home', 'convert', 'broker', 'report', 'settings
 
 export const isTabRoute = (name: string): name is TabName => (TABS as string[]).includes(name);
 
-const stroke = (active: boolean) => ({
+const line = {
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: active ? 2 : 1.8,
+  strokeWidth: 1.7,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+};
+
+/** 채운 아이콘 안에 파내는 선. 알약 배경이 흰색이라 흰 선으로 판다 */
+const carve = (w = 2) => ({
+  fill: 'none',
+  stroke: '#fff',
+  strokeWidth: w,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
 });
 
-const ICONS: Record<TabName, (active: boolean) => JSX.Element> = {
-  // 체크 — 판정. 로고와 같은 모양이라 첫 탭이 무엇인지 바로 읽힌다
-  home: (a) => (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M4.5 12.4l4.2 4.2 10.8-10.8" {...stroke(a)} />
-      <path d="M4.5 19.5h15" {...stroke(a)} />
-    </svg>
+/** 비활성 — 라인 */
+const LINE: Record<TabName, JSX.Element> = {
+  // 둥근 사각 안의 체크 — 판정. 로고와 같은 뜻을 쓴다
+  home: (
+    <>
+      <rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5.2" {...line} />
+      <path d="M8.3 12.1l2.7 2.7 5-5.3" {...line} />
+    </>
   ),
-  // 양방향 화살표 — 전세↔월세 환산
-  convert: (a) => (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M4 9h13.5M14.5 5.6 18.2 9M20 15H6.5M9.5 11.6 5.8 15" {...stroke(a)} />
-    </svg>
+  // 서로 반대로 가는 화살표 — 전세↔월세 환산
+  convert: (
+    <>
+      <path d="M4.8 9.3h11.4M13.4 6.5l2.8 2.8-2.8 2.8" {...line} />
+      <path d="M19.2 14.7H7.8M10.6 11.9l-2.8 2.8 2.8 2.8" {...line} />
+    </>
   ),
-  // 도장 — 중개보수
-  broker: (a) => (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M9 3.8h6a1 1 0 0 1 1 1V9a3 3 0 0 1-1.6 2.7l-.4.2v2.3h2.6a2 2 0 0 1 2 2v1.3H5.4V16.2a2 2 0 0 1 2-2H10v-2.3l-.4-.2A3 3 0 0 1 8 9V4.8a1 1 0 0 1 1-1z" {...stroke(a)} />
-      <path d="M4.6 20.2h14.8" {...stroke(a)} />
-    </svg>
+  // 영수증 — 중개보수. 도장은 22px 에서 뭉개졌다
+  broker: (
+    <>
+      <path
+        d="M5.6 4.6a1 1 0 0 1 1-1h10.8a1 1 0 0 1 1 1v15.8l-2.6-1.5-2.6 1.5-2.6-1.5-2.6 1.5-2.4-1.4z"
+        {...line}
+      />
+      <path d="M9 8.6h6M9 12.4h4" {...line} />
+    </>
   ),
   // 서류 + 체크 — 임대차 신고
-  report: (a) => (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M6 3.6h8.2L18 7.4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.6a1 1 0 0 1 1-1z" {...stroke(a)} />
-      <path d="M13.8 3.8v3.8H17.8M8.4 14.6l2 2 3.4-3.6" {...stroke(a)} />
-    </svg>
+  report: (
+    <>
+      <path d="M6.4 3.8h7.2l4 4V20a1 1 0 0 1-1 1H6.4a1 1 0 0 1-1-1V4.8a1 1 0 0 1 1-1z" {...line} />
+      <path d="M13.4 3.9v3.9h3.9" {...line} />
+      <path d="M8.8 14.4l2 2 3.6-3.8" {...line} />
+    </>
   ),
-  // 톱니바퀴는 22px 에서 햇살처럼 보인다. 슬라이더가 작은 크기에서 더 또렷하다(net-pay 에서 배운 것)
-  settings: (a) => (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M4 7.6h11M19 7.6h1M4 16.4h4M12 16.4h8" {...stroke(a)} />
-      <circle cx="17" cy="7.6" r="2.3" {...stroke(a)} />
-      <circle cx="10" cy="16.4" r="2.3" {...stroke(a)} />
-    </svg>
+  // 슬라이더 — 설정. 톱니바퀴는 22px 에서 햇살처럼 보인다(net-pay 에서 배운 것)
+  settings: (
+    <>
+      <path d="M4.4 8.2h9.2M18.4 8.2h1.2M4.4 15.8h4.2M13.4 15.8h6.2" {...line} />
+      <circle cx="16" cy="8.2" r="2.4" {...line} />
+      <circle cx="11" cy="15.8" r="2.4" {...line} />
+    </>
+  ),
+};
+
+/** 활성 — 면 */
+const FILL: Record<TabName, JSX.Element> = {
+  home: (
+    <>
+      <rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5.2" fill="currentColor" />
+      <path d="M8.3 12.1l2.7 2.7 5-5.3" {...carve(2.1)} />
+    </>
+  ),
+  convert: (
+    <>
+      <path
+        d="M4.8 8.2h9.6V5.6a1 1 0 0 1 1.7-.7l3.6 3.6a1 1 0 0 1 0 1.4l-3.6 3.6a1 1 0 0 1-1.7-.7V10.2H4.8a1 1 0 0 1 0-2z"
+        fill="currentColor"
+      />
+      <path
+        d="M19.2 15.8H9.6v2.6a1 1 0 0 1-1.7.7l-3.6-3.6a1 1 0 0 1 0-1.4l3.6-3.6a1 1 0 0 1 1.7.7v2.6h9.6a1 1 0 0 1 0 2z"
+        fill="currentColor"
+      />
+    </>
+  ),
+  broker: (
+    <>
+      <path
+        d="M5.6 4.6a1 1 0 0 1 1-1h10.8a1 1 0 0 1 1 1v15.8l-2.6-1.5-2.6 1.5-2.6-1.5-2.6 1.5-2.4-1.4z"
+        fill="currentColor"
+      />
+      <path d="M9 8.6h6M9 12.4h4" {...carve(1.9)} />
+    </>
+  ),
+  report: (
+    <>
+      <path
+        d="M6.4 3.8h7.2l4.4 4.4V20a1 1 0 0 1-1 1H6.4a1 1 0 0 1-1-1V4.8a1 1 0 0 1 1-1z"
+        fill="currentColor"
+      />
+      <path d="M8.8 14.4l2 2 3.6-3.8" {...carve(2)} />
+    </>
+  ),
+  settings: (
+    <>
+      <path
+        d="M4.4 7.2h9.2a1 1 0 0 1 0 2H4.4a1 1 0 0 1 0-2zM18.4 7.2h1.2a1 1 0 0 1 0 2h-1.2a1 1 0 0 1 0-2zM4.4 14.8h4.2a1 1 0 0 1 0 2H4.4a1 1 0 0 1 0-2zM13.4 14.8h6.2a1 1 0 0 1 0 2h-6.2a1 1 0 0 1 0-2z"
+        fill="currentColor"
+      />
+      <circle cx="16" cy="8.2" r="2.8" fill="currentColor" />
+      <circle cx="11" cy="15.8" r="2.8" fill="currentColor" />
+    </>
   ),
 };
 
@@ -81,7 +149,9 @@ export function TabBar({ current, onSelect }: Props) {
             data-on={active}
             onClick={() => onSelect(tab)}
           >
-            {ICONS[tab](active)}
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+              {active ? FILL[tab] : LINE[tab]}
+            </svg>
             <span>{t(`tab.${tab}` as 'tab.home')}</span>
           </button>
         );
