@@ -10,6 +10,10 @@
   --danger: #f04452;
   --lock: #8b95a1;
   --radius: 16px;
+  /* 모션 — 값은 한곳에서. 길이는 짧게 두고 거리는 작게 둔다(도구형 앱이라 기다림이 없어야 한다) */
+  --dur-fast: 120ms;
+  --dur: 220ms;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   /* SDK SafeArea 값이 들어온다(@ait/kit useSafeArea). 토스 앱 밖에서는 0 */
   --safe-top: 0px;
   --safe-bottom: 0px;
@@ -59,24 +63,59 @@ a { color: var(--primary); }
 .note { color: #9a5b00; }
 
 /* ── 큰 숫자 입력 ───────────────────────────────────── */
-.money-input { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; font-size: 17px; font-weight: 700; }
+/* 밑줄 입력은 서식지처럼 보였다. 채워진 카드로 바꾸고 라벨을 값 위로 올린다 */
+.money-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'label label' 'value unit';
+  align-items: baseline;
+  column-gap: 8px;
+  margin-top: 8px;
+  padding: 10px 14px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--surface);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.money-input:focus-within {
+  background: var(--bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-weak);
+}
+.money-input__prefix {
+  grid-area: label;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  letter-spacing: 0.01em;
+}
 .money-input__field {
-  flex: 1 1 120px;
-  min-width: 100px;
+  grid-area: value;
+  width: 100%;
+  min-width: 0;
   border: none;
-  border-bottom: 2px solid var(--primary);
   background: transparent;
   color: var(--text);
-  font: 700 32px/1.2 inherit;
+  font: 700 28px/1.25 inherit;
   font-variant-numeric: tabular-nums;
-  padding: 4px 0;
+  letter-spacing: -0.02em;
+  padding: 0;
   outline: none;
 }
-.money-input__field::placeholder { color: #c4cad2; }
+.money-input__field::placeholder { color: #c4cad2; font-weight: 600; }
+.money-input__suffix {
+  grid-area: unit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sub);
+}
 
 /* ── 칩 ─────────────────────────────────────────────── */
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 0; }
 .chip {
+  display: inline-block;
+  margin-top: 14px;
   border: 1px solid var(--line);
   background: var(--bg);
   color: var(--sub);
@@ -84,6 +123,7 @@ a { color: var(--primary); }
   padding: 8px 14px;
   font-size: 13px;
   min-height: 36px;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 .chip--on { border-color: var(--primary); color: var(--primary); }
 
@@ -273,12 +313,16 @@ a { color: var(--primary); }
 
 /* 판정 결과 카드 — 색으로 판정을 구분하지 않는다(6장 토큰) */
 .verdict {
-  border-left: 4px solid var(--text);
+  /* 왼쪽 띠는 브랜드색 하나로 통일한다. 초과를 검정으로 두면 경고처럼 읽히고,
+     판정에 색 의미를 주지 않는다는 규칙(SCREEN_FLOW 6장)에도 어긋난다 */
+  border-left: 4px solid var(--primary);
+  /* 신규 계약 모드에서는 위에 날짜 입력이 없어 기준금리 칩과 맞붙어 보였다 */
+  margin: 20px 0 0;
   padding: 16px;
   background: var(--surface);
   border-radius: var(--radius);
+  animation: rise var(--dur) var(--ease) both;
 }
-.verdict[data-verdict='within'] { border-left-color: var(--primary); }
 .verdict > h2 { margin: 0 0 10px; font-size: 20px; font-weight: 700; }
 .verdict dl { margin: 0; display: grid; gap: 4px; }
 .verdict dl div {
@@ -438,3 +482,66 @@ a { color: var(--primary); }
 .menu > li > span + span { float: right; padding: 14px 2px; }
 
 .locked-body__row { margin: 0; color: var(--lock); font-variant-numeric: tabular-nums; }
+
+
+/* ── 모션 ───────────────────────────────────────────────
+   결과가 "바뀌었다"를 눈으로 알려 주는 용도로만 쓴다. 장식은 넣지 않는다.
+   숫자는 입력할 때마다 갱신되므로 애니메이션을 걸지 않는다 — 카드가 처음 뜰 때와
+   판정/환산 카드가 서로 바뀔 때만 한 번 움직인다(React 가 엘리먼트를 갈아 끼울 때).
+   접근성: 사용자가 모션을 줄이도록 설정했으면 전부 끈다. */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(16px); opacity: 0.6; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bar-grow {
+  from { transform: scaleY(0.02); }
+  to { transform: none; }
+}
+
+/* 누르는 느낌 — 토스 앱 안에서는 hover 가 없다. :active 만 쓴다 */
+.cta, .chip, .tools button, .segment button, .card__link, .tile {
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.cta:active:not(:disabled), .tile:active { transform: scale(0.98); }
+.chip:active, .tools button:active, .card__link:active { transform: scale(0.97); }
+
+/* 세그먼트 — 배경이 미끄러지듯 바뀐다 */
+.segment button { transition: background var(--dur) var(--ease), color var(--dur) var(--ease); }
+
+/* 카드 등장 */
+.card { animation: rise var(--dur) var(--ease) both; }
+
+/* 시트 — 아래에서 올라온다 */
+.scrim { animation: scrim-in var(--dur-fast) var(--ease) both; }
+.sheet { animation: sheet-up var(--dur) var(--ease) both; }
+.dialog { animation: rise var(--dur) var(--ease) both; }
+
+/* 막대는 아래에서 자란다. 연도 순서대로 조금씩 늦게 */
+.chart__bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: bar-grow var(--dur) var(--ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cta:active:not(:disabled), .tile:active, .chip:active,
+  .tools button:active, .card__link:active { transform: none; }
+}

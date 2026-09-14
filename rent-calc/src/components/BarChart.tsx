@@ -45,7 +45,16 @@ export function BarChart({ bars, format }: { bars: Bar[]; format: (v: number) =>
           const y = H - PAD_BOTTOM - h;
           return (
             <g key={b.label}>
-              <rect x={x} y={y} width={barW} height={Math.max(2, h)} rx="3" className="chart__bar" />
+              <rect
+                x={x}
+                y={y}
+                width={barW}
+                height={Math.max(2, h)}
+                rx="3"
+                className="chart__bar"
+                // 연도 순서대로 조금씩 늦게 자란다. 마지막 막대까지 0.3초 안에 끝난다
+                style={{ animationDelay: `${i * 40}ms` }}
+              />
               {showLabel(i) && (
                 <>
                   <text x={x + barW / 2} y={y - 6} className="chart__value">
