@@ -4,7 +4,7 @@
 루트에서 `npm run status` 로 본다. 이 파일에는 **파일에서 읽어낼 수 없는 것만** 적는다 —
 콘솔 등록·심사·정산처럼 앱인토스 쪽에만 있는 사실이다.
 
-- **단계**: **QR 테스트 대기** (2026-09-15 출시 번들 `20260915-5` 배포 완료 — 탭 아이콘 확정. 이 번들로 QR 1회 → 검토 요청)
+- **단계**: **심사 중** (2026-09-15 `20260915-5` 검토 요청 완료. `reviewStatus: REVIEWING`, `isTested: true`, 출시 노트 등록됨. 비게임 최대 3영업일)
 - 갱신: 2026-09-15
 
 ## 앱 정보 검토 반려 (2026-09-09)
@@ -50,7 +50,7 @@
 | 로고 | 초안 `assets/logo-600.png` (체크 + 계약서 밑줄). 등록 여부 확인 필요 |
 | 스크린샷 | **다시 올려야 한다** — 2026-09-15 디자인 수정으로 콘솔에 올라간 5장이 실제 화면과 다르다. 새 5장은 `~/Downloads/rent-calc-upload/` (재생성 `npm run shots`) |
 | 광고 그룹 | **완료** (2026-09-14) 리워드·배너 2개. 실 ID 는 `.env` 에만 두고 커밋하지 않는다. 출시 번들에서 실 ID 문자열 2건·테스트 ID 0건 확인 |
-| 최신 번들 | **`20260915-5`**, SDK **3.3.0**, 2026-09-15 배포. `reviewStatus: CREATED`, `isTested: false`. 실 광고 ID + 디자인 수정 + 하단 탭(아이콘 B안) |
+| 최신 번들 | **`20260915-5`**, SDK **3.3.0**, 2026-09-15 배포·검토 요청. `reviewStatus: REVIEWING`, `isTested: true`, `deployed: false`. 실 광고 ID + 하단 탭(아이콘 B안) |
 | 이전 번들 | `20260915-4`(아이콘 변경 전) · `20260915-3` · `20260914-2` · `20260909-1`. 쓰지 않는다 |
 | 최신 배포 ID | `01a0a0a0-f56e-7fb0-aae5-e018c73ca44b` |
 | QR 테스트 링크 | `intoss-private://rent-calc?_deploymentId=01a0a0a0-f56e-7fb0-aae5-e018c73ca44b&host=appsInTossHost` |
@@ -64,24 +64,25 @@
 
 ## 다음 한 걸음
 
-1. ~~광고 그룹 2개 생성~~ → 완료(2026-09-14)
-2. ~~`.env` 실 ID~~ → 완료(2026-09-14). 값은 `.env` 에만 둔다
-3. ~~`npm run deploy:release`~~ → 완료(2026-09-14) `20260914-2`
-4. **이 번들로 QR 1회** ← 지금. 콘솔 → 앱 출시 → `20260915-5` → [테스트].
-   `isTested` 가 서야 검토 요청 버튼이 열린다.
-   [SUBMISSION 3-2](docs/SUBMISSION.md) 13항목을 본다. 이번엔 광고 4항목도 포함이다.
-   - **광고 그룹을 방금 만들었으면 구글 등록까지 최대 2시간** 걸린다. 그전에 광고가
-     안 뜨는 것은 버그가 아니다. 시간이 지난 뒤 다시 본다
-   - 리워드: 게이트 시트 → 광고 → **끝까지 본 경우에만** 시간축·저장 20개가 열리는지.
-     중간에 닫으면 열리지 않아야 한다(`dismissed` 로는 지급 없음)
-   - 배너: 홈·환산·중개보수·신고·저장 목록 하단에만. 숫자 키패드 위로 올라오지 않는지
-   - 판정 카드 이미지 저장, 딥링크 `intoss://rent-calc/j?…` 진입, 자정 재잠금
-5. **검토 요청** — 콘솔 → 앱 출시. 그 화면에서 **출시 노트**를 넣는다
-   ([SUBMISSION 1-6](docs/SUBMISSION.md), 914자 / 좁으면 465자 판). CLI 로는 못 넣는다.
-   비게임 최대 3영업일
+1. ~~광고 그룹·`.env` 실 ID·출시 번들 배포~~ → 완료(2026-09-15) `20260915-5`
+2. ~~QR 실기기 테스트~~ → 완료. `isTested: true`
+3. ~~스크린샷·출시 노트 등록, 검토 요청~~ → 완료(2026-09-15). 출시 노트는 콘솔에 들어갔다
+4. **심사 결과 대기** ← 지금. 비게임 최대 3영업일
+   - 승인되면 콘솔 → 앱 출시에서 **출시**를 눌러야 `deployed: true` 가 된다. 승인 = 출시가 아니다
+   - 반려되면 `reviewReason` 을 STATUS 에 적고 고친다. 지금까지 이 저장소에서 나온 반려
+     사유는 **출시 번들에 남은 테스트 광고 ID 문자열**(fx-replay)과 **진입 시 시트 자동
+     오픈**(work-journal) 둘이다. 이 앱은 번들 스캔으로 전자를 막았고, 시트는 사용자가
+     누를 때만 열린다
+5. 출시 후: 광고 성과 확인(콘솔 → 인앱 광고 → 성과), 기준금리 갱신 주기 관리(4장)
 
-**번들 버전 표기**: `ait build` 가 번호를 먼저 잡아 업로드본은 뒤 번호가 된다. 콘솔 버전
-목록에서 **`20260915-5`** 를 고른다.
+## 확인 방법
 
-**스크린샷 재등록**: 4번과 함께 콘솔 → 앱 정보 → 스크린샷을 새 5장으로 바꾼다.
-디자인이 바뀌어 기존 5장은 실제 화면과 다르다.
+```bash
+python3 - <<'PY'
+import json, os, urllib.request
+key = json.load(open(os.path.expanduser('~/.ait/credentials')))['rent-calc']
+url = 'https://apps-in-toss.toss.im/console/api-public/v3/openapi/bundles/rent-calc/deployments/01a0a0a0-f56e-7fb0-aae5-e018c73ca44b'
+d = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={'Authorization': f'Bearer {key}'}), timeout=20))['success']
+print({k: d.get(k) for k in ['versionName', 'reviewStatus', 'isTested', 'deployed', 'reviewReason']})
+PY
+```
